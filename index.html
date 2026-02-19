@@ -10256,27 +10256,46 @@ function createFilterModal() {
 (function(){
   const KEY = "fp_show_charts";
   const toggle = document.getElementById("toggleCharts");
-  const h = document.getElementById("chartsHistorico");
-  const f = document.getElementById("chartsFuturo");
-
   if(!toggle) return;
 
-  const get = () => {
+  const getPref = () => {
     const v = localStorage.getItem(KEY);
     return v === null ? true : v === "1";
   };
 
-  const apply = (show) => {
-    if(h) h.style.display = show ? "" : "none";
-    if(f) f.style.display = show ? "" : "none";
-    toggle.checked = show;
+  const setPref = (show) => localStorage.setItem(KEY, show ? "1" : "0");
+
+  const getChartCards = () => {
+    const ids = ["incomeExpenseChart","futureIncomeExpenseChart"];
+    const cards = [];
+    ids.forEach(id=>{
+      const canvas = document.getElementById(id);
+      if(canvas){
+        const card = canvas.closest(".card");
+        if(card) cards.push(card);
+      }
+    });
+    return cards;
   };
 
-  apply(get());
+  const apply = (show) => {
+    toggle.checked = show;
+    const cards = getChartCards();
+    if(cards.length){
+      cards.forEach(card => card.style.display = show ? "" : "none");
+    }
+  };
+
+  // initial
+  apply(getPref());
+
+  // watch for dashboard rerenders (charts are injected dynamically)
+  const obs = new MutationObserver(() => apply(getPref()));
+  obs.observe(document.body, { childList:true, subtree:true });
 
   toggle.addEventListener("change", () => {
     const show = !!toggle.checked;
-    localStorage.setItem(KEY, show ? "1" : "0");
+    setPref(show);
     apply(show);
   });
 })();
