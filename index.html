@@ -2130,28 +2130,14 @@
             transform: translateX(20px); /* Deslocamento do círculo */
         }
 
-    </style>
-
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    </style>    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="financasgo-completo-7a3240bf">
+    <meta name="apple-mobile-web-app-title" content="FinancePlay 2.0">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-        navigator.serviceWorker.register("./service-worker.js")
-            .then(function(registration) {
-                console.log("SW registered: ", registration);
-            }, function(registrationError) {
-                console.log("SW registration failed: ", registrationError);
-            });
-    });
-}
-</script></head>
+</head>
 <body>
     <div id="app">
         </div>
@@ -2166,7 +2152,10 @@ if ("serviceWorker" in navigator) {
                 
                 this.PLAN_CONFIG = 'completo';
                 
-                this.CHECKOUT_LINKS = {};
+                this.CHECKOUT_LINKS = {
+                    essencial: 'https://pay.metodogo.com/1/checkout-financasgo-plano-master',
+                    completo: 'https://pay.metodogo.com/1/checkout-financasgo-plano-master-up'
+                };
                 
                 this.user = null;
                 this.licenseInfo = null;
@@ -2193,8 +2182,11 @@ if ("serviceWorker" in navigator) {
     accounts: [],
     cards: []
 };
-                this.licenseKeys = {};
-this.planType = 'financeplay';
+                this.licenseKeys = { 
+    completo: { 'lifetime': '6ba7b814-9dad-11d1-80b4-00c04fd430c8' }
+};
+this.planType = 'completo';
+                this.upgradePlanURL = "https://www.seusite.com/checkout?plan=complete"; // URL PLANO UPGRADE
                 this.emojiList = [  '💰', '💵', '💳', '📈', '📉', '💹', '💸', '🏦', '🏠', '🏢', '🔧', '🧹', '🛋️', '⚡', '💧', '🔥', '📶', '📱', '🚗', '🚕', '🚌', '⛽', '🚲', '✈️',  '🛒', '👕', '👞', '🧴', '🛍️',  '🍔', '🍝', '☕', '🍲', '🍺',  '🎬', '🎮', '📚', '🎭', '🎵', '🏖️', '💊', '🏥', '🦷', '👓', '🧠',  '🏋️', '🧘', '🏃', '💆', '🥗', '💼', '📊', '🖥️', '👔', '🚕', '🎓', '📚', '📝', '💻', '🔬',  '👤', '👨', '👩', '👨‍👩‍👧', '🐱', '🤖', '👑',  '📆', '🔄', '🕒', '🎁', '💫', '🎯', '💰', '🏠', '🚗', '💍', '🌴' ];
                 this.colorList = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#10b981', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
                 this.timezoneList = [ { value: -12, label: '(UTC-12:00) International Date Line West' }, { value: -11, label: '(UTC-11:00) Coordinated Universal Time-11' }, { value: -10, label: '(UTC-10:00) Hawaii' }, { value: -9, label: '(UTC-09:00) Alaska' }, { value: -8, label: '(UTC-08:00) Pacific Time (US & Canada)' }, { value: -7, label: '(UTC-07:00) Mountain Time (US & Canada)' }, { value: -6, label: '(UTC-06:00) Central Time (US & Canada)' }, { value: -5, label: '(UTC-05:00) Eastern Time (US & Canada)' }, { value: -4, label: '(UTC-04:00) Atlantic Time (Canada)' }, { value: -3, label: '(UTC-03:00) Brasilia' }, { value: -2, label: '(UTC-02:00) Mid-Atlantic' }, { value: -1, label: '(UTC-01:00) Azores' }, { value: 0, label: '(UTC+00:00) London, Dublin, Edinburgh' }, { value: 1, label: '(UTC+01:00) Berlin, Paris, Madrid' }, { value: 2, label: '(UTC+02:00) Athens, Istanbul, Helsinki' }, { value: 3, label: '(UTC+03:00) Moscow, St. Petersburg' }, { value: 4, label: '(UTC+04:00) Dubai, Abu Dhabi' }, { value: 5, label: '(UTC+05:00) Islamabad, Karachi' }, { value: 5.5, label: '(UTC+05:30) New Delhi, Mumbai' }, { value: 6, label: '(UTC+06:00) Dhaka' }, { value: 7, label: '(UTC+07:00) Bangkok, Jakarta' }, { value: 8, label: '(UTC+08:00) Beijing, Hong Kong, Singapore' }, { value: 9, label: '(UTC+09:00) Tokyo, Seoul' }, { value: 9.5, label: '(UTC+09:30) Adelaide' }, { value: 10, label: '(UTC+10:00) Sydney, Melbourne' }, { value: 11, label: '(UTC+11:00) Vladivostok' }, { value: 12, label: '(UTC+12:00) Auckland, Wellington' } ];
@@ -3710,7 +3702,7 @@ checkPlanLimits(type, currentCount) {
                     }
                 } else {
                     // Event listener para limpar filtro personalizado
-                    const clearCustomFilter = document.
+                    const clearCustomFilter = document.getElementById('clearCustomFilterDashboard');
                 // Relatórios (mês/período atual) - Excel / PDF
                 const exportXlsxDashboardBtn = document.getElementById('exportXlsxDashboard');
                 const exportPdfDashboardBtn = document.getElementById('exportPdfDashboard');
@@ -3725,8 +3717,6 @@ checkPlanLimits(type, currentCount) {
                         this.exportTransactions('pdf', 'filtered');
                     });
                 }
-
-getElementById('clearCustomFilterDashboard');
                     if (clearCustomFilter) {
                         clearCustomFilter.addEventListener('click', () => {
                             this.customDateFilterEnabled = false;
