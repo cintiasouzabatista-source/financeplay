@@ -2182,8 +2182,21 @@
 }
 
     
-/* ===== Ajustes solicitados: remover Simulador (UI), remover Saldo Inicial (Dashboard), remover Modo Previsto ===== */
-.toggle-switch-container { display: none !important; }
+/* Toggle opcional: gráficos */
+.opt-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:1px solid rgba(56,189,248,0.18);
+  border-radius:999px;
+  cursor:pointer;
+  user-select:none;
+  font-size:13px;
+  color: var(--text-light);
+}
+.opt-toggle input{ accent-color: #009EE3; }
+.opt-toggle span{ line-height: 1; }
 
 </style>
 
@@ -3159,14 +3172,19 @@ showTrialExpiredModal() {
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="categories"><i class="fas fa-tags nav-icon"></i><span>Categorias</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="simulator"><i class="fas fa-calculator nav-icon"></i><span>Metas</span></a></li>
+                                <li class="nav-item"><a href="#" class="nav-link" data-page="simulator"><i class="fas fa-calculator nav-icon"></i><span>Simulador</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog nav-icon"></i><span>Configurações</span></a></li>
                             </ul>
                         </aside>
                         <main class="main-content sidebar-active-overlay" id="mainContent">
                             <div class="header"> <button class="menu-toggle" id="sidebarToggleOpen"><i class="fas fa-bars"></i></button> <h1 class="page-title" id="pageTitle">Dashboard</h1>
                                 <div class="header-actions">
-                                    ${trialInfo}
+                                    
+            <label class="opt-toggle" title="Mostrar/ocultar gráficos">
+                <input type="checkbox" id="toggleCharts" />
+                <span>Gráficos</span>
+            </label>
+${trialInfo}
                                     <div class="user-profile" id="userProfile">
                                         <div class="profile-button" id="profileButton"> <div class="profile-avatar">${this.user && this.user.emoji ? this.user.emoji : '👤'}</div> <div class="profile-info"><div class="profile-name">${this.user && this.user.name ? this.user.name : 'Usuário'}</div><div class="profile-email">${this.user && this.user.email ? this.user.email : ''}</div></div> <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--text-light);"></i> </div>
                                         <div class="profile-dropdown" id="profileDropdown"> <ul class="dropdown-list"> <li class="dropdown-item" data-action="profile"><i class="fas fa-user"></i><span>Meu Perfil</span></li> <li class="dropdown-item" data-action="settings"><i class="fas fa-cog"></i><span>Configurações</span></li> </ul> </div>
@@ -3621,8 +3639,9 @@ checkPlanLimits(type, currentCount) {
                             <span class="toggle-label">Modo Previsto</span>
                         </div>
                     </div>
-                    <div class="grid-container">
-<div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
+                    <div class="grid-container"> 
+                        <div class="card stat-card"><div class="stat-title">Saldo Inicial ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardInitialBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardInitialBalance">R$ ${this.formatCurrency(monthData.dashboardInitialBalance)}</div></div> 
+                        <div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
                     </div>
@@ -8783,47 +8802,6 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 <div class="card simulator-card">
                     <div class="card-header"><h3 class="card-title">Simulador Financeiro</h3></div>
                     <div class="card-body">
-                        
-                    <div class="card" id="goalsCard">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-bullseye"></i> Metas</h3>
-                            <p class="card-subtitle">Crie metas (incluindo Reserva de Emergência) e acompanhe seu progresso.</p>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-row-inline">
-                                <div class="form-row">
-                                    <label class="form-label" for="goalName">Nome da meta</label>
-                                    <input class="form-input" id="goalName" placeholder="Ex.: Reserva de Emergência">
-                                </div>
-                                <div class="form-row">
-                                    <label class="form-label" for="goalTarget">Valor alvo (R$)</label>
-                                    <input class="form-input" id="goalTarget" placeholder="0,00">
-                                </div>
-                            </div>
-
-                            <div class="form-row-inline">
-                                <div class="form-row">
-                                    <label class="form-label" for="goalCurrent">Já guardado (R$)</label>
-                                    <input class="form-input" id="goalCurrent" placeholder="0,00">
-                                </div>
-                                <div class="form-row" style="display:flex; align-items:flex-end;">
-                                    <button class="btn btn-primary" id="addGoalBtn" type="button" style="width:100%;">
-                                        <i class="fas fa-plus"></i> Criar Meta
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="alert alert-warning" id="reserveAlert" style="display:none; margin-top:12px;">
-                                <i class="fas fa-triangle-exclamation"></i>
-                                Sua <strong>Reserva de Emergência</strong> está baixa. Que tal acrescentar mais um pouco?
-                            </div>
-
-                            <div id="goalsList" style="margin-top:14px; display:flex; flex-direction:column; gap:10px;"></div>
-                        </div>
-                    </div>
-
-                    <div id="simulatorLegacy" style="display:none;">
-
                         <form id="simulatorForm">
                             <div class="form-row-inline">
                                 <div class="form-row"><label class="form-label" for="initialInvestment">Investimento Inicial (R$)</label><input type="text" class="form-input" id="initialInvestment" placeholder="0,00" value="10.000,00"></div>
@@ -8835,7 +8813,6 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                             </div>
                             <div class="form-row"><button type="button" class="btn btn-primary" id="calculateBtnSimulator"><i class="fas fa-calculator"></i><span>Calcular</span></button></div>
                         </form>
-                    </div>
                         <div class="simulator-result" id="simulatorResult" style="display: none;">
                             <h4 class="result-title">Resultado da Simulação</h4>
                             <div class="result-grid">
@@ -10274,5 +10251,36 @@ function createFilterModal() {
   </div>
 </div>
 
+<script>
+
+(function(){
+  const KEY = "fp_show_charts";
+  const toggle = document.getElementById("toggleCharts");
+  const h = document.getElementById("chartsHistorico");
+  const f = document.getElementById("chartsFuturo");
+
+  if(!toggle) return;
+
+  const get = () => {
+    const v = localStorage.getItem(KEY);
+    return v === null ? true : v === "1";
+  };
+
+  const apply = (show) => {
+    if(h) h.style.display = show ? "" : "none";
+    if(f) f.style.display = show ? "" : "none";
+    toggle.checked = show;
+  };
+
+  apply(get());
+
+  toggle.addEventListener("change", () => {
+    const show = !!toggle.checked;
+    localStorage.setItem(KEY, show ? "1" : "0");
+    apply(show);
+  });
+})();
+
+</script>
 </body>
 </html>
