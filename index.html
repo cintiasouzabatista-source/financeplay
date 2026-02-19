@@ -2181,7 +2181,66 @@
     }
 }
 
-    </style>
+    
+/* ===== Metas ===== */
+.goal-item{
+  padding:12px;
+  border:1px solid var(--border-color);
+  border-radius:16px;
+  background: var(--card-bg);
+  margin-bottom:10px;
+}
+.goal-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.goal-name{
+  font-weight:800;
+}
+.goal-values{
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top:4px;
+}
+.goal-progress{
+  margin-top:10px;
+  height:10px;
+  background: rgba(15,23,42,0.08);
+  border-radius:999px;
+  overflow:hidden;
+}
+[data-theme="dark"] .goal-progress{
+  background: rgba(255,255,255,0.08);
+}
+.goal-progress > div{
+  height:100%;
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  border-radius:999px;
+  width:0%;
+}
+.goal-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.goal-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 10px;
+  border-radius:999px;
+  border: 1px solid rgba(56,189,248,0.22);
+  color: var(--text-light);
+  font-size: 12px;
+}
+.goal-pill.warn{
+  border-color: rgba(245,158,11,0.35);
+}
+
+</style>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#009EE3">
@@ -2224,8 +2283,8 @@ if ("serviceWorker" in navigator) {
                 
                 this.user = null;
                 this.licenseInfo = null;
-                this.isPreviewMode = this.isFeatureAvailable('preview_mode'); 
-                this.darkMode = false;
+                this.isPreviewMode = false; 
+this.darkMode = false;
                 this.currentMonth = new Date().getMonth();
                 this.currentYear = new Date().getFullYear();
                 this.transactionsSortOrder = 'asc'; 
@@ -3617,13 +3676,8 @@ checkPlanLimits(type, currentCount) {
                             <span class="toggle-label">Modo Previsto</span>
                         </div>
                     </div>
-                    <div class="grid-container"> 
-                        <div class="card stat-card"><div class="stat-title">Saldo Inicial ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardInitialBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardInitialBalance">R$ ${this.formatCurrency(monthData.dashboardInitialBalance)}</div></div> 
-                        <div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
-                        <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
-                        <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
-                    </div>
-                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
+                    <div class="grid-container">
+` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
                 `;
                 
@@ -10228,6 +10282,36 @@ function createFilterModal() {
     </div>
   </div>
 </div>
+
+
+    <!-- Modal Metas -->
+    <div class="modal-overlay" id="goalModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="goalModalTitle">Nova Meta</h3>
+                <button class="modal-close" id="goalModalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nome</label>
+                    <input class="form-input" id="goalName" placeholder="Ex.: Reserva de Emergência" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor alvo (R$)</label>
+                    <input class="form-input" id="goalTarget" type="number" min="0" step="0.01" placeholder="Ex.: 10000" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quanto já juntou (R$)</label>
+                    <input class="form-input" id="goalCurrent" type="number" min="0" step="0.01" placeholder="Ex.: 250" />
+                </div>
+                <small style="color: var(--text-light);">Dica: a Reserva é fundamental. Mantemos um mínimo de R$ 10,00 para não ficar zerada.</small>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outlined" id="goalModalCancel">Cancelar</button>
+                <button class="btn btn-primary" id="goalModalSave">Salvar</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
