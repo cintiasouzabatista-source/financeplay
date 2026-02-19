@@ -2308,6 +2308,16 @@ if ("serviceWorker" in navigator) {
 }
 </script></head>
 <body>
+
+<div id="fp-version-banner" style="position:fixed;top:0;left:0;right:0;z-index:10000;
+background:rgba(0,158,227,0.92);color:white;font-weight:800;
+padding:8px 12px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+display:flex;align-items:center;justify-content:space-between;gap:10px;">
+  <div>✅ VERSÃO TESTE ATIVA — FP-2026-02-19 23:22</div>
+  <div style="font-weight:600;opacity:.9;font-size:12px;">Se você está vendo esta faixa, o Vercel está usando ESTE index.html</div>
+</div>
+<div style="height:44px"></div>
+
     <div id="app">
         </div>
 
@@ -10501,82 +10511,12 @@ function createFilterModal() {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+        console.log("FP-TEST-STAMP: FP-2026-02-19 23:22");
     apply();
     const obs = new MutationObserver(() => apply());
     obs.observe(document.body, {subtree:true, childList:true, characterData:true});
   });
 })();
-
-</script>
-<script>
-
-/* === Reordenação do Dashboard (mobile/desktop) ===
-   Objetivo:
-   1) Subir "Contas (Saldo Final Mês)" e "Cartões (Faturas do Mês)" para o começo do Dashboard
-   2) Manter "Despesas por Categoria / Receitas por Categoria / Limites" no meio
-   3) Jogar os gráficos "Últimos 6 meses" e "Próximos 6 meses" para o final
-*/
-(function(){
-  function findCardByHeadingText(text){
-    const headings = Array.from(document.querySelectorAll('h2,h3,h4'));
-    const t = text.toLowerCase();
-    const h = headings.find(el => (el.textContent||'').toLowerCase().includes(t));
-    if(!h) return null;
-    // sobe até um container "card" ou "chart-container"
-    return h.closest('.card, .chart-container, .content-section, .dashboard-section') || h.parentElement;
-  }
-
-  function moveToTop(container, el){
-    if(!container || !el) return;
-    // coloca logo após o primeiro bloco (resumo) se existir
-    const summary = container.querySelector('.grid-container') || container.querySelector('.summary-cards');
-    if(summary && summary.parentElement === container){
-      summary.insertAdjacentElement('afterend', el);
-    } else {
-      container.insertBefore(el, container.firstChild);
-    }
-  }
-
-  function moveToBottom(container, el){
-    if(!container || !el) return;
-    container.appendChild(el);
-  }
-
-  function reorder(){
-    // detecta conteúdo do dashboard
-    const pageTitle = document.getElementById('pageTitle');
-    const isDash = pageTitle ? (pageTitle.textContent||'').toLowerCase().includes('dashboard') || (pageTitle.textContent||'').toLowerCase().includes('minhas') : true;
-
-    const container = document.getElementById('pageContent') || document.querySelector('.content') || document.querySelector('.main-content');
-    if(!container) return;
-
-    // blocos alvo
-    const contas = findCardByHeadingText('Contas') || findCardByHeadingText('Saldo Final Mês');
-    const cartoes = findCardByHeadingText('Cartões') || findCardByHeadingText('Faturas');
-    const graf1 = findCardByHeadingText('Últimos 6 meses');
-    const graf2 = findCardByHeadingText('Próximos 6 meses');
-
-    // Regras
-    // 1) subir contas + cartoes
-    if(contas) moveToTop(container, contas);
-    if(cartoes) moveToTop(container, cartoes);
-
-    // 2) gráficos para o final
-    if(graf1) moveToBottom(container, graf1);
-    if(graf2) moveToBottom(container, graf2);
-  }
-
-  function safeReorder(){
-    try{ reorder(); }catch(e){ console.error('Reorder error:', e); }
-  }
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    safeReorder();
-    const obs = new MutationObserver(()=>safeReorder());
-    obs.observe(document.body, {subtree:true, childList:true});
-  });
-})();
-/* === /Reordenação === */
 
 </script>
 </body>
