@@ -2266,6 +2266,98 @@
   }
 }
 
+
+
+/* ===== UI POLISH: Transações (Desktop + Mobile) ===== */
+
+/* Botões do topo da lista de transações */
+.header-buttons{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.header-buttons .btn{
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+.header-buttons .btn i{ margin-right:8px; }
+
+/* Lista de transações mais “fintech” */
+.transaction-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.transaction-item{
+  border: 1px solid rgba(56,189,248,0.14);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  padding: 12px 12px;
+}
+.transaction-details{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.transaction-info{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.transaction-name{
+  font-weight: 700;
+}
+.transaction-category{
+  color: var(--text-light);
+  font-size: 12px;
+}
+.transaction-amount{
+  font-weight: 800;
+}
+.transaction-actions{
+  display:flex;
+  gap:8px;
+}
+
+/* ===== Mobile (layout app) ===== */
+@media (max-width: 900px){
+  /* cards de saldo em 2x2 */
+  .stats-grid{
+    display:grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap:10px !important;
+  }
+  .stat-card{
+    width:100% !important;
+  }
+
+  /* Botões Exportar / Nova Transação em 2 colunas iguais */
+  .header-buttons{
+    width:100%;
+    justify-content:stretch;
+  }
+  .header-buttons .btn{
+    flex:1;
+    justify-content:center;
+  }
+
+  /* Lista ocupa toda largura */
+  .transaction-item{
+    padding: 12px 10px;
+  }
+
+  /* Ações de cada transação viram linha compacta */
+  .transaction-actions{
+    gap:6px;
+  }
+  .action-btn{
+    width:34px;
+    height:34px;
+    border-radius:12px;
+  }
+}
+
 </style>
 <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
