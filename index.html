@@ -1,52 +1,121 @@
 <!DOCTYPE html>
+<style>
+
+/* COLE AQUI TODO O CSS QUE EU TE ENVIEI */
+
+
+/* ===== Modern Blue Upgrade ===== */
+.card{
+  border: 1px solid rgba(56,189,248,0.18);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  border-radius: 16px;
+}
+
+.btn-primary{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:#fff;
+}
+
+.nav-link.active{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:white;
+}
+
+@media (max-width:768px){
+  .header{
+    border-bottom:1px solid rgba(56,189,248,0.18);
+  }
+}
+
+</style>
+
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças GO!</title>
+    <title>FinancePlay 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-
         :root {
-            --primary-color: #009EE3;       /* Azul Mercado Pago */
-            --primary-dark: #0077B6;
-            --secondary-color: #22C55E;
-            --secondary-dark: #16A34A;
-            --danger-color: #EF4444;
-            --danger-dark: #DC2626;
-            --warning-color: #F59E0B;
-            --warning-dark: #D97706;
-
-            /* Light theme base */
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #0f172a;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-
-            /* Effects */
-            --shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-            --border-radius: 12px;
+            --primary-color: #9aa3b2;
+            --primary-dark: #7f8897;
+            --secondary-color: #2ecc71;
+            --secondary-dark: #27ae60;
+            --danger-color: #e74c3c;
+            --danger-dark: #c0392b;
+            --warning-color: #f1c40f;
+            --warning-dark: #d4ac0d;
+            --bg-color: #0f1115;
+            --card-bg: #171a21;
+            --text-color: #e6e8ec;
+            --text-light: #9aa3b2;
+            --border-color: #2a2f3a;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            --border-radius: 10px;
             --transition: all 0.25s ease;
+
         }
 
-[data-theme="dark"] {
-            --primary-color: #38BDF8;
-            --primary-dark: #009EE3;
-            --secondary-color: #34d399;
-            --secondary-dark: #10b981;
-            --danger-color: #f87171;
-            --danger-dark: #ef4444;
-            --warning-color: #fbbf24;
-            --warning-dark: #f59e0b;
-            --bg-color: #0F172A;
-            --card-bg: #111C2E;
-            --text-color: #E2E8F0;
-            --text-light: #94A3B8;
-            --border-color: rgba(56,189,248,0.18);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+.header-actions{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+        .report-actions{
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .btn-icon{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+        }
+        .btn.btn-sm{
+            padding:8px 10px;
+            border-radius:10px;
+            font-weight:600;
+            letter-spacing:0.1px;
+        }
+        .btn.btn-outlined{
+            background:transparent;
+            border:1px solid var(--border-color);
+            color:var(--text-color);
+        }
+        .btn.btn-outlined:hover{
+            border-color:#3a4150;
+            background:rgba(255,255,255,0.03);
+        }
+
+        .brand-badge{
+            margin-left:8px;
+            padding:2px 8px;
+            border:1px solid var(--border-color);
+            border-radius:999px;
+            font-size:12px;
+            color:var(--text-light);
+        }
+
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #9aa3b2;
+            --primary-dark: #7f8897;
+            --secondary-color: #2ecc71;
+            --secondary-dark: #27ae60;
+            --danger-color: #e74c3c;
+            --danger-dark: #c0392b;
+            --warning-color: #f1c40f;
+            --warning-dark: #d4ac0d;
+            --bg-color: #0f1115;
+            --card-bg: #171a21;
+            --text-color: #e6e8ec;
+            --text-light: #9aa3b2;
+            --border-color: #2a2f3a;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
         }
 
         * {
@@ -56,7 +125,7 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: var(--transition);
@@ -135,7 +204,7 @@
         }
 
         .nav-link:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -322,7 +391,7 @@
         }
 
         .month-nav-btn:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -336,7 +405,7 @@
         }
 
         .current-month:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -456,7 +525,7 @@
         }
 
         .transaction-item:hover {
-            background-color: rgba(0, 158, 227, 0.06);
+            background-color: rgba(99, 102, 241, 0.05);
         }
         .transaction-item.card-item-pending-preview {
             opacity: 0.6;
@@ -493,7 +562,7 @@
         }
 
         .transfer-icon {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -570,7 +639,7 @@
 
         .action-btn:hover {
             color: var(--primary-color);
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .delete-btn:hover {
@@ -650,7 +719,7 @@
         .drilldown-table th, .drilldown-table td{ padding:10px 8px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; }
         .drilldown-table th{ text-align:left; color: var(--text-light); font-weight: 600; font-size: 0.8rem; letter-spacing: .02em; text-transform: uppercase; }
         .drilldown-table td.amount{ text-align:right; font-weight: 600; white-space: nowrap; }
-        .drilldown-pill{ display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius: 999px; border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-color); background: rgba(0, 158, 227, 0.07); }
+        .drilldown-pill{ display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius: 999px; border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-color); background: rgba(99, 102, 241, 0.06); }
 
 
         .modal-overlay {
@@ -824,7 +893,7 @@
         }
 
         .emoji-item:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .emoji-item.selected {
@@ -961,7 +1030,7 @@
         }
 
         .profile-button:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .profile-avatar {
@@ -1036,7 +1105,7 @@
         }
 
         .dropdown-item:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
          [data-theme="dark"] .dropdown-item:hover {
@@ -1075,9 +1144,9 @@
             border-radius: 12px;
             background: linear-gradient(145deg, 
                 var(--card-bg) 0%, 
-                rgba(0, 158, 227, 0.03) 100%);
+                rgba(99, 102, 241, 0.02) 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0, 158, 227, 0.10);
+            border: 1px solid rgba(99, 102, 241, 0.08);
         }
 
         .chart-container canvas {
@@ -1127,7 +1196,7 @@
         [data-theme="dark"] .chart-container {
             background: linear-gradient(145deg, 
                 var(--card-bg) 0%, 
-                rgba(0, 158, 227, 0.06) 100%);
+                rgba(99, 102, 241, 0.05) 100%);
             border: 1px solid rgba(99, 102, 241, 0.12);
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
@@ -1671,7 +1740,7 @@
         .result-item {
             text-align: center;
             padding: 15px;
-            background-color: rgba(0, 158, 227, 0.06);
+            background-color: rgba(99, 102, 241, 0.05);
             border-radius: var(--border-radius);
         }
 
@@ -1914,7 +1983,7 @@
 
         .card-bill-header {
             padding: 12px 15px;
-            background-color: rgba(0, 158, 227, 0.06); /* Leve destaque */
+            background-color: rgba(99, 102, 241, 0.05); /* Leve destaque */
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
@@ -2094,132 +2163,37 @@
         }
 
     
-/* =====================================================
-   REESTRUTURAÇÃO 3.0 — MOBILE MINIMAL (foco saldo + meta)
-   ===================================================== */
-
-/* Cards mais premium */
-.card, .transaction-item, .chart-container, .stat-card, .card-bill-group {
-    border: 1px solid var(--border-color);
-}
-.btn-primary {
-    background: linear-gradient(135deg, #009EE3, #38BDF8);
-}
-.btn-primary:hover { filter: brightness(0.95); }
-.nav-link.active { background: linear-gradient(135deg, #009EE3, #38BDF8); }
-
-/* HERO do saldo (último card do grid, geralmente saldo final) */
-.grid-container .stat-card:last-child {
-    background: linear-gradient(135deg, rgba(0,158,227,0.22), rgba(56,189,248,0.10));
-    border: 1px solid rgba(56,189,248,0.28);
-}
-.grid-container .stat-card:last-child .stat-value {
-    text-shadow: 0 0 14px rgba(0,158,227,0.25);
+/* ===== Modern Blue Upgrade ===== */
+.card{
+  border: 1px solid rgba(56,189,248,0.18);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  border-radius: 16px;
 }
 
-/* Mobile minimal */
-@media (max-width: 992px) {
-    .sidebar { box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
-    .main-content { margin-left: 0 !important; width: 100% !important; }
-    .header { gap: 10px; }
+.btn-primary{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:#fff;
 }
 
-@media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.active { transform: translateX(0); }
-
-    .main-content { padding: 12px !important; }
-
-    .header {
-        position: sticky;
-        top: 0;
-        background-color: var(--bg-color);
-        padding: 10px 12px !important;
-        margin-bottom: 12px !important;
-        border-bottom: 1px solid rgba(56,189,248,0.14);
-        z-index: 900;
-    }
-
-    .page-title { font-size: 1.1rem !important; }
-
-    .header-actions { gap: 8px !important; }
-    .btn { padding: 10px 12px !important; border-radius: 14px; }
-    .btn-icon { width: 36px; height: 36px; }
-
-    .grid-container {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-    }
-
-    .stat-card {
-        padding: 12px !important;
-        text-align: left !important;
-        border-radius: 16px !important;
-    }
-
-    .stat-value { font-size: 1.25rem !important; }
-
-    .grid-container .stat-card:last-child {
-        grid-column: 1 / -1 !important;
-        padding: 16px !important;
-    }
-    .grid-container .stat-card:last-child .stat-value {
-        font-size: 1.8rem !important;
-        font-weight: 800 !important;
-    }
-
-    .month-navigation { margin-bottom: 10px !important; gap: 8px !important; }
-    .chart-container { margin: 12px 0 !important; }
-    .transaction-item { border-radius: 16px !important; }
-
-    .header-actions .toggle-switch-container {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: flex-start !important;
-        margin-bottom: 8px !important;
-        order: -1 !important;
-    }
+.nav-link.active{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:white;
 }
 
-    
-/* Toggle opcional: gráficos */
-.opt-toggle{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 10px;
-  border:1px solid rgba(56,189,248,0.18);
-  border-radius:999px;
-  cursor:pointer;
-  user-select:none;
-  font-size:13px;
-  color: var(--text-light);
+@media (max-width:768px){
+  .header{
+    border-bottom:1px solid rgba(56,189,248,0.18);
+  }
 }
-.opt-toggle input{ accent-color: #009EE3; }
-.opt-toggle span{ line-height: 1; }
 
-</style>
-
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#009EE3">
+</style>    <meta name="theme-color" content="#009EE3">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="financasgo-completo-7a3240bf">
+    <meta name="apple-mobile-web-app-title" content="FinancePlay 2.0">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-        navigator.serviceWorker.register("./service-worker.js")
-            .then(function(registration) {
-                console.log("SW registered: ", registration);
-            }, function(registrationError) {
-                console.log("SW registration failed: ", registrationError);
-            });
-    });
-}
-</script></head>
+</head>
 <body>
     <div id="app">
         </div>
@@ -2314,7 +2288,8 @@ async init() {
             return;
         }
         
-        this.darkMode = (await this.loadFromStorage('finance_darkmode')) || false;
+        const savedDarkMode = await this.loadFromStorage('finance_darkmode');
+        this.darkMode = (savedDarkMode === null || savedDarkMode === undefined) ? true : savedDarkMode;
         
         if (this.darkMode) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -2487,7 +2462,7 @@ async initializeTrial() {
     await this.saveToStorage('finance_trial_start', trialData.startDate);
     
     this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
+        'Bem-vindo ao FinancePlay', 
         'Parabéns pela sua compra! Você tem acesso completo!', 
         'success', 
         10000
@@ -2499,7 +2474,7 @@ generateBrowserFingerprint() {
     const ctx = canvas.getContext('2d');
     ctx.textBaseline = 'top';
     ctx.font = '14px Arial';
-    ctx.fillText('Finanças GO! Fingerprint', 2, 2);
+    ctx.fillText('FinancePlay Fingerprint', 2, 2);
     
     const fingerprint = {
         canvas: canvas.toDataURL(),
@@ -2591,7 +2566,7 @@ initializeTrialSync() {
     localStorage.setItem('finance_trial_start', JSON.stringify(trialData.startDate));
     
     this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
+        'Bem-vindo ao FinancePlay', 
         'Parabéns pela sua compra! Você terá acesso completo por 7 dias, após este período receberá sua chave vitalícia na área de membros.', 
         'success', 
         10000
@@ -2968,19 +2943,58 @@ async migrateDataFromLocalStorage() {
 }
 
 setupBackupReminder() {
-    const exibirNotificacao = () => {
-        if (this.notificationSystem && typeof this.notificationSystem.show === 'function' && this.user && this.isFeatureAvailable('import_export')) { 
-            this.notificationSystem.show(
-                'Lembrete de backup',
-                'Faça um backup dos seus dados para evitar perdas! (Configurações > Exportar)',
-                'warning',
-                15000 
-            );
+    const checkReservaMensal = async () => {
+        try {
+            if (!this.notificationSystem || typeof this.notificationSystem.show !== 'function') return;
+
+            // Garante que exista a conta "Reserva de Emergência"
+            const reserveAccId = this.ensureEmergencyReserveAccount();
+
+            const minReserva = (await this.loadFromStorage('finance_reserve_min')) ?? 10;
+            const alvoReserva = (await this.loadFromStorage('finance_reserve_target')) ?? 1000;
+
+            const saldoReserva = this.getLiveAccountBalance(reserveAccId, /*includeFuture*/ false);
+
+            const now = new Date();
+            const mesKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
+            const lastKey = await this.loadFromStorage('finance_reserve_last_alert');
+            const tipo = (saldoReserva >= alvoReserva) ? 'ok' : (saldoReserva < minReserva ? 'low' : 'nudge');
+            const currentKey = `${mesKey}:${tipo}`;
+
+            if (lastKey === currentKey) return;
+
+            if (saldoReserva < minReserva) {
+                this.notificationSystem.show(
+                    'Reserva de Emergência baixa',
+                    `Sua reserva está em R$ ${this.formatCurrency(saldoReserva)}. Que tal acrescentar mais um pouco? (mínimo sugerido: R$ ${this.formatCurrency(minReserva)})`,
+                    'warning',
+                    10000
+                );
+            } else if (saldoReserva >= alvoReserva) {
+                this.notificationSystem.show(
+                    'Parabéns! 🎉',
+                    `Sua reserva está decolando: R$ ${this.formatCurrency(saldoReserva)} (meta: R$ ${this.formatCurrency(alvoReserva)}). Continue assim!`,
+                    'success',
+                    9000
+                );
+            } else {
+                this.notificationSystem.show(
+                    'Reserva em evolução',
+                    `Sua reserva está em R$ ${this.formatCurrency(saldoReserva)}. Vamos avançar rumo a R$ ${this.formatCurrency(alvoReserva)}?`,
+                    'info',
+                    8000
+                );
+            }
+
+            await this.saveToStorage('finance_reserve_last_alert', currentKey);
+        } catch (e) {
+            console.warn('Falha ao checar reserva mensal:', e);
         }
     };
-    
-    setTimeout(exibirNotificacao, 30 * 1000); 
-    setInterval(exibirNotificacao, 30 * 60 * 1000); 
+
+    // Checa ao abrir (depois que a UI carregar) e revalida periodicamente
+    setTimeout(checkReservaMensal, 8 * 1000);
+    setInterval(checkReservaMensal, 6 * 60 * 60 * 1000);
 }
             validateLicense(key) {
     // Verificar se é trial
@@ -3046,7 +3060,7 @@ setupBackupReminder() {
             // Básico: ❌ | Essencial: ✅ | Completo: ✅
             return activePlan === 'essencial' || activePlan === 'completo';
             
-        case 'simulator':
+        case 'goals':
             // Básico: ❌ | Essencial: ❌ | Completo: ✅
             return activePlan === 'completo';
             
@@ -3165,26 +3179,21 @@ showTrialExpiredModal() {
                 this.app.innerHTML = `
                     <div class="app-container">
                         <aside class="sidebar" id="sidebar">
-                            <div class="sidebar-header"> <div class="sidebar-title"><i class="fas fa-wallet logo-icon"></i><span>Finanças GO!</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
+                            <div class="sidebar-header"> <div class="sidebar-title"><i class="fas fa-wallet logo-icon"></i><span>FinancePlay <span class="brand-badge">R$</span></span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
                             <ul class="nav-menu">
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Dashboard</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="categories"><i class="fas fa-tags nav-icon"></i><span>Categorias</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="simulator"><i class="fas fa-calculator nav-icon"></i><span>Simulador</span></a></li>
+                                <li class="nav-item"><a href="#" class="nav-link" data-page="goals"><i class="fas fa-life-ring nav-icon"></i><span>Metas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog nav-icon"></i><span>Configurações</span></a></li>
                             </ul>
                         </aside>
                         <main class="main-content sidebar-active-overlay" id="mainContent">
                             <div class="header"> <button class="menu-toggle" id="sidebarToggleOpen"><i class="fas fa-bars"></i></button> <h1 class="page-title" id="pageTitle">Dashboard</h1>
                                 <div class="header-actions">
-                                    
-            <label class="opt-toggle" title="Mostrar/ocultar gráficos">
-                <input type="checkbox" id="toggleCharts" />
-                <span>Gráficos</span>
-            </label>
-${trialInfo}
+                                    ${trialInfo}
                                     <div class="user-profile" id="userProfile">
                                         <div class="profile-button" id="profileButton"> <div class="profile-avatar">${this.user && this.user.emoji ? this.user.emoji : '👤'}</div> <div class="profile-info"><div class="profile-name">${this.user && this.user.name ? this.user.name : 'Usuário'}</div><div class="profile-email">${this.user && this.user.email ? this.user.email : ''}</div></div> <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--text-light);"></i> </div>
                                         <div class="profile-dropdown" id="profileDropdown"> <ul class="dropdown-list"> <li class="dropdown-item" data-action="profile"><i class="fas fa-user"></i><span>Meu Perfil</span></li> <li class="dropdown-item" data-action="settings"><i class="fas fa-cog"></i><span>Configurações</span></li> </ul> </div>
@@ -3480,11 +3489,6 @@ ${trialInfo}
                     this.showUpgradeModal('cards');
                     return;
                 }
-                
-                if (page === 'simulator' && !this.isFeatureAvailable('simulator')) {
-                    this.showUpgradeModal('simulator');
-                    return;
-                }
 
                 const navLinks = document.querySelectorAll('.nav-link'); 
                 navLinks.forEach(link => { 
@@ -3508,8 +3512,8 @@ ${trialInfo}
                             this.renderCards(pageContent); 
                             break;
                         case 'settings': this.renderSettings(pageContent); break;
-                        case 'simulator': 
-                            this.renderSimulator(pageContent); 
+                        case 'goals': 
+                            this.renderGoals(pageContent); 
                             break;
                         default: pageContent.innerHTML = '<div class="card no-data"><i class="fas fa-exclamation-triangle"></i><p>Página não encontrada.</p></div>';
                     }
@@ -3517,6 +3521,7 @@ ${trialInfo}
                     setTimeout(() => {
                         this.setupFilterToggles();
                         this.populateFilters();
+                        this.setupGoalCard();
                     }, 100);
                 }
                 
@@ -3538,8 +3543,8 @@ ${trialInfo}
                     case 'accounts': return 'Contas'; 
                     case 'cards': return 'Cartões'; 
                     case 'settings': return 'Configurações'; 
-                    case 'simulator': return 'Simulador Financeiro'; 
-                    default: return 'Finanças GO!';
+                    case 'goals': return 'Metas'; 
+                    default: return 'FinancePlay';
                 }
             }
 // Verificar limites do plano atual
@@ -3571,6 +3576,59 @@ checkPlanLimits(type, currentCount) {
     
     return false;
 }
+            
+            async setupGoalCard() {
+                try {
+                    const targetInput = document.getElementById('goalTargetInput');
+                    const saveBtn = document.getElementById('saveGoalBtn');
+                    const goalTargetEl = document.getElementById('goalTarget');
+                    const goalCurrentEl = document.getElementById('goalCurrent');
+                    const goalFill = document.getElementById('goalProgressFill');
+                    if (!targetInput || !saveBtn || !goalTargetEl || !goalCurrentEl || !goalFill) return;
+
+                    // Load target (default 15000)
+                    const savedTarget = await this.loadFromStorage('finance_goal_target');
+                    const target = (savedTarget === null || savedTarget === undefined || isNaN(savedTarget)) ? 15000 : Number(savedTarget);
+                    targetInput.value = target;
+
+                    // Current = saldo realizado da conta "Investimentos" (se existir)
+                    const investAcc = this.data.accounts.find(a => (a.name || '').toLowerCase().includes('invest'));
+                    let current = 0;
+                    if (investAcc) {
+                        current = this.calculateAccountRealizedBalance(investAcc.id);
+                    }
+
+                    goalTargetEl.textContent = `R$ ${this.formatCurrency(target)}`;
+                    goalCurrentEl.textContent = `R$ ${this.formatCurrency(current)}`;
+
+                    const pct = target > 0 ? Math.min((current / target) * 100, 100) : 0;
+                    goalFill.style.width = `${pct}%`;
+                    goalFill.textContent = `${Math.round(pct)}%`;
+                    goalFill.style.display = 'flex';
+                    goalFill.style.alignItems = 'center';
+                    goalFill.style.justifyContent = 'center';
+                    goalFill.style.fontSize = '10px';
+                    goalFill.style.color = '#0f1115';
+
+                    // color by level
+                    if (pct < 60) goalFill.style.backgroundColor = 'var(--secondary-color)';
+                    else if (pct < 85) goalFill.style.backgroundColor = 'var(--warning-color)';
+                    else goalFill.style.backgroundColor = 'var(--danger-color)';
+
+                    saveBtn.onclick = async () => {
+                        const v = Number(targetInput.value || 0);
+                        if (v <= 0) { alert('Informe um valor de meta maior que zero.'); return; }
+                        await this.saveToStorage('finance_goal_target', v);
+                        goalTargetEl.textContent = `R$ ${this.formatCurrency(v)}`;
+                        const pct2 = Math.min((current / v) * 100, 100);
+                        goalFill.style.width = `${pct2}%`;
+                        goalFill.textContent = `${Math.round(pct2)}%`;
+                    };
+                } catch (e) {
+                    console.error('setupGoalCard error', e);
+                }
+            }
+
             renderDashboard(container) {
                 const filterAccountId = this.hasActiveTransactionFilters() ? this.getEffectiveAccountFilter() : this.selectedFilterAccount;
                 const monthData = this.customDateFilterEnabled ? 
@@ -3598,7 +3656,7 @@ checkPlanLimits(type, currentCount) {
                     
                     if (activeFilters.length > 0) {
                         filterInfo = `
-                            <div style="background-color: rgba(0, 158, 227, 0.12); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <div style="background-color: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-filter" style="color: var(--primary-color);"></i>
                                     <span style="font-weight: 500;">Filtros ativos:</span>
@@ -3631,21 +3689,40 @@ checkPlanLimits(type, currentCount) {
                                 <button class="month-nav-btn" id="nextMonthBtnDashboard"><i class="fas fa-chevron-right"></i></button>
                             </div>`
                         }
-                        <div style="display: flex; align-items: center; gap: 10px;" class="toggle-switch-container">
+                        <div class="header-actions">
+                            <div class="toggle-switch-container">
                             <label class="toggle-switch">
                                 <input type="checkbox" id="previewToggleDashboard" ${this.isPreviewMode ? 'checked' : ''}>
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="toggle-label">Modo Previsto</span>
+                            </div>
+                        <div class="report-actions">
+                            <button class="btn btn-sm btn-outlined btn-icon" id="exportXlsxDashboard" title="Exportar mês atual para Excel"><i class="fa-solid fa-file-excel"></i>Excel</button>
+                            <button class="btn btn-sm btn-outlined btn-icon" id="exportPdfDashboard" title="Exportar mês atual para PDF"><i class="fa-solid fa-file-pdf"></i>PDF</button>
                         </div>
                     </div>
                     <div class="grid-container"> 
                         <div class="card stat-card"><div class="stat-title">Saldo Inicial ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardInitialBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardInitialBalance">R$ ${this.formatCurrency(monthData.dashboardInitialBalance)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
-                        
-                        <div class="card stat-card"><div class="stat-title">Cartão de Crédito ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value" style="color: var(--warning-color);" id="dashboardCreditCardTotal">R$ ${this.formatCurrency(monthData.dashboardCreditCardTotal)}</div></div> 
-<div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
+                        <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
+                        <div class="card stat-card" id="goalStatCard">
+                          <div class="stat-title">Meta</div>
+                          <div class="stat-value" style="font-size:1.1rem;">
+                            <span id="goalCurrent">R$ 0,00</span>
+                            <span style="color:var(--text-light);font-size:0.9rem;"> / </span>
+                            <span id="goalTarget">R$ 0,00</span>
+                          </div>
+                          <div class="progress-bar" style="margin-top:8px;height:10px;">
+                            <div class="progress-fill" id="goalProgressFill" style="width:0%;"></div>
+                          </div>
+                          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+                            <input type="number" id="goalTargetInput" placeholder="Definir meta (R$)" style="flex:1;min-width:120px;">
+                            <button class="btn btn-primary" id="saveGoalBtn" style="white-space:nowrap;">Salvar</button>
+                          </div>
+                        </div>
+                    </div>
                     </div>
                     ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
@@ -3682,6 +3759,20 @@ checkPlanLimits(type, currentCount) {
                 } else {
                     // Event listener para limpar filtro personalizado
                     const clearCustomFilter = document.getElementById('clearCustomFilterDashboard');
+                // Relatórios (mês/período atual) - Excel / PDF
+                const exportXlsxDashboardBtn = document.getElementById('exportXlsxDashboard');
+                const exportPdfDashboardBtn = document.getElementById('exportPdfDashboard');
+                if (exportXlsxDashboardBtn) {
+                    exportXlsxDashboardBtn.addEventListener('click', () => {
+                        // 'filtered' exporta o mês/período atualmente selecionado
+                        this.exportTransactions('xlsx', 'filtered');
+                    });
+                }
+                if (exportPdfDashboardBtn) {
+                    exportPdfDashboardBtn.addEventListener('click', () => {
+                        this.exportTransactions('pdf', 'filtered');
+                    });
+                }
                     if (clearCustomFilter) {
                         clearCustomFilter.addEventListener('click', () => {
                             this.customDateFilterEnabled = false;
@@ -4680,7 +4771,7 @@ checkPlanLimits(type, currentCount) {
                     
                     if (activeFilters.length > 0) {
                         filterInfo = `
-                            <div style="background-color: rgba(0, 158, 227, 0.12); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <div style="background-color: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-filter" style="color: var(--primary-color);"></i>
                                     <span style="font-weight: 500;">Filtros ativos:</span>
@@ -5896,7 +5987,6 @@ renderInitialBalanceItem(item) {
                     dashboardInitialBalance: 0,
                     dashboardIncome: 0,
                     dashboardExpense: 0,
-                    dashboardCreditCardTotal: 0,
                     dashboardFinalBalance: 0,
                     transactionsInitialBalance: 0,
                     transactionsIncome: 0,
@@ -5998,9 +6088,6 @@ renderInitialBalanceItem(item) {
                         if (passesAllFilters) {
                             if (t.type === 'income') result.dashboardIncome += t.amount;
                             if (t.type === 'expense') result.dashboardExpense += t.amount;
-                            if (isCardTransactionForCurrentInvoice && !t.isCarriedOverBalance) {
-                                result.dashboardCreditCardTotal += t.amount;
-                            }
                             if (isCardTransactionForCurrentInvoice && !this.isCardInvoicePaid(t.card, t.invoiceMonth, t.invoiceYear)) {
                                 result.dashboardExpense += t.amount;
                             }
@@ -6266,10 +6353,6 @@ renderInitialBalanceItem(item) {
                         }
                     } else {
                         // Modo realizado - apenas transações completed
-                        // Total no Cartão de Crédito (fatura do mês) — independente de estar "realizado"
-                        if (isCardTransactionForCurrentInvoice && passesAllFilters && !t.isCarriedOverBalance) {
-                            result.dashboardCreditCardTotal += t.amount;
-                        }
                         if (t.completed && passesAllFilters) {
                             if (t.type === 'income') {
                                 result.dashboardIncome += t.amount;
@@ -6819,6 +6902,299 @@ renderInitialBalanceItem(item) {
                 const category = this.data.categories[type].find(c => c.id === id); 
                 return category ? category.name : 'Sem Categoria'; 
             }
+            // ===========================
+            // FinancePlay 2.0 - Metas (inclui Reserva de Emergência obrigatória)
+            // ===========================
+
+            normalizeText(str) {
+                return (str || '').toString().trim().toLowerCase();
+            }
+
+            ensureEmergencyReserveAccount() {
+                // Procura conta "Reserva de Emergência" (ou variações)
+                const targetNames = ['reserva de emergência', 'reserva de emergencia', 'reserva emergencia', 'reserva'];
+                const existing = (this.data?.accounts || []).find(a => targetNames.includes(this.normalizeText(a.name)));
+                if (existing) return existing.id;
+
+                // Cria se não existir
+                const id = this.generateId();
+                const newAcc = {
+                    id,
+                    name: 'Reserva de Emergência',
+                    emoji: '🛟',
+                    color: '#22c55e',
+                    initialBalance: 0
+                };
+                this.data.accounts = this.data.accounts || [];
+                this.data.accounts.push(newAcc);
+
+                // Persiste sem travar a UX (não precisa await aqui)
+                this.saveToStorage('finance_data', this.data).catch(() => {});
+                return id;
+            }
+
+            isGoalAccount(account) {
+                const name = this.normalizeText(account?.name);
+                return name.startsWith('meta:') || name.startsWith('meta ');
+            }
+
+            getLiveAccountBalance(accountId, includeFuture = false) {
+                const acc = (this.data?.accounts || []).find(a => a.id === accountId);
+                if (!acc) return 0;
+
+                let balance = Number(acc.initialBalance || 0);
+                const now = new Date();
+
+                const txs = (this.data?.transactions || []).filter(t => {
+                    if (!t) return false;
+                    if (t.type === 'card') return false; // cartão não afeta saldo direto da conta
+                    if (!includeFuture) {
+                        if (t.completed !== true) return false;
+                        const d = this.parseDate(t.date);
+                        if (isNaN(d.getTime())) return false;
+                        if (d > now) return false;
+                    }
+                    return true;
+                });
+
+                for (const t of txs) {
+                    const amt = Number(t.amount || 0);
+                    if (!amt) continue;
+
+                    if (t.type === 'income') {
+                        if (t.account === accountId) balance += amt;
+                    } else if (t.type === 'expense') {
+                        if (t.account === accountId) balance -= amt;
+                    } else if (t.type === 'transfer') {
+                        if (t.fromAccount === accountId) balance -= amt;
+                        if (t.toAccount === accountId) balance += amt;
+                    }
+                }
+                return balance;
+            }
+
+            async loadGoals() {
+                const goals = await this.loadFromStorage('finance_goals');
+                return Array.isArray(goals) ? goals : [];
+            }
+
+            async saveGoals(goals) {
+                await this.saveToStorage('finance_goals', goals);
+            }
+
+            async createGoalAccount(name) {
+                const id = this.generateId();
+                const accName = `Meta: ${name}`;
+                const newAcc = {
+                    id,
+                    name: accName,
+                    emoji: '🎯',
+                    color: '#94a3b8',
+                    initialBalance: 0
+                };
+                this.data.accounts = this.data.accounts || [];
+                this.data.accounts.push(newAcc);
+                await this.saveToStorage('finance_data', this.data);
+                return id;
+            }
+
+            async renderGoals(container) {
+                const reserveAccId = this.ensureEmergencyReserveAccount();
+                const minReserva = (await this.loadFromStorage('finance_reserve_min')) ?? 10;
+                const alvoReserva = (await this.loadFromStorage('finance_reserve_target')) ?? 1000;
+                const saldoReserva = this.getLiveAccountBalance(reserveAccId, false);
+                const pctReserva = alvoReserva > 0 ? Math.min(100, (saldoReserva / alvoReserva) * 100) : 0;
+
+                const goals = await this.loadGoals();
+
+                const goalsHtml = goals.length === 0
+                    ? `<div class="no-data"><i class="fas fa-bullseye"></i><p>Nenhuma meta criada ainda. Crie uma meta para separar objetivos do dia a dia.</p></div>`
+                    : goals.map(g => {
+                        const current = this.getLiveAccountBalance(g.accountId, false);
+                        const pct = g.target > 0 ? Math.min(100, (current / g.target) * 100) : 0;
+                        return `
+                            <div class="card" style="margin-bottom:12px;">
+                                <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="transaction-icon" style="background-color:#94a3b820; color:#cbd5e1;">🎯</div>
+                                        <div>
+                                            <div class="card-title" style="margin:0;">${this.escapeHtml(g.name)}</div>
+                                            <div class="text-muted" style="font-size:12px;">${this.escapeHtml(g.accountName || '')}</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm delete-goal-btn" data-id="${g.id}" title="Excluir meta">Excluir</button>
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                                        <div>
+                                            <div class="text-muted">Acumulado</div>
+                                            <div style="font-size:18px; font-weight:700;">R$ ${this.formatCurrency(current)}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-muted">Meta</div>
+                                            <div style="font-size:18px; font-weight:700;">R$ ${this.formatCurrency(g.target)}</div>
+                                        </div>
+                                        <div style="min-width:120px; text-align:right;">
+                                            <div class="text-muted">Progresso</div>
+                                            <div style="font-size:18px; font-weight:700;">${pct.toFixed(0)}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-bar" style="margin-top:10px;">
+                                        <div class="progress-fill" style="width:${pct}%; background:#94a3b8;"></div>
+                                    </div>
+                                    <div class="text-muted" style="margin-top:8px; font-size:12px;">
+                                        Para adicionar valor nesta meta, registre uma <b>Transferência</b> para a conta <b>${this.escapeHtml(g.accountName || '')}</b>.
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                container.innerHTML = `
+                    <div class="header-actions" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 18px;">
+                        <div>
+                            <h2 style="margin:0;">Metas</h2>
+                            <div class="text-muted" style="margin-top:4px;">Separe objetivos (metas) das contas do dia a dia. A <b>Reserva de Emergência</b> é obrigatória.</div>
+                        </div>
+                        <button class="btn btn-primary" id="createGoalBtn"><i class="fas fa-plus"></i> Nova Meta</button>
+                    </div>
+
+                    <div class="card" style="border:1px solid rgba(148,163,184,0.15); margin-bottom: 14px;">
+                        <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="transaction-icon" style="background-color:#22c55e20; color:#22c55e;">🛟</div>
+                                <div>
+                                    <div class="card-title" style="margin:0;">Reserva de Emergência</div>
+                                    <div class="text-muted" style="font-size:12px;">Obrigatória • separada do dia a dia</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <button class="btn btn-secondary btn-sm" id="reserveSettingsBtn">Configurar</button>
+                                <button class="btn btn-secondary btn-sm" id="reserveViewBtn">Ver lançamentos</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                                <div>
+                                    <div class="text-muted">Acumulado</div>
+                                    <div style="font-size:22px; font-weight:800;">R$ ${this.formatCurrency(saldoReserva)}</div>
+                                </div>
+                                <div>
+                                    <div class="text-muted">Meta</div>
+                                    <div style="font-size:22px; font-weight:800;">R$ ${this.formatCurrency(alvoReserva)}</div>
+                                </div>
+                                <div style="min-width:120px; text-align:right;">
+                                    <div class="text-muted">Progresso</div>
+                                    <div style="font-size:22px; font-weight:800;">${pctReserva.toFixed(0)}%</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar" style="margin-top:12px;">
+                                <div class="progress-fill" style="width:${pctReserva}%; background:#22c55e;"></div>
+                            </div>
+                            <div class="text-muted" style="margin-top:8px; font-size:12px;">
+                                Mínimo sugerido: <b>R$ ${this.formatCurrency(minReserva)}</b>. Ao atingir <b>R$ ${this.formatCurrency(alvoReserva)}</b>, você receberá uma mensagem de parabéns.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px;">
+                        ${goalsHtml}
+                    </div>
+                `;
+
+                // handlers
+                setTimeout(() => this.setupGoalsHandlers(reserveAccId), 50);
+            }
+
+            setupGoalsHandlers(reserveAccId) {
+                const createBtn = document.getElementById('createGoalBtn');
+                if (createBtn) {
+                    createBtn.onclick = async () => {
+                        const name = prompt('Nome da meta (ex: Viagem, Reforma, IPVA):');
+                        if (!name || !name.trim()) return;
+
+                        const targetRaw = prompt('Valor da meta (ex: 2500):', '1000');
+                        const target = Number(String(targetRaw || '').replace(',', '.'));
+                        if (!isFinite(target) || target <= 0) {
+                            this.notificationSystem?.show('Valor inválido', 'Informe um valor de meta maior que zero.', 'warning', 6000);
+                            return;
+                        }
+
+                        const accountId = await this.createGoalAccount(name.trim());
+                        const goals = await this.loadGoals();
+                        goals.push({
+                            id: this.generateId(),
+                            name: name.trim(),
+                            target,
+                            accountId,
+                            accountName: `Meta: ${name.trim()}`
+                        });
+                        await this.saveGoals(goals);
+
+                        this.notificationSystem?.show('Meta criada', 'Meta criada com sucesso! Use Transferência para movimentar valores para ela.', 'success', 6000);
+                        this.navigateToPage('goals');
+                    };
+                }
+
+                const reserveCfg = document.getElementById('reserveSettingsBtn');
+                if (reserveCfg) {
+                    reserveCfg.onclick = async () => {
+                        const minRaw = prompt('Mínimo sugerido da reserva (R$):', String((await this.loadFromStorage('finance_reserve_min')) ?? 10));
+                        const min = Number(String(minRaw || '').replace(',', '.'));
+                        if (!isFinite(min) || min < 0) return;
+
+                        const targetRaw = prompt('Meta da reserva (R$):', String((await this.loadFromStorage('finance_reserve_target')) ?? 1000));
+                        const target = Number(String(targetRaw || '').replace(',', '.'));
+                        if (!isFinite(target) || target <= 0) return;
+
+                        await this.saveToStorage('finance_reserve_min', min);
+                        await this.saveToStorage('finance_reserve_target', target);
+
+                        this.notificationSystem?.show('Reserva atualizada', 'Configurações da reserva foram salvas.', 'success', 5000);
+                        this.navigateToPage('goals');
+                    };
+                }
+
+                const reserveView = document.getElementById('reserveViewBtn');
+                if (reserveView) {
+                    reserveView.onclick = () => {
+                        // Navega para Transações já filtrando pela conta da reserva
+                        this.transactionFilters = this.transactionFilters || { type:'all', category:'all', account:'all' };
+                        this.transactionFilters.account = reserveAccId;
+                        this.customDateFilterEnabled = false;
+                        this.navigateToPage('transactions');
+                        this.notificationSystem?.show('Reserva', 'Filtro aplicado: lançamentos da Reserva de Emergência.', 'info', 5000);
+                    };
+                }
+
+                document.querySelectorAll('.delete-goal-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        const goals = await this.loadGoals();
+                        const goal = goals.find(g => g.id === id);
+                        if (!goal) return;
+
+                        const ok = confirm(`Excluir a meta "${goal.name}"? (A conta criada para ela continuará existindo.)`);
+                        if (!ok) return;
+
+                        const updated = goals.filter(g => g.id !== id);
+                        await this.saveGoals(updated);
+                        this.notificationSystem?.show('Meta removida', 'A meta foi removida. (A conta permanece.)', 'success', 5000);
+                        this.navigateToPage('goals');
+                    });
+                });
+            }
+
+            escapeHtml(text) {
+                return (text || '').toString()
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+
 
             generateId() { 
                 return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); 
@@ -7058,7 +7434,10 @@ attachCategoryEventListeners() {
                 if (!this.data.accounts || this.data.accounts.length === 0) { 
                     return `<div class="no-data"><i class="fas fa-university"></i><p>Nenhuma conta cadastrada.</p></div>`; 
                 } 
-                return this.data.accounts.map(originalAccount => { 
+                return this.data.accounts.filter(a => {
+                    const n = this.normalizeText(a.name);
+                    return !(n === 'reserva de emergência' || n === 'reserva de emergencia' || this.isGoalAccount(a));
+                }).map(originalAccount => { 
                     const accountMonthData = accountsDataFromMonth.find(ad => ad.id === originalAccount.id); 
                     const finalBalanceToShow = accountMonthData ? accountMonthData.finalBalance : originalAccount.initialBalance; 
                     const initialBalanceRegistered = originalAccount.initialBalance; 
@@ -7394,7 +7773,7 @@ if (isEdit) {
                                             <label for="valueInstallmentRadio">Valor da Parcela</label>
                                         </div>
                                     </div>
-                                    <div id="installmentValueDisplay" style="margin-top: 10px; padding: 10px; background-color: rgba(0, 158, 227, 0.12); border-radius: 4px; font-size: 0.95rem; color: var(--primary-color); display: none;">
+                                    <div id="installmentValueDisplay" style="margin-top: 10px; padding: 10px; background-color: rgba(99, 102, 241, 0.1); border-radius: 4px; font-size: 0.95rem; color: var(--primary-color); display: none;">
                                         <span id="installmentValueText"></span>
                                     </div>
                                 </div>
@@ -9260,7 +9639,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 doc.setFont('helvetica');
                 doc.setFontSize(16);
                 doc.setTextColor(99, 102, 241);
-                doc.text('Finanças GO! - Relatório de Transações', 20, 20);
+                doc.text('FinancePlay - Relatório de Transações', 20, 20);
                 
                 let yPosition = 35;
                 doc.setFontSize(10);
@@ -10261,54 +10640,81 @@ function createFilterModal() {
   </div>
 </div>
 
+
 <script>
 
+/* === Hora de Guardar (saldo previsto > R$ 250,00) === */
 (function(){
-  const KEY = "fp_show_charts";
-  const toggle = document.getElementById("toggleCharts");
-  if(!toggle) return;
-
-  const getPref = () => {
-    const v = localStorage.getItem(KEY);
-    return v === null ? true : v === "1";
-  };
-
-  const setPref = (show) => localStorage.setItem(KEY, show ? "1" : "0");
-
-  const getChartCards = () => {
-    const ids = ["incomeExpenseChart","futureIncomeExpenseChart"];
-    const cards = [];
-    ids.forEach(id=>{
-      const canvas = document.getElementById(id);
-      if(canvas){
-        const card = canvas.closest(".card");
-        if(card) cards.push(card);
-      }
-    });
-    return cards;
-  };
-
-  const apply = (show) => {
-    toggle.checked = show;
-    const cards = getChartCards();
-    if(cards.length){
-      cards.forEach(card => card.style.display = show ? "" : "none");
+  const KEY = "fp_guard_notice_dismissed"; // future-proof if you add dismiss
+  function parseBRL(txt){
+    if(txt == null) return 0;
+    const s = String(txt).replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',', '.');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+  function ensureBox(){
+    let box = document.getElementById("fp-guard-notice");
+    if(box) return box;
+    box = document.createElement("div");
+    box.id = "fp-guard-notice";
+    box.style.display = "none";
+    box.style.margin = "10px 0 14px";
+    box.style.padding = "12px 14px";
+    box.style.borderRadius = "16px";
+    box.style.border = "1px solid rgba(0,158,227,0.22)";
+    box.style.background = "linear-gradient(135deg, rgba(0,158,227,0.14), rgba(56,189,248,0.08))";
+    box.style.color = "var(--text-color, #0f172a)";
+    box.style.fontWeight = "600";
+    box.innerHTML = '💙 <b>Hora de guardar</b> — seu <b>saldo previsto</b> passou de <b>R$ 250,00</b>. Que tal separar um valor para suas metas?';
+    // insert under header if possible
+    const header = document.querySelector(".header") || document.querySelector(".dashboard-header");
+    if(header && header.parentElement){
+      header.parentElement.insertBefore(box, header.nextSibling);
+    } else {
+      const main = document.querySelector(".main-content") || document.querySelector("main") || document.body;
+      main.insertBefore(box, main.firstChild);
     }
-  };
+    return box;
+  }
 
-  // initial
-  apply(getPref());
+  function getPredictedValue(){
+    // 1) explicit ids if your app has them
+    const candidates = [
+      "#predictedBalance",
+      "#predictedFinalBalance",
+      "[data-role='predicted-balance']",
+      ".predicted-balance .value",
+      ".saldo-previsto .value",
+      ".predicted .stat-value"
+    ];
+    for(const sel of candidates){
+      const el = document.querySelector(sel);
+      if(el && el.textContent) return parseBRL(el.textContent);
+    }
 
-  // watch for dashboard rerenders (charts are injected dynamically)
-  const obs = new MutationObserver(() => apply(getPref()));
-  obs.observe(document.body, { childList:true, subtree:true });
+    // 2) If there's a 'Modo Previsto' toggle and it is ON, try to read saldo final card value
+    const toggle = document.querySelector("#forecastToggle, #modoPrevistoToggle, input[name='forecast'], input[name='previsto']");
+    const isOn = toggle ? !!toggle.checked : true; // if we can't detect, assume true
+    if(isOn){
+      const elFinal = document.querySelector("#finalBalanceValue, .final-balance .value, .grid-container .stat-card:last-child .stat-value, .stat-card:last-child .stat-value");
+      if(elFinal && elFinal.textContent) return parseBRL(elFinal.textContent);
+    }
+    return 0;
+  }
 
-  toggle.addEventListener("change", () => {
-    const show = !!toggle.checked;
-    setPref(show);
-    apply(show);
+  function update(){
+    const box = ensureBox();
+    const predicted = getPredictedValue();
+    box.style.display = (predicted > 250) ? "block" : "none";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    update();
+    const obs = new MutationObserver(() => update());
+    obs.observe(document.body, { childList:true, subtree:true, characterData:true });
   });
 })();
+/* === /Hora de Guardar === */
 
 </script>
 </body>
