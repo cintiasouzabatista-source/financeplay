@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças GO!</title>
+    <title>FinancePlay 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2204,7 +2204,7 @@
     <meta name="theme-color" content="#009EE3">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="financasgo-completo-7a3240bf">
+    <meta name="apple-mobile-web-app-title" content="FinancePlay 2.0">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
@@ -2333,180 +2333,9 @@ async init() {
             this.usePreviousMonthBalance = usePrevMonth;
             console.log(`Configuração carregada: usePreviousMonthBalance = ${usePrevMonth}`);
         } else {
-            console.log(`Nenhuma configuração encontrada, usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}`);
-            await this.saveToStorage('finance_use_prev_month', this.usePreviousMonthBalance);
-        }
-        
-        const paidInvoices = await this.loadFromStorage('finance_paid_invoices');
-        if (paidInvoices) {
-            this.paidCardInvoices = paidInvoices;
-        }
-        
-        const savedSortOrder = await this.loadFromStorage('finance_sort_order');
-        if (savedSortOrder) {
-            this.transactionsSortOrder = savedSortOrder;
-        }
-        
-        this.renderMainApp();
-        this.navigate('dashboard');
-        this.setupBackupReminder();
-        
-    } catch (error) {
-        console.error("Erro ao inicializar a aplicação:", error);
-        this.notificationSystem.show(
-            'Erro ao Inicializar', 
-            'Ocorreu um erro ao carregar seus dados. Tente recarregar a página.', 
-            'error', 
-            10000
-        );
-        
-        await this.initWithLocalStorage();
-    }
-}
-
-async initWithLocalStorage() {
-    if (!this.notificationSystem) {
-        this.notificationSystem = new NotificationSystem();
-    }
-    
-    const savedData = this.loadFromStorageSync('finance_data');
-    if (savedData) {
-        this.data = savedData;
-        if (!this.data.transactions) this.data.transactions = [];
-        if (!this.data.categories) this.data.categories = { income: [], expense: [] };
-        if (!this.data.categories.income) this.data.categories.income = [];
-        if (!this.data.categories.expense) this.data.categories.expense = [];
-        if (!this.data.accounts) this.data.accounts = [];
-        if (!this.data.cards) this.data.cards = [];
-        
-        let needsUpdate = false;
-        
-        if (this.data.cards && Array.isArray(this.data.cards)) {
-            this.data.cards.forEach(card => {
-                if (!card.account && this.data.accounts && this.data.accounts.length > 0) {
-                    card.account = this.data.accounts[0].id;
-                    needsUpdate = true;
-                } else if (!card.account && (!this.data.accounts || this.data.accounts.length === 0)) {
-                    card.account = null;
-                    needsUpdate = true;
-                }
-            });
-        }
-        
-        if (needsUpdate) {
-            localStorage.setItem('finance_data', JSON.stringify(this.data));
-        }
+            console.log(`Nenhuma configuração encontrada, usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}``Configuração carregada (sync): usePreviousMonthBalance = ${usePrevMonth}`);
     } else {
-        this.data = {
-            categories: JSON.parse(JSON.stringify(this.defaultData.categories)),
-            accounts: JSON.parse(JSON.stringify(this.defaultData.accounts)),
-            cards: JSON.parse(JSON.stringify(this.defaultData.cards)),
-            transactions: []
-        };
-        localStorage.setItem('finance_data', JSON.stringify(this.data));
-    }
-    
-    this.user = this.loadFromStorageSync('finance_user');
-    this.licenseInfo = this.loadFromStorageSync('finance_license');
-    
-    if (!this.user || !this.licenseInfo) {
-        this.initializeTrialSync();
-    }
-    
-    // Verificar trial status
-    if (!this.checkTrialAndLicenseStatusSync()) {
-        this.showTrialExpiredModal();
-        return;
-    }
-    
-    this.darkMode = this.loadFromStorageSync('finance_darkmode') || false;
-    
-    if (this.darkMode) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
-    
-    const savedTimezoneOffsetInMinutes = this.loadFromStorageSync('finance_timezone_offset');
-    if (savedTimezoneOffsetInMinutes !== null) {
-        this.timezoneOffset = savedTimezoneOffsetInMinutes;
-    } else {
-        this.timezoneOffset = new Date().getTimezoneOffset();
-        localStorage.setItem('finance_timezone_offset', JSON.stringify(this.timezoneOffset));
-    }
-    
-    const usePrevMonth = this.loadFromStorageSync('finance_use_prev_month');
-    if (usePrevMonth === true || usePrevMonth === false) {
-        this.usePreviousMonthBalance = usePrevMonth;
-        console.log(`Configuração carregada (sync): usePreviousMonthBalance = ${usePrevMonth}`);
-    } else {
-        console.log(`Nenhuma configuração encontrada (sync), usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}`);
-        localStorage.setItem('finance_use_prev_month', JSON.stringify(this.usePreviousMonthBalance));
-    }
-    
-    const paidInvoices = this.loadFromStorageSync('finance_paid_invoices');
-    if (paidInvoices) {
-        this.paidCardInvoices = paidInvoices;
-    }
-    
-    this.renderMainApp();
-    this.navigate('dashboard');
-    this.setupBackupReminder();
-}
-
-async initializeTrial() {
-    const currentDate = new Date();
-    const trialData = {
-        startDate: currentDate.toISOString(),
-        endDate: new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(),
-        browserFingerprint: this.generateBrowserFingerprint(),
-        installId: this.generateId(),
-        accessCount: 1
-    };
-    
-    // Criar usuário automático
-    this.user = { 
-        name: '', 
-        email: '', 
-        emoji: '👤' 
-    };
-    
-    // Criar licença de trial
-    this.licenseInfo = { 
-        key: 'TRIAL', 
-        type: 'trial', 
-        validity: '7days', 
-        activationDate: currentDate.toISOString(),
-        isTrialActive: true,
-        trialData: trialData
-    };
-    
-    // Salvar dados de controle em múltiplas chaves para dificultar bypass
-    await this.saveToStorage('finance_user', this.user);
-    await this.saveToStorage('finance_license', this.licenseInfo);
-    await this.saveToStorage('finance_trial_control', trialData);
-    await this.saveToStorage('finance_install_id', trialData.installId);
-    await this.saveToStorage('finance_trial_start', trialData.startDate);
-    
-    this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
-        'Parabéns pela sua compra! Você tem acesso completo!', 
-        'success', 
-        10000
-    );
-}
-
-generateBrowserFingerprint() {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillText('Finanças GO! Fingerprint', 2, 2);
-    
-    const fingerprint = {
-        canvas: canvas.toDataURL(),
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
+        console.log(`Nenhuma configuração encontrada (sync), usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}``${screen.width}x${screen.height}x${screen.colorDepth}`,
         timestamp: Date.now()
     };
     
@@ -2591,7 +2420,7 @@ initializeTrialSync() {
     localStorage.setItem('finance_trial_start', JSON.stringify(trialData.startDate));
     
     this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
+        'Bem-vindo ao FinancePlay 2.0', 
         'Parabéns pela sua compra! Você terá acesso completo por 7 dias, após este período receberá sua chave vitalícia na área de membros.', 
         'success', 
         10000
@@ -2966,17 +2795,7 @@ async migrateDataFromLocalStorage() {
         return false;
     }
 }
-
-setupBackupReminder() {
-    const exibirNotificacao = () => {
-        if (this.notificationSystem && typeof this.notificationSystem.show === 'function' && this.user && this.isFeatureAvailable('import_export')) { 
-            this.notificationSystem.show(
-                'Lembrete de backup',
-                'Faça um backup dos seus dados para evitar perdas! (Configurações > Exportar)',
-                'warning',
-                15000 
-            );
-        }
+    setupBackupReminder() { /* removido */ }
     };
     
     setTimeout(exibirNotificacao, 30 * 1000); 
@@ -3165,7 +2984,7 @@ showTrialExpiredModal() {
                 this.app.innerHTML = `
                     <div class="app-container">
                         <aside class="sidebar" id="sidebar">
-                            <div class="sidebar-header"> <div class="sidebar-title"><i class="fas fa-wallet logo-icon"></i><span>Finanças GO!</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
+                            <div class="sidebar-header"> <div class="sidebar-title"><i class="fas fa-wallet logo-icon"></i><span>FinancePlay 2.0</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
                             <ul class="nav-menu">
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Dashboard</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
@@ -3539,7 +3358,7 @@ ${trialInfo}
                     case 'cards': return 'Cartões'; 
                     case 'settings': return 'Configurações'; 
                     case 'simulator': return 'Simulador Financeiro'; 
-                    default: return 'Finanças GO!';
+                    default: return 'FinancePlay 2.0';
                 }
             }
 // Verificar limites do plano atual
@@ -9260,7 +9079,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 doc.setFont('helvetica');
                 doc.setFontSize(16);
                 doc.setTextColor(99, 102, 241);
-                doc.text('Finanças GO! - Relatório de Transações', 20, 20);
+                doc.text('FinancePlay 2.0 - Relatório de Transações', 20, 20);
                 
                 let yPosition = 35;
                 doc.setFontSize(10);
@@ -10313,3 +10132,5 @@ function createFilterModal() {
 </script>
 </body>
 </html>
+
+<!-- Hora de guardar methods injection failed to place, manual insert needed -->
