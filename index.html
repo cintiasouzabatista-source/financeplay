@@ -2155,206 +2155,60 @@
 }
 
 
-/* ===== REESTRUTURAÇÃO: SHELL MOBILE-FIRST ===== */
 
-/* Layout base */
-.app-container{
+/* ===== Brand + Azul moderno (Mercado Pago) ===== */
+.brand-logo{
   display:flex;
-  min-height:100vh;
-  background: var(--bg-color);
-}
-
-/* Sidebar desktop */
-.sidebar{
-  width:260px;
-  flex:0 0 260px;
-  position:sticky;
-  top:0;
-  height:100vh;
-  overflow:auto;
-  border-right:1px solid rgba(56,189,248,0.10);
-  background: rgba(30,41,59,0.92);
-  backdrop-filter: blur(10px);
-}
-
-/* Main desktop */
-.main-content{
-  flex:1;
-  min-width:0;
-}
-
-/* Header mais “app” */
-.header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background: rgba(15,23,42,0.82);
-  backdrop-filter: blur(10px);
-  border-bottom:1px solid rgba(56,189,248,0.12);
-}
-
-/* MOBILE: sidebar vira gaveta (off-canvas) */
-@media (max-width: 900px){
-  .sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    height:100vh;
-    transform: translateX(-105%);
-    transition: transform .25s ease;
-    z-index:60;
-    box-shadow: 20px 0 40px rgba(0,0,0,0.45);
-  }
-  .sidebar.active{
-    transform: translateX(0);
-  }
-
-  /* Conteúdo ocupa 100% */
-  .main-content{
-    width:100%;
-  }
-
-  /* Overlay quando sidebar abre */
-  .main-content.sidebar-open::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background: rgba(0,0,0,0.45);
-    z-index:50;
-  }
-
-  /* Espaçamento geral */
-  .header{
-    padding: 12px 12px !important;
-  }
-
-  /* Minimalista C: foco no saldo+meta */
-  .summary-cards, .stats-grid, .cards-grid{
-    display:grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap:10px !important;
-    padding: 0 12px !important;
-  }
-  .stat-card, .summary-card{
-    border-radius:18px !important;
-    border:1px solid rgba(56,189,248,0.18) !important;
-  }
-
-  /* Card destaque (Saldo Final): tenta pegar o que tiver label 'Saldo Final' */
-  .stat-card:has(.label),
-  .summary-card:has(.label){}
-  /* fallback: 4º card */
-  .stat-card:nth-child(4), .summary-card:nth-child(4){
-    grid-column: 1 / -1 !important;
-    background: linear-gradient(135deg, rgba(0,158,227,0.28), rgba(56,189,248,0.14)) !important;
-    border: 1px solid rgba(56,189,248,0.30) !important;
-  }
-  .stat-card:nth-child(4) .value,
-  .summary-card:nth-child(4) .value{
-    font-size: 28px !important;
-    font-weight: 800 !important;
-    text-shadow: 0 0 14px rgba(0,158,227,0.35) !important;
-  }
-
-  .goal-card, .meta-card, .card-goal, .goal{
-    grid-column: 1 / -1 !important;
-    margin: 12px 12px 0 !important;
-  }
-
-  .chart-card, .charts, .chart-container{
-    margin: 12px 12px 0 !important;
-  }
-}
-
-
-
-/* ===== UI POLISH: Transações (Desktop + Mobile) ===== */
-
-/* Botões do topo da lista de transações */
-.header-buttons{
-  display:flex;
-  gap:10px;
   align-items:center;
+  gap:10px;
 }
-.header-buttons .btn{
+.brand-mark{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:800;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+.brand-name{
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+/* Botões de relatório (Excel/PDF) mais elegantes */
+.report-actions .btn{
   border-radius: 14px;
-  padding: 10px 14px;
+  padding: 8px 12px;
   font-weight: 700;
 }
-.header-buttons .btn i{ margin-right:8px; }
 
-/* Lista de transações mais “fintech” */
-.transaction-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+/* Card Reserva com leve destaque */
+#reserveStatCard{
+  border: 1px solid rgba(56,189,248,0.22);
 }
-.transaction-item{
-  border: 1px solid rgba(56,189,248,0.14);
-  border-radius: 16px;
-  background: rgba(255,255,255,0.02);
-  padding: 12px 12px;
-}
-.transaction-details{
+#reserveStatCard .stat-title{
   display:flex;
   align-items:center;
-  gap:12px;
-}
-.transaction-info{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
-.transaction-name{
-  font-weight: 700;
-}
-.transaction-category{
-  color: var(--text-light);
-  font-size: 12px;
-}
-.transaction-amount{
-  font-weight: 800;
-}
-.transaction-actions{
-  display:flex;
   gap:8px;
 }
+#reserveStatCard .stat-title::before{
+  content:"";
+  width:10px;height:10px;border-radius:999px;
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  display:inline-block;
+}
 
-/* ===== Mobile (layout app) ===== */
+/* Mobile: mantém layout original, só organiza os cards do topo */
 @media (max-width: 900px){
-  /* cards de saldo em 2x2 */
   .stats-grid{
-    display:grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap:10px !important;
   }
-  .stat-card{
-    width:100% !important;
-  }
-
-  /* Botões Exportar / Nova Transação em 2 colunas iguais */
-  .header-buttons{
-    width:100%;
-    justify-content:stretch;
-  }
-  .header-buttons .btn{
-    flex:1;
-    justify-content:center;
-  }
-
-  /* Lista ocupa toda largura */
-  .transaction-item{
-    padding: 12px 10px;
-  }
-
-  /* Ações de cada transação viram linha compacta */
-  .transaction-actions{
-    gap:6px;
-  }
-  .action-btn{
-    width:34px;
-    height:34px;
-    border-radius:12px;
+  #reserveStatCard, #goalStatCard{
+    grid-column: 1 / -1 !important;
   }
 }
 
@@ -3693,6 +3547,7 @@ showTrialExpiredModal() {
                     setTimeout(() => {
                         this.setupFilterToggles();
                         this.populateFilters();
+                        this.setupReserveCard();
                         this.setupGoalCard();
                     }, 100);
                 }
@@ -3749,6 +3604,80 @@ checkPlanLimits(type, currentCount) {
     return false;
 }
             
+
+            async setupReserveCard() {
+                try {
+                    const targetInput = document.getElementById('reserveTargetInput');
+                    const minInput = document.getElementById('reserveMinInput');
+                    const saveBtn = document.getElementById('saveReserveBtn');
+                    const targetEl = document.getElementById('reserveTarget');
+                    const currentEl = document.getElementById('reserveCurrent');
+                    const fill = document.getElementById('reserveProgressFill');
+                    const hint = document.getElementById('reserveHint');
+                    if (!targetInput || !minInput || !saveBtn || !targetEl || !currentEl || !fill) return;
+
+                    // garante a conta Reserva de Emergência
+                    const reserveAccId = this.ensureEmergencyReserveAccount();
+
+                    const savedMin = await this.loadFromStorage('finance_reserve_min');
+                    const savedTarget = await this.loadFromStorage('finance_reserve_target');
+
+                    const minVal = (savedMin === null || savedMin === undefined || isNaN(savedMin)) ? 10 : Number(savedMin);
+                    const targetVal = (savedTarget === null || savedTarget === undefined || isNaN(savedTarget)) ? 1000 : Number(savedTarget);
+
+                    minInput.value = minVal;
+                    targetInput.value = targetVal;
+
+                    const current = this.getLiveAccountBalance(reserveAccId, /*includeFuture*/ false);
+
+                    targetEl.textContent = `R$ ${this.formatCurrency(targetVal)}`;
+                    currentEl.textContent = `R$ ${this.formatCurrency(current)}`;
+
+                    const pct = targetVal > 0 ? Math.min((current / targetVal) * 100, 100) : 0;
+                    fill.style.width = `${pct}%`;
+                    fill.textContent = `${Math.round(pct)}%`;
+                    fill.style.display = 'flex';
+                    fill.style.alignItems = 'center';
+                    fill.style.justifyContent = 'center';
+                    fill.style.fontSize = '10px';
+                    fill.style.color = '#0f1115';
+                    // gradiente azul moderno
+                    fill.style.background = 'linear-gradient(90deg, #009EE3, #38BDF8)';
+
+                    if (hint) {
+                        if (current < minVal) hint.textContent = 'Sua reserva está baixa. Que tal acrescentar mais um pouco este mês?';
+                        else if (current >= targetVal) hint.textContent = 'Parabéns! Sua reserva está decolando 🚀';
+                        else hint.textContent = 'Boa! Continue alimentando sua reserva mês a mês.';
+                    }
+
+                    saveBtn.onclick = async () => {
+                        const vTarget = Number(targetInput.value || 0);
+                        const vMin = Number(minInput.value || 0);
+                        if (vMin <= 0) { alert('Informe um valor mínimo maior que zero.'); return; }
+                        if (vTarget <= 0) { alert('Informe um alvo maior que zero.'); return; }
+                        await this.saveToStorage('finance_reserve_min', vMin);
+                        await this.saveToStorage('finance_reserve_target', vTarget);
+                        targetEl.textContent = `R$ ${this.formatCurrency(vTarget)}`;
+
+                        const cur = this.getLiveAccountBalance(reserveAccId, false);
+                        currentEl.textContent = `R$ ${this.formatCurrency(cur)}`;
+
+                        const p = vTarget > 0 ? Math.min((cur / vTarget) * 100, 100) : 0;
+                        fill.style.width = `${p}%`;
+                        fill.textContent = `${Math.round(p)}%`;
+
+                        if (hint) {
+                            if (cur < vMin) hint.textContent = 'Sua reserva está baixa. Que tal acrescentar mais um pouco este mês?';
+                            else if (cur >= vTarget) hint.textContent = 'Parabéns! Sua reserva está decolando 🚀';
+                            else hint.textContent = 'Boa! Continue alimentando sua reserva mês a mês.';
+                        }
+                    };
+                } catch (e) {
+                    console.error('Erro ao configurar card de Reserva:', e);
+                }
+            }
+
+
             async setupGoalCard() {
                 try {
                     const targetInput = document.getElementById('goalTargetInput');
@@ -3879,6 +3808,25 @@ checkPlanLimits(type, currentCount) {
                         <div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
+                        
+                        <div class="card stat-card" id="reserveStatCard">
+                          <div class="stat-title">Reserva de Emergência</div>
+                          <div class="stat-value" style="font-size:1.1rem;">
+                            <span id="reserveCurrent">R$ 0,00</span>
+                            <span style="color:var(--text-light);font-size:0.9rem;"> / </span>
+                            <span id="reserveTarget">R$ 0,00</span>
+                          </div>
+                          <div class="progress-bar" style="margin-top:8px;height:10px;">
+                            <div class="progress-fill" id="reserveProgressFill" style="width:0%;"></div>
+                          </div>
+                          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+                            <input type="number" id="reserveTargetInput" placeholder="Alvo (R$)" style="flex:1;min-width:120px;">
+                            <input type="number" id="reserveMinInput" placeholder="Mín. (R$)" style="width:120px;min-width:110px;">
+                            <button class="btn btn-primary" id="saveReserveBtn" style="white-space:nowrap;">Salvar</button>
+                          </div>
+                          <div id="reserveHint" style="margin-top:8px;color:var(--text-light);font-size:12px;"></div>
+                        </div>
+
                         <div class="card stat-card" id="goalStatCard">
                           <div class="stat-title">Meta</div>
                           <div class="stat-value" style="font-size:1.1rem;">
