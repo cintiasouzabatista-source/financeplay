@@ -2136,7 +2136,7 @@
     <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="FinancePlay 2.0">
+    <meta name="apple-mobile-web-app-title" content="financasgo-completo-7a3240bf">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
@@ -2161,7 +2161,7 @@ if ("serviceWorker" in navigator) {
         
         class FinanceApp {
             constructor() {
-                this.dbManager = new IndexedDBManager('FinancePlay_DB');
+                this.dbManager = new IndexedDBManager('FinancasGO_Universal');
                 this.currentView = null;
                 
                 this.PLAN_CONFIG = 'completo';
@@ -2195,7 +2195,7 @@ if ("serviceWorker" in navigator) {
 };
                 this.licenseKeys = {};
 this.planType = 'financeplay';
-                                this.emojiList = [  '💰', '💵', '💳', '📈', '📉', '💹', '💸', '🏦', '🏠', '🏢', '🔧', '🧹', '🛋️', '⚡', '💧', '🔥', '📶', '📱', '🚗', '🚕', '🚌', '⛽', '🚲', '✈️',  '🛒', '👕', '👞', '🧴', '🛍️',  '🍔', '🍝', '☕', '🍲', '🍺',  '🎬', '🎮', '📚', '🎭', '🎵', '🏖️', '💊', '🏥', '🦷', '👓', '🧠',  '🏋️', '🧘', '🏃', '💆', '🥗', '💼', '📊', '🖥️', '👔', '🚕', '🎓', '📚', '📝', '💻', '🔬',  '👤', '👨', '👩', '👨‍👩‍👧', '🐱', '🤖', '👑',  '📆', '🔄', '🕒', '🎁', '💫', '🎯', '💰', '🏠', '🚗', '💍', '🌴' ];
+                this.emojiList = [  '💰', '💵', '💳', '📈', '📉', '💹', '💸', '🏦', '🏠', '🏢', '🔧', '🧹', '🛋️', '⚡', '💧', '🔥', '📶', '📱', '🚗', '🚕', '🚌', '⛽', '🚲', '✈️',  '🛒', '👕', '👞', '🧴', '🛍️',  '🍔', '🍝', '☕', '🍲', '🍺',  '🎬', '🎮', '📚', '🎭', '🎵', '🏖️', '💊', '🏥', '🦷', '👓', '🧠',  '🏋️', '🧘', '🏃', '💆', '🥗', '💼', '📊', '🖥️', '👔', '🚕', '🎓', '📚', '📝', '💻', '🔬',  '👤', '👨', '👩', '👨‍👩‍👧', '🐱', '🤖', '👑',  '📆', '🔄', '🕒', '🎁', '💫', '🎯', '💰', '🏠', '🚗', '💍', '🌴' ];
                 this.colorList = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#10b981', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
                 this.timezoneList = [ { value: -12, label: '(UTC-12:00) International Date Line West' }, { value: -11, label: '(UTC-11:00) Coordinated Universal Time-11' }, { value: -10, label: '(UTC-10:00) Hawaii' }, { value: -9, label: '(UTC-09:00) Alaska' }, { value: -8, label: '(UTC-08:00) Pacific Time (US & Canada)' }, { value: -7, label: '(UTC-07:00) Mountain Time (US & Canada)' }, { value: -6, label: '(UTC-06:00) Central Time (US & Canada)' }, { value: -5, label: '(UTC-05:00) Eastern Time (US & Canada)' }, { value: -4, label: '(UTC-04:00) Atlantic Time (Canada)' }, { value: -3, label: '(UTC-03:00) Brasilia' }, { value: -2, label: '(UTC-02:00) Mid-Atlantic' }, { value: -1, label: '(UTC-01:00) Azores' }, { value: 0, label: '(UTC+00:00) London, Dublin, Edinburgh' }, { value: 1, label: '(UTC+01:00) Berlin, Paris, Madrid' }, { value: 2, label: '(UTC+02:00) Athens, Istanbul, Helsinki' }, { value: 3, label: '(UTC+03:00) Moscow, St. Petersburg' }, { value: 4, label: '(UTC+04:00) Dubai, Abu Dhabi' }, { value: 5, label: '(UTC+05:00) Islamabad, Karachi' }, { value: 5.5, label: '(UTC+05:30) New Delhi, Mumbai' }, { value: 6, label: '(UTC+06:00) Dhaka' }, { value: 7, label: '(UTC+07:00) Bangkok, Jakarta' }, { value: 8, label: '(UTC+08:00) Beijing, Hong Kong, Singapore' }, { value: 9, label: '(UTC+09:00) Tokyo, Seoul' }, { value: 9.5, label: '(UTC+09:30) Adelaide' }, { value: 10, label: '(UTC+10:00) Sydney, Melbourne' }, { value: 11, label: '(UTC+11:00) Vladivostok' }, { value: 12, label: '(UTC+12:00) Auckland, Wellington' } ];
                 this.app = document.getElementById('app');
@@ -2276,7 +2276,7 @@ async init() {
         
         this.renderMainApp();
         this.navigate('dashboard');
-        
+        this.setupBackupReminder();
         
     } catch (error) {
         console.error("Erro ao inicializar a aplicação:", error);
@@ -2376,7 +2376,7 @@ async initWithLocalStorage() {
     
     this.renderMainApp();
     this.navigate('dashboard');
-    
+    this.setupBackupReminder();
 }
 
 async initializeTrial() {
@@ -2894,8 +2894,137 @@ async migrateDataFromLocalStorage() {
     }
 }
 
-validateLicense(key) { return true; }
-isFeatureAvailable(feature) { return true; }
+setupBackupReminder() {
+    const checkReservaMensal = async () => {
+        try {
+            if (!this.notificationSystem || typeof this.notificationSystem.show !== 'function') return;
+
+            // Garante que exista a conta "Reserva de Emergência"
+            const reserveAccId = this.ensureEmergencyReserveAccount();
+
+            const minReserva = (await this.loadFromStorage('finance_reserve_min')) ?? 10;
+            const alvoReserva = (await this.loadFromStorage('finance_reserve_target')) ?? 1000;
+
+            const saldoReserva = this.getLiveAccountBalance(reserveAccId, /*includeFuture*/ false);
+
+            const now = new Date();
+            const mesKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
+            const lastKey = await this.loadFromStorage('finance_reserve_last_alert');
+            const tipo = (saldoReserva >= alvoReserva) ? 'ok' : (saldoReserva < minReserva ? 'low' : 'nudge');
+            const currentKey = `${mesKey}:${tipo}`;
+
+            if (lastKey === currentKey) return;
+
+            if (saldoReserva < minReserva) {
+                this.notificationSystem.show(
+                    'Reserva de Emergência baixa',
+                    `Sua reserva está em R$ ${this.formatCurrency(saldoReserva)}. Que tal acrescentar mais um pouco? (mínimo sugerido: R$ ${this.formatCurrency(minReserva)})`,
+                    'warning',
+                    10000
+                );
+            } else if (saldoReserva >= alvoReserva) {
+                this.notificationSystem.show(
+                    'Parabéns! 🎉',
+                    `Sua reserva está decolando: R$ ${this.formatCurrency(saldoReserva)} (meta: R$ ${this.formatCurrency(alvoReserva)}). Continue assim!`,
+                    'success',
+                    9000
+                );
+            } else {
+                this.notificationSystem.show(
+                    'Reserva em evolução',
+                    `Sua reserva está em R$ ${this.formatCurrency(saldoReserva)}. Vamos avançar rumo a R$ ${this.formatCurrency(alvoReserva)}?`,
+                    'info',
+                    8000
+                );
+            }
+
+            await this.saveToStorage('finance_reserve_last_alert', currentKey);
+        } catch (e) {
+            console.warn('Falha ao checar reserva mensal:', e);
+        }
+    };
+
+    // Checa ao abrir (depois que a UI carregar) e revalida periodicamente
+    setTimeout(checkReservaMensal, 8 * 1000);
+    setInterval(checkReservaMensal, 6 * 60 * 60 * 1000);
+}
+            validateLicense(key) {
+    // Verificar se é trial
+    if (key === 'TRIAL') {
+        if (this.licenseInfo && this.licenseInfo.activationDate) {
+            const activationDate = new Date(this.licenseInfo.activationDate);
+            const currentDate = new Date();
+            const expirationDate = new Date(activationDate);
+            expirationDate.setDate(expirationDate.getDate() + 7);
+            
+            if (currentDate > expirationDate) {
+                this.licenseInfo.isTrialActive = false;
+                this.saveToStorage('finance_license', this.licenseInfo);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    // Verificar chaves de licença normais
+    let isValid = false;
+    let licenseType = '';
+    let licenseValidity = '';
+    
+    for (const type in this.licenseKeys) {
+        for (const validity in this.licenseKeys[type]) {
+            if (this.licenseKeys[type][validity] === key) {
+                isValid = true;
+                licenseType = type;
+                licenseValidity = validity;
+                break;
+            }
+        }
+        if (isValid) break;
+    }
+    
+    return isValid;
+}
+
+            isFeatureAvailable(feature) {
+    const activePlan = this.PLAN_CONFIG;
+    
+    // Baseado EXATAMENTE na imagem dos planos
+    switch(feature) {
+        case 'cards':
+            // Básico: Sem cartão | Essencial: 3 cartões | Completo: Ilimitado
+            return activePlan === 'essencial' || activePlan === 'completo';
+            
+        case 'preview_mode':
+            // Básico: ❌ | Essencial: ✅ | Completo: ✅
+            return activePlan === 'essencial' || activePlan === 'completo';
+            
+        case 'transfers':
+            // Básico: ❌ | Essencial: ❌ | Completo: ✅
+            return activePlan === 'completo';
+            
+        case 'auto_installments':
+            // Básico: ❌ | Essencial: ✅ | Completo: ✅
+            return activePlan === 'essencial' || activePlan === 'completo';
+            
+        case 'dashboard_advanced':
+            // Básico: ❌ | Essencial: ✅ | Completo: ✅
+            return activePlan === 'essencial' || activePlan === 'completo';
+            
+        case 'goals':
+            // Básico: ❌ | Essencial: ❌ | Completo: ✅
+            return activePlan === 'completo';
+            
+        case 'import_export':
+            // Não está na imagem, então disponível para todos
+            return true;
+            
+        default:
+            // Funcionalidades não listadas estão disponíveis para todos
+            return true;
+    }
+}
 checkTrialStatus() {
     if (this.licenseInfo && this.licenseInfo.type === 'trial') {
         if (!this.validateLicense('TRIAL')) {
@@ -3371,7 +3500,36 @@ showTrialExpiredModal() {
                 }
             }
 // Verificar limites do plano atual
-async setupGoalCard() {
+getPlanLimits() {
+    const activePlan = this.PLAN_CONFIG;
+    
+    // Baseado EXATAMENTE na imagem dos planos
+    if (activePlan === 'basico') {
+        return { accounts: 1, cards: 0, categories: 2 };
+    } else if (activePlan === 'essencial') {
+        return { accounts: 3, cards: 3, categories: 10 };
+    } else if (activePlan === 'completo') {
+        return { accounts: -1, cards: -1, categories: -1 }; // -1 = ilimitado
+    }
+    
+    return { accounts: 0, cards: 0, categories: 0 };
+}
+
+checkPlanLimits(type, currentCount) {
+    const limits = this.getPlanLimits();
+    
+    if (type === 'accounts') {
+        return limits.accounts === -1 || currentCount < limits.accounts;
+    } else if (type === 'cards') {
+        return limits.cards === -1 || currentCount < limits.cards;
+    } else if (type === 'categories') {
+        return limits.categories === -1 || currentCount < limits.categories;
+    }
+    
+    return false;
+}
+            
+            async setupGoalCard() {
                 try {
                     const targetInput = document.getElementById('goalTargetInput');
                     const saveBtn = document.getElementById('saveGoalBtn');
@@ -8642,8 +8800,207 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 }); 
             }
 
-            showUpgradeModal() { return; }
-async exportData() {
+            showUpgradeModal(targetFeature = null) {
+    const currentPlan = this.PLAN_CONFIG;
+    
+    if (currentPlan === 'completo') {
+        this.notificationSystem.show('Informação', 'Você já possui o plano mais completo disponível!', 'info');
+        return;
+    }
+    
+    const modalContentEl = document.getElementById('modalContent');
+    
+    // Texto específico da funcionalidade bloqueada
+    let featureBlockedText = '';
+    if (targetFeature) {
+        const featureNames = {
+            'cards': 'Cartões de Crédito',
+            'preview_mode': 'Modo Previsto',
+            'transfers': 'Transferências entre Contas',
+            'dashboard_advanced': 'Gráficos Avançados',
+            'simulator': 'Simulador de Aposentadoria',
+            'auto_installments': 'Parcelamento Automático',
+            'categories': 'Limite de Categorias',
+            'accounts': 'Limite de Contas',
+            'import_export': 'Importação e Exportação de Dados',
+            'transaction_completed': 'Controle de Transações Realizadas'
+        };
+        
+        featureBlockedText = `
+            <div style="background-color: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--danger-color); border: 1px solid rgba(239, 68, 68, 0.2);">
+                <h4 style="margin-bottom: 10px; color: var(--danger-color);">🚫 Funcionalidade Bloqueada</h4>
+                <p style="color: var(--text-color); margin: 0;"><strong>${featureNames[targetFeature] || 'Esta funcionalidade'}</strong> não está disponível no seu plano atual.</p>
+            </div>
+        `;
+    }
+    
+    modalContentEl.innerHTML = `
+        <div class="modal-header">
+            <h3 class="modal-title">💎 Escolha seu Plano</h3>
+            <button class="modal-close" id="modalCloseUpgrade">&times;</button>
+        </div>
+        <div class="modal-body">
+            ${featureBlockedText}
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0;">
+                
+                <!-- PLANO BÁSICO -->
+                <div class="upgrade-plan-card upgrade-plan-basic" style="${currentPlan === 'basico' ? 'border-color: #22d3ee;' : ''}">
+                    <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                        ⚠️ Para começar
+                    </div>
+                    
+                    <div style="margin-top: 32px;">
+                        <h3 class="upgrade-plan-text" style="margin-bottom: 8px; font-size: 1.5rem; font-weight: 700;">BÁSICO</h3>
+                        <div class="upgrade-plan-text" style="font-size: 2.5rem; font-weight: 800; margin-bottom: 4px;">R$ 5,90</div>
+                        <div class="upgrade-plan-text-muted" style="font-size: 0.9rem; margin-bottom: 24px;">Pagamento Único</div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 24px; font-size: 0.85rem;">
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            📊 Controle Financeiro
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Sem Cartão de crédito</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> 1 Conta de Banco</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> 2 Categorias Personalizadas</div>
+                        
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🔧 Funcionalidades
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Entradas e Saídas</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Modo Realizado</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Modo Previsto</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Transferência entre contas</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Parcelamento automático</div>
+                        
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🚀 Recursos Avançados
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Gráficos avançados</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Simulador de aposentadoria</div>
+                    </div>
+                    
+                    ${currentPlan === 'basico' ? '<button class="btn" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; opacity: 0.6;" disabled>PLANO ATUAL</button>' : '<button class="btn" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700;" disabled>QUERO O BÁSICO</button>'}
+                </div>
+                
+                <!-- PLANO ESSENCIAL -->
+                <div class="upgrade-plan-card upgrade-plan-essential" style="${currentPlan === 'essencial' ? 'border-color: #22d3ee;' : ''}">
+                    <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                        😊 Para Não Passar Sufoco
+                    </div>
+                    
+                    <div style="margin-top: 32px;">
+                        <h3 class="upgrade-plan-text" style="margin-bottom: 8px; font-size: 1.5rem; font-weight: 700;">ESSENCIAL</h3>
+                        <div class="upgrade-plan-text" style="font-size: 2.5rem; font-weight: 800; margin-bottom: 4px;">R$ 15,90</div>
+                        <div class="upgrade-plan-text-muted" style="font-size: 0.9rem; margin-bottom: 24px;">Pagamento Único</div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 24px; font-size: 0.85rem;">
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            📊 Controle Financeiro
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> 3 Cartões de Crédito</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> 3 Contas de Banco</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> 10 Categorias Personalizadas</div>
+                        
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🔧 Funcionalidades
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Entradas e Saídas</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Modo Realizado</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Modo Previsto</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Transferência entre contas</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Parcelamento automático</div>
+                        
+                        <div class="upgrade-plan-text-muted upgrade-plan-divider" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🚀 Recursos Avançados
+                        </div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Gráficos avançados</div>
+                        <div class="upgrade-plan-text" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #ef4444;">❌</span> Simulador de aposentadoria</div>
+                    </div>
+                    
+                    ${currentPlan === 'essencial' ? '<button class="btn" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; opacity: 0.6;" disabled>PLANO ATUAL</button>' : '<button class="btn" id="upgradeEssencial" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700;">QUERO O ESSENCIAL</button>'}
+                </div>
+                
+                <!-- PLANO COMPLETO -->
+                <div class="upgrade-plan-card upgrade-plan-complete" style="${currentPlan === 'completo' ? 'border-color: #22d3ee;' : ''}">
+                    <div style="position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: bold;">
+                        🔥 A Mais escolhida
+                    </div>
+                    <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                        ⚡ Liberdade Total
+                    </div>
+                    
+                    <div style="margin-top: 32px;">
+                        <h3 class="upgrade-plan-text-complete" style="margin-bottom: 8px; font-size: 1.5rem; font-weight: 700;">COMPLETO</h3>
+                        <div class="upgrade-plan-text-complete" style="font-size: 2.5rem; font-weight: 800; margin-bottom: 4px;">R$ 25,90</div>
+                        <div class="upgrade-plan-text-complete-muted" style="font-size: 0.9rem; margin-bottom: 24px;">Pagamento Único</div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 24px; font-size: 0.85rem;">
+                        <div class="upgrade-plan-text-complete-muted upgrade-plan-divider-complete" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            📊 Controle Financeiro
+                        </div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Cartão de Crédito <strong>ilimitado</strong></div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Conta de Banco <strong>ilimitado</strong></div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Categorias <strong>ilimitadas</strong></div>
+                        
+                        <div class="upgrade-plan-text-complete-muted upgrade-plan-divider-complete" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🔧 Funcionalidades
+                        </div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Entradas e Saídas</div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Modo Realizado</div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Modo Previsto</div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Transferência entre contas</div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Parcelamento automático</div>
+                        
+                        <div class="upgrade-plan-text-complete-muted upgrade-plan-divider-complete" style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 12px; padding-bottom: 6px;">
+                            🚀 Recursos Avançados
+                        </div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Gráficos avançados</div>
+                        <div class="upgrade-plan-text-complete" style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><span style="color: #22c55e;">✅</span> Simulador de aposentadoria</div>
+                    </div>
+                    
+                    ${currentPlan === 'completo' ? '<button class="btn" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; opacity: 0.6;" disabled>PLANO ATUAL</button>' : '<button class="btn" id="upgradeCompleto" style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700;">QUERO O MELHOR!</button>'}
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 0.9rem; color: var(--text-light); margin-top: 20px;">
+                <p>💳 Pagamento único • 🔒 Acesso vitalício • ⚡ Ativação imediata</p>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-outlined" id="cancelUpgradeBtn">Continuar com plano atual</button>
+        </div>
+    `;
+    
+    document.getElementById('modalOverlay').classList.add('active');
+    
+    // Event listeners
+    document.getElementById('modalCloseUpgrade').addEventListener('click', () => this.closeModal());
+    document.getElementById('cancelUpgradeBtn').addEventListener('click', () => this.closeModal());
+    
+    // Event listeners para botões de upgrade
+    const upgradeEssencial = document.getElementById('upgradeEssencial');
+    if (upgradeEssencial) {
+        upgradeEssencial.addEventListener('click', () => {
+            window.open(this.CHECKOUT_LINKS.essencial, '_blank');
+            this.closeModal();
+            this.notificationSystem.show('Redirecionando...', 'Você será redirecionado para o checkout do plano Essencial', 'info', 3000);
+        });
+    }
+    
+    const upgradeCompleto = document.getElementById('upgradeCompleto');
+    if (upgradeCompleto) {
+        upgradeCompleto.addEventListener('click', () => {
+            window.open(this.CHECKOUT_LINKS.completo, '_blank');
+            this.closeModal();
+            this.notificationSystem.show('Redirecionando...', 'Você será redirecionado para o checkout do plano Completo', 'info', 3000);
+        });
+    }
+}
+
+            async exportData() {
     if (!this.isFeatureAvailable('import_export')) {
         this.notificationSystem.show('Recurso Indisponível', 'Exportação de dados requer o plano Completo.', 'warning');
         this.showUpgradeModal('import_export');
@@ -8783,7 +9140,743 @@ async exportData() {
     }
 }
 
-            class IndexedDBManager {
+            renderSimulator(container) { 
+                container.innerHTML = `
+                <div class="card simulator-card">
+                    <div class="card-header"><h3 class="card-title">Simulador Financeiro</h3></div>
+                    <div class="card-body">
+                        <form id="simulatorForm">
+                            <div class="form-row-inline">
+                                <div class="form-row"><label class="form-label" for="initialInvestment">Investimento Inicial (R$)</label><input type="text" class="form-input" id="initialInvestment" placeholder="0,00" value="10.000,00"></div>
+                                <div class="form-row"><label class="form-label" for="monthlyInvestment">Investimento Mensal (R$)</label><input type="text" class="form-input" id="monthlyInvestment" placeholder="0,00" value="500,00"></div>
+                            </div>
+                            <div class="form-row-inline">
+                                <div class="form-row"><label class="form-label" for="interestRate">Taxa de Juros Anual (%)</label><input type="number" class="form-input" id="interestRate" min="0" step="0.1" value="10"></div>
+                                <div class="form-row"><label class="form-label" for="yearsToInvest">Anos de Investimento</label><input type="number" class="form-input" id="yearsToInvest" min="1" max="50" value="30"></div>
+                            </div>
+                            <div class="form-row"><button type="button" class="btn btn-primary" id="calculateBtnSimulator"><i class="fas fa-calculator"></i><span>Calcular</span></button></div>
+                        </form>
+                        <div class="simulator-result" id="simulatorResult" style="display: none;">
+                            <h4 class="result-title">Resultado da Simulação</h4>
+                            <div class="result-grid">
+                                <div class="result-item"><div class="result-value" id="totalInvested">R$ 0,00</div><div class="result-label">Total Investido</div></div>
+                                <div class="result-item"><div class="result-value" id="totalInterest">R$ 0,00</div><div class="result-label">Juros Acumulados</div></div>
+                                <div class="result-item"><div class="result-value" id="finalAmount">R$ 0,00</div><div class="result-label">Montante Final</div></div>
+                                <div class="result-item"><div class="result-value" id="monthlyIncome">R$ 0,00</div><div class="result-label">Renda Mensal Estimada (Retirada 4% a.a.)</div></div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <h4 style="margin-bottom: 15px;">Evolução do Investimento</h4>
+                                <div class="chart-container"><canvas id="investmentChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`; 
+                
+                // Configurar máscaras nos campos de valor
+                this.setupCurrencyMask('initialInvestment');
+                this.setupCurrencyMask('monthlyInvestment');
+                
+                document.getElementById('calculateBtnSimulator').addEventListener('click', () => {
+                    if (!this.isFeatureAvailable('simulator')) {
+                        this.showUpgradeModal('simulator');
+                        return;
+                    }
+                    this.calculateRetirement();
+                }); 
+            }
+
+            calculateRetirement() { 
+                const initialInvestment = this.parseValueInput(document.getElementById('initialInvestment').value) || 0; 
+                const monthlyInvestment = this.parseValueInput(document.getElementById('monthlyInvestment').value) || 0; 
+                const interestRate = parseFloat(document.getElementById('interestRate').value) || 0; 
+                const yearsToInvest = parseInt(document.getElementById('yearsToInvest').value) || 0; 
+
+                if (initialInvestment < 0 || monthlyInvestment < 0 || interestRate < 0 || yearsToInvest <= 0) { 
+                    this.notificationSystem.show('Erro', 'Preencha todos os campos com valores válidos!', 'error'); 
+                    return; 
+                } 
+                const monthlyRate = interestRate / 100 / 12; 
+                const totalMonths = yearsToInvest * 12; 
+                
+                let currentTotalAmount = initialInvestment;
+                let currentTotalInvested = initialInvestment; 
+                
+                const chartLabels = ['Ano 0'];
+                const investedData = [currentTotalInvested]; 
+                const totalData = [currentTotalAmount]; 
+                
+                for (let m = 1; m <= totalMonths; m++) { 
+                    currentTotalAmount *= (1 + monthlyRate); 
+                    currentTotalAmount += monthlyInvestment; 
+                    currentTotalInvested += monthlyInvestment; 
+                    if (m % 12 === 0) { 
+                        const year = m / 12; 
+                        chartLabels.push(`Ano ${year}`); 
+                        investedData.push(parseFloat(currentTotalInvested.toFixed(2))); 
+                        totalData.push(parseFloat(currentTotalAmount.toFixed(2))); 
+                    } 
+                } 
+                if (totalMonths % 12 !== 0) { 
+                    chartLabels.push(`Ano ${yearsToInvest}`); 
+                    investedData.push(parseFloat(currentTotalInvested.toFixed(2))); 
+                    totalData.push(parseFloat(currentTotalAmount.toFixed(2))); 
+                } 
+                
+                const monthlyIncomeFromFinalAmount = currentTotalAmount * (0.04 / 12); 
+                const totalInterest = currentTotalAmount - currentTotalInvested; 
+                
+                document.getElementById('totalInvested').textContent = `R$ ${this.formatCurrency(currentTotalInvested)}`; 
+                document.getElementById('totalInterest').textContent = `R$ ${this.formatCurrency(totalInterest)}`; 
+                document.getElementById('finalAmount').textContent = `R$ ${this.formatCurrency(currentTotalAmount)}`; 
+                document.getElementById('monthlyIncome').textContent = `R$ ${this.formatCurrency(monthlyIncomeFromFinalAmount)}`; 
+                
+                document.getElementById('simulatorResult').style.display = 'block'; 
+                this.createInvestmentChart(chartLabels, investedData, totalData); 
+                document.getElementById('simulatorResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
+            }
+
+            createInvestmentChart(labels, investedData, totalData) { 
+                const canvasElement = document.getElementById('investmentChart'); 
+                if (!canvasElement) return; 
+                const ctx = canvasElement.getContext('2d'); 
+                if (!ctx) return; 
+                
+                if (window.investmentChartInstance) window.investmentChartInstance.destroy(); 
+                
+                window.investmentChartInstance = new Chart(ctx, { 
+                    type: 'line', 
+                    data: { 
+                        labels: labels, 
+                        datasets: [ 
+                            { label: 'Total Investido', data: investedData, backgroundColor: 'rgba(99, 102, 241, 0.2)', borderColor: 'rgba(99, 102, 241, 1)', borderWidth: 2, fill: true, tension: 0.1 }, 
+                            { label: 'Montante Total (com Juros)', data: totalData, backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 2, fill: true, tension: 0.1 } 
+                        ] 
+                    }, 
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        animation: { duration: 800, easing: 'easeInOutQuart' }, 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { 
+                                    callback: value => 'R$ ' + value.toLocaleString('pt-BR'), 
+                                    color: this.darkMode ? '#FFFFFF' : 'var(--text-light)' 
+                                } 
+                            }, 
+                            x: { 
+                                ticks: { 
+                                    maxRotation: 0, 
+                                    minRotation: 0, 
+                                    autoSkip: true, 
+                                    maxTicksLimit: 10, 
+                                    color: this.darkMode ? '#FFFFFF' : 'var(--text-light)' 
+                                } 
+                            } 
+                        }, 
+                        plugins: { 
+                            tooltip: { 
+                                callbacks: { 
+                                    label: context => `${context.dataset.label}: R$ ${context.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+                                } 
+                            }, 
+                            legend: { 
+                                position: 'top', 
+                                labels: { 
+                                    color: this.darkMode ? '#FFFFFF' : 'var(--text-color)' 
+                                } 
+                            } 
+                        } 
+                    } 
+                }); 
+            }
+
+            navigateMonth(offset) { 
+                // Não permitir navegação de mês quando filtro personalizado está ativo
+                if (this.customDateFilterEnabled) {
+                    this.notificationSystem.show('Aviso', 'Desative o filtro de data personalizada para navegar por meses.', 'warning');
+                    return;
+                }
+
+                let newMonth = this.currentMonth + offset; 
+                let newYear = this.currentYear; 
+                if (newMonth < 0) { 
+                    newMonth = 11; 
+                    newYear--; 
+                } else if (newMonth > 11) { 
+                    newMonth = 0; 
+                    newYear++; 
+                } 
+                const currentYearLimit = new Date().getFullYear(); 
+                if (newYear < currentYearLimit - 20 || newYear > currentYearLimit + 20) { 
+                    this.notificationSystem.show('Aviso', 'Navegação limitada a 20 anos no passado/futuro.', 'warning'); 
+                    return; 
+                } 
+                this.currentMonth = newMonth; 
+                this.currentYear = newYear; 
+                this.refreshView(); 
+            }
+
+            refreshView() { 
+                if (this.currentView) { 
+                    this.navigate(this.currentView); 
+                } 
+            }
+
+            showExportModal() {
+                const modalContentEl = document.getElementById('modalContent');
+                modalContentEl.innerHTML = `
+                    <div class="modal-header">
+                        <h3 class="modal-title">Exportar Transações</h3>
+                        <button class="modal-close" id="modalCloseExport">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <label class="form-label">Formato de Exportação</label>
+                            <select class="form-select" id="exportFormat">
+                                <option value="csv">CSV (Excel)</option>
+                                <option value="json">JSON</option>
+                                <option value="xlsx">Excel (.xlsx)</option>
+                                <option value="pdf">PDF (Relatório Formatado)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Escopo da Exportação</label>
+                            <div class="form-check">
+                                <input type="radio" id="exportFiltered" name="exportScope" value="filtered" checked>
+                                <label for="exportFiltered">Transações Filtradas Atualmente</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="exportAll" name="exportScope" value="all">
+                                <label for="exportAll">Todas as Transações</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid var(--secondary-color); border-radius: var(--border-radius); padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <i class="fas fa-info-circle" style="color: var(--secondary-color);"></i>
+                                    <span style="font-weight: 500;">Informações da Exportação</span>
+                                </div>
+                                <div id="exportInfo" style="font-size: 0.9rem; color: var(--text-light);">
+                                    Calculando...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-footer">
+                        <button class="btn btn-outlined" id="cancelExportBtn">Cancelar</button>
+                        <button class="btn btn-secondary" id="confirmExportBtn">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('modalOverlay').classList.add('active');
+                document.getElementById('modalCloseExport').addEventListener('click', () => this.closeModal());
+                document.getElementById('cancelExportBtn').addEventListener('click', () => this.closeModal());
+                
+                const updateExportInfo = () => {
+                    const scope = document.querySelector('input[name="exportScope"]:checked').value;
+                    const infoEl = document.getElementById('exportInfo');
+                    
+                    if (scope === 'filtered') {
+                        const currentTransactions = this.getCurrentFilteredTransactions();
+                        const periodText = this.customDateFilterEnabled ? 
+                            `período de ${this.formatDate(this.customDateStart)} a ${this.formatDate(this.customDateEnd)}` :
+                            `${this.getMonthName(this.currentMonth)} de ${this.currentYear}`;
+                        
+                        infoEl.innerHTML = `
+                            <strong>Período:</strong> ${periodText}<br>
+                            <strong>Total de transações:</strong> ${currentTransactions.length}<br>
+                            <strong>Filtros ativos:</strong> ${this.hasActiveTransactionFilters() ? 'Sim' : 'Não'}
+                        `;
+                    } else {
+                        infoEl.innerHTML = `
+                            <strong>Período:</strong> Todas as transações<br>
+                            <strong>Total de transações:</strong> ${this.data.transactions.length}<br>
+                            <strong>Filtros:</strong> Nenhum aplicado
+                        `;
+                    }
+                };
+                
+                document.querySelectorAll('input[name="exportScope"]').forEach(radio => {
+                    radio.addEventListener('change', updateExportInfo);
+                });
+                
+                updateExportInfo();
+                
+                document.getElementById('confirmExportBtn').addEventListener('click', () => {
+                    const format = document.getElementById('exportFormat').value;
+                    const scope = document.querySelector('input[name="exportScope"]:checked').value;
+                    this.exportTransactions(format, scope);
+                    this.closeModal();
+                });
+            }
+
+            getCurrentFilteredTransactions() {
+                const filterAccountId = this.hasActiveTransactionFilters() ? this.getEffectiveAccountFilter() : this.selectedFilterAccount;
+                
+                let transactions;
+                if (this.customDateFilterEnabled) {
+                    transactions = this.getCustomPeriodTransactions(this.customDateStart, this.customDateEnd, filterAccountId);
+                } else {
+                    const monthData = this.getMonthData(this.currentMonth, this.currentYear, filterAccountId);
+                    transactions = monthData.transactionsInMonth;
+                }
+                
+                if (this.hasActiveTransactionFilters()) {
+                    transactions = transactions.filter(transaction => {
+                        if (this.transactionFilters.type !== 'all' && transaction.type !== this.transactionFilters.type) {
+                            return false;
+                        }
+                        
+                        if (this.transactionFilters.category !== 'all' && transaction.category !== this.transactionFilters.category) {
+                            return false;
+                        }
+                        
+                        return true;
+                    });
+                }
+                
+                return transactions;
+            }
+
+            exportTransactions(format, scope) {
+                let transactions;
+                let filename;
+                
+                if (scope === 'filtered') {
+                    transactions = this.getCurrentFilteredTransactions();
+                    const periodText = this.customDateFilterEnabled ? 
+                        `${this.formatDateForFilename(this.customDateStart)}_${this.formatDateForFilename(this.customDateEnd)}` :
+                        `${this.getMonthName(this.currentMonth)}_${this.currentYear}`;
+                    filename = `transacoes_${periodText}`;
+                } else {
+                    transactions = this.data.transactions;
+                    filename = `transacoes_todas`;
+                }
+                
+                const exportData = transactions.map(t => {
+                    const account = this.data.accounts.find(a => a.id === t.account);
+                    const card = this.data.cards.find(c => c.id === t.card);
+                    
+                    let category = '';
+                    if (t.type === 'income') {
+                        const cat = this.data.categories.income.find(c => c.id === t.category);
+                        category = cat ? cat.name : '';
+                    } else if (t.type === 'expense') {
+                        const cat = this.data.categories.expense.find(c => c.id === t.category);
+                        category = cat ? cat.name : '';
+                    }
+                    
+                    const baseData = {
+                        data: this.formatDate(this.parseDate(t.date)),
+                        descricao: t.description,
+                        valor: t.amount,
+                        tipo: this.getTransactionTypeLabel(t.type),
+                        categoria: category,
+                        conta: account ? account.name : '',
+                        concluida: t.completed ? 'Sim' : 'Não'
+                    };
+                    
+                    if (t.type === 'card') {
+                        baseData.cartao = card ? `${card.name} (*${card.lastDigits})` : '';
+                        baseData.fatura = `${this.getMonthName(t.invoiceMonth)}/${t.invoiceYear}`;
+                        if (t.installments > 1) {
+                            baseData.parcela = `${t.currentInstallment}/${t.installments}`;
+                        }
+                    } else if (t.type === 'transfer') {
+                        const sourceAccount = this.data.accounts.find(a => a.id === t.sourceAccount);
+                        const destAccount = this.data.accounts.find(a => a.id === t.destAccount);
+                        baseData.conta_origem = sourceAccount ? sourceAccount.name : '';
+                        baseData.conta_destino = destAccount ? destAccount.name : '';
+                    }
+                    
+                    return baseData;
+                });
+
+                if (format === 'csv') {
+                    this.exportToCSV(exportData, filename);
+                } else if (format === 'json') {
+                    this.exportToJSON(exportData, filename);
+                } else if (format === 'xlsx') {
+                    this.exportToExcel(exportData, filename);
+                } else if (format === 'pdf') {
+                    this.exportToPDF(exportData, filename, scope);
+                }
+                
+                this.notificationSystem.show('Sucesso', `${transactions.length} transações exportadas com sucesso!`, 'success');
+            }
+
+            getTransactionTypeLabel(type) {
+                switch(type) {
+                    case 'income': return 'Receita';
+                    case 'expense': return 'Despesa';
+                    case 'transfer': return 'Transferência';
+                    case 'card': return 'Cartão';
+                    default: return type;
+                }
+            }
+
+            formatDateForFilename(date) {
+                const d = new Date(date);
+                return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+            }
+
+            exportToCSV(data, filename) {
+                if (data.length === 0) {
+                    this.notificationSystem.show('Aviso', 'Não há dados para exportar!', 'warning');
+                    return;
+                }
+                
+                const headers = Object.keys(data[0]);
+                const csvContent = [
+                    headers.join(';'),
+                    ...data.map(row => 
+                        headers.map(header => {
+                            const value = row[header] || '';
+                            return `"${value.toString().replace(/"/g, '""')}"`;
+                        }).join(';')
+                    )
+                ].join('\n');
+                
+                const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                this.downloadFile(blob, `${filename}.csv`);
+            }
+
+            exportToJSON(data, filename) {
+                const jsonContent = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonContent], { type: 'application/json' });
+                this.downloadFile(blob, `${filename}.json`);
+            }
+
+            exportToExcel(data, filename) {
+                if (data.length === 0) {
+                    this.notificationSystem.show('Aviso', 'Não há dados para exportar!', 'warning');
+                    return;
+                }
+                
+                const headers = Object.keys(data[0]);
+                let xlsContent = '<table><tr>';
+                headers.forEach(header => {
+                    xlsContent += `<th>${header}</th>`;
+                });
+                xlsContent += '</tr>';
+                
+                data.forEach(row => {
+                    xlsContent += '<tr>';
+                    headers.forEach(header => {
+                        xlsContent += `<td>${row[header] || ''}</td>`;
+                    });
+                    xlsContent += '</tr>';
+                });
+                xlsContent += '</table>';
+                
+                const blob = new Blob([xlsContent], { type: 'application/vnd.ms-excel' });
+                this.downloadFile(blob, `${filename}.xls`);
+            }
+
+            exportToPDF(data, filename, scope) {
+                try {
+                    if (data.length === 0) {
+                        this.notificationSystem.show('Aviso', 'Não há dados para exportar!', 'warning');
+                        return;
+                    }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.setTextColor(99, 102, 241);
+                doc.text('FinancePlay - Relatório de Transações', 20, 20);
+                
+                let yPosition = 35;
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                
+                const now = new Date();
+                const dateText = `Gerado em: ${this.formatDate(now)} às ${now.toLocaleTimeString('pt-BR')}`;
+                doc.text(String(dateText || ''), 20, yPosition);
+                yPosition += 5;
+                
+                if (scope === 'filtered') {
+                    const periodText = this.customDateFilterEnabled ? 
+                        `Período: ${this.formatDate(this.customDateStart)} a ${this.formatDate(this.customDateEnd)}` :
+                        `Período: ${this.getMonthName(this.currentMonth)} de ${this.currentYear}`;
+                    doc.text(String(periodText || ''), 20, yPosition);
+                } else {
+                    doc.text('Período: Todas as transações', 20, yPosition);
+                }
+                yPosition += 5;
+                
+                doc.text(String(`Total de transações: ${data.length}` || ''), 20, yPosition);
+                yPosition += 15;
+                
+                const headers = ['Data', 'Descrição', 'Valor', 'Tipo', 'Categoria', 'Conta'];
+                const columnWidths = [25, 60, 25, 25, 40, 30];
+                const startX = 20;
+                
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setFillColor(99, 102, 241);
+                doc.setTextColor(255, 255, 255);
+                doc.rect(startX, yPosition - 3, columnWidths.reduce((a, b) => a + b, 0), 6, 'F');
+                
+                let xPosition = startX;
+                headers.forEach((header, index) => {
+                    const safeHeader = String(header || '');
+                    doc.text(safeHeader, xPosition + 2, yPosition);
+                    xPosition += columnWidths[index];
+                });
+                
+                yPosition += 8;
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                const pageHeight = 210;
+                const bottomMargin = 20;
+                
+                data.forEach((transaction, index) => {
+                    if (yPosition > pageHeight - bottomMargin) {
+                        doc.addPage();
+                        yPosition = 20;
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFillColor(99, 102, 241);
+                        doc.setTextColor(255, 255, 255);
+                        doc.rect(startX, yPosition - 3, columnWidths.reduce((a, b) => a + b, 0), 6, 'F');
+                        
+                        xPosition = startX;
+                        headers.forEach((header, index) => {
+                            const safeHeader = String(header || '');
+                            doc.text(safeHeader, xPosition + 2, yPosition);
+                            xPosition += columnWidths[index];
+                        });
+                        yPosition += 8;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(0, 0, 0);
+                    }
+                    
+                    if (index % 2 === 0) {
+                        doc.setFillColor(245, 245, 245);
+                        doc.rect(startX, yPosition - 3, columnWidths.reduce((a, b) => a + b, 0), 6, 'F');
+                    }
+                    
+                    const formatCurrencyValue = (value) => {
+                        if (typeof this.formatCurrency === 'function') {
+                            return this.formatCurrency(value);
+                        }
+                        return parseFloat(value || 0).toLocaleString('pt-BR', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        });
+                    };
+                    
+                    const rowData = [
+                        String(transaction.data || ''),
+                        this.truncateText(String(transaction.descricao || ''), 35),
+                        `R$ ${formatCurrencyValue(transaction.valor || 0)}`,
+                        String(transaction.tipo || ''),
+                        this.truncateText(String(transaction.categoria || ''), 25),
+                        this.truncateText(String(transaction.conta || ''), 20)
+                    ];
+                    
+                    xPosition = startX;
+                    rowData.forEach((cellData, colIndex) => {
+                        const safeText = String(cellData || '');
+                        doc.text(safeText, xPosition + 2, yPosition);
+                        xPosition += columnWidths[colIndex];
+                    });
+                    
+                    yPosition += 6;
+                });
+                
+                const totalIncome = data.filter(t => t.tipo === 'Receita').reduce((sum, t) => sum + parseFloat(t.valor || 0), 0);
+                const totalExpense = data.filter(t => t.tipo === 'Despesa' || t.tipo === 'Cartão').reduce((sum, t) => sum + parseFloat(t.valor || 0), 0);
+                const balance = totalIncome - totalExpense;
+                
+                yPosition += 10;
+                if (yPosition > pageHeight - 40) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9);
+                doc.text('RESUMO FINANCEIRO:', startX, yPosition);
+                yPosition += 8;
+                
+                const formatCurrencyValue = (value) => {
+                    if (typeof this.formatCurrency === 'function') {
+                        return this.formatCurrency(value);
+                    }
+                    return parseFloat(value || 0).toLocaleString('pt-BR', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    });
+                };
+                
+                doc.setTextColor(16, 185, 129);
+                doc.text(`Total de Receitas: R$ ${formatCurrencyValue(totalIncome)}`, startX, yPosition);
+                yPosition += 6;
+                
+                doc.setTextColor(239, 68, 68);
+                doc.text(`Total de Despesas: R$ ${formatCurrencyValue(totalExpense)}`, startX, yPosition);
+                yPosition += 6;
+                
+                if (balance >= 0) {
+                    doc.setTextColor(16, 185, 129);
+                } else {
+                    doc.setTextColor(239, 68, 68);
+                }
+                doc.text(`Saldo: R$ ${formatCurrencyValue(balance)}`, startX, yPosition);
+                
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text(String(`Página ${i} de ${pageCount}` || ''), 250, 200);
+                }
+                
+                doc.save(`${filename}.pdf`);
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    this.notificationSystem.show('Erro', 'Erro ao gerar PDF: ' + error.message, 'error');
+                }
+            }
+
+            truncateText(text, maxLength) {
+                if (!text) return '';
+                return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+            }
+
+            downloadFile(blob, filename) {
+                const link = document.createElement('a');
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }
+            }
+
+            closeModal() { 
+                const modalOverlay = document.getElementById('modalOverlay'); 
+                if (modalOverlay) { 
+                    modalOverlay.classList.remove('active'); 
+                    const modalContent = document.getElementById('modalContent'); 
+                    if (modalContent) { 
+                        modalContent.innerHTML = ''; 
+                    } 
+                } 
+            }
+        } 
+
+        class NotificationSystem {
+    constructor() { 
+        this.container = document.getElementById('notificationContainer'); 
+        this.maxVisibleNotifications = 1; // Reduzido para apenas 1 notificação visível por vez
+        this.activeNotifications = [];
+
+        if (!this.container) { 
+            this.container = document.createElement('div'); 
+            this.container.id = 'notificationContainer'; 
+            this.container.style.position = 'fixed'; 
+            this.container.style.top = '20px'; 
+            this.container.style.right = '20px'; 
+            this.container.style.zIndex = '2000'; 
+            this.container.style.width = 'auto'; 
+            this.container.style.maxWidth = '350px'; 
+            document.body.appendChild(this.container); 
+        } 
+    }
+    show(title, message, type = 'info', duration = 5000) { 
+        // Fechar notificações existentes antes de mostrar uma nova
+        this.activeNotifications.forEach(notification => {
+            this.close(notification, true);
+        });
+        this.activeNotifications = [];
+
+        const notificationId = `notification-${Date.now()}-${Math.random().toString(36).substring(2,7)}`;
+        const notification = document.createElement('div'); 
+        notification.className = `notification notification-${type}`; 
+        notification.id = notificationId; 
+        notification.innerHTML = `
+            <div class="notification-icon"><i class="fas ${this.getIconClass(type)}"></i></div>
+            <div class="notification-content">
+                <div class="notification-title">${title}</div>
+                <div class="notification-message">${message}</div>
+            </div>
+            <button class="notification-close" aria-label="Fechar notificação"><i class="fas fa-times"></i></button>`; 
+        
+        this.container.prepend(notification); 
+        this.activeNotifications.push(notification); 
+        
+        void notification.offsetWidth; 
+        requestAnimationFrame(() => { 
+            notification.classList.add('active'); 
+        }); 
+        
+        const closeBtn = notification.querySelector('.notification-close'); 
+        closeBtn.addEventListener('click', () => this.close(notification)); 
+        
+        if (duration > 0) { 
+            setTimeout(() => this.close(notification), duration); 
+        } 
+        return notification; 
+    }
+
+    close(notification, immediate = false) { 
+        if (!notification || !notification.parentNode) return; 
+        
+        this.activeNotifications = this.activeNotifications.filter(n => n.id !== notification.id);
+
+        if (immediate) {
+             if (notification.parentNode === this.container) {
+                this.container.removeChild(notification);
+            }
+            return;
+        }
+
+        notification.classList.remove('active'); 
+        
+        const removeNode = () => {
+            if (notification.parentNode === this.container) {
+                this.container.removeChild(notification);
+            }
+            notification.removeEventListener('transitionend', removeNode); 
+        };
+        
+        notification.addEventListener('transitionend', removeNode); 
+        
+        setTimeout(() => { 
+            if (notification && notification.parentNode === this.container && !notification.classList.contains('active')) {
+                 removeNode(); 
+            }
+        }, 500); 
+    }
+
+    getIconClass(type) { 
+        switch (type) { 
+            case 'success': return 'fa-check-circle'; 
+            case 'error': return 'fa-times-circle'; 
+            case 'warning': return 'fa-exclamation-triangle'; 
+            case 'info': 
+            default: return 'fa-info-circle'; 
+        } 
+    }
+}
+class IndexedDBManager {
     constructor(dbName = 'FinancasGO_Universal', version = 1) {
         this.dbName = 'FinancasGO_Universal';
         this.version = version;
