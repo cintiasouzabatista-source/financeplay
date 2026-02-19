@@ -2333,9 +2333,179 @@ async init() {
             this.usePreviousMonthBalance = usePrevMonth;
             console.log(`Configuração carregada: usePreviousMonthBalance = ${usePrevMonth}`);
         } else {
-            console.log(`Nenhuma configuração encontrada, usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}``Configuração carregada (sync): usePreviousMonthBalance = ${usePrevMonth}`);
+            console.log(`Nenhuma configuração encontrada, usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}`);
+            await this.saveToStorage('finance_use_prev_month', this.usePreviousMonthBalance);
+        }
+        
+        const paidInvoices = await this.loadFromStorage('finance_paid_invoices');
+        if (paidInvoices) {
+            this.paidCardInvoices = paidInvoices;
+        }
+        
+        const savedSortOrder = await this.loadFromStorage('finance_sort_order');
+        if (savedSortOrder) {
+            this.transactionsSortOrder = savedSortOrder;
+        }
+        
+        this.renderMainApp();
+        this.navigate('dashboard');
+        // this.setupBackupReminder(); // removido
+} catch (error) {
+        console.error("Erro ao inicializar a aplicação:", error);
+        this.notificationSystem.show(
+            'Erro ao Inicializar', 
+            'Ocorreu um erro ao carregar seus dados. Tente recarregar a página.', 
+            'error', 
+            10000
+        );
+        
+        await this.initWithLocalStorage();
+    }
+}
+
+async initWithLocalStorage() {
+    if (!this.notificationSystem) {
+        this.notificationSystem = new NotificationSystem();
+    }
+    
+    const savedData = this.loadFromStorageSync('finance_data');
+    if (savedData) {
+        this.data = savedData;
+        if (!this.data.transactions) this.data.transactions = [];
+        if (!this.data.categories) this.data.categories = { income: [], expense: [] };
+        if (!this.data.categories.income) this.data.categories.income = [];
+        if (!this.data.categories.expense) this.data.categories.expense = [];
+        if (!this.data.accounts) this.data.accounts = [];
+        if (!this.data.cards) this.data.cards = [];
+        
+        let needsUpdate = false;
+        
+        if (this.data.cards && Array.isArray(this.data.cards)) {
+            this.data.cards.forEach(card => {
+                if (!card.account && this.data.accounts && this.data.accounts.length > 0) {
+                    card.account = this.data.accounts[0].id;
+                    needsUpdate = true;
+                } else if (!card.account && (!this.data.accounts || this.data.accounts.length === 0)) {
+                    card.account = null;
+                    needsUpdate = true;
+                }
+            });
+        }
+        
+        if (needsUpdate) {
+            localStorage.setItem('finance_data', JSON.stringify(this.data));
+        }
     } else {
-        console.log(`Nenhuma configuração encontrada (sync), usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}``${screen.width}x${screen.height}x${screen.colorDepth}`,
+        this.data = {
+            categories: JSON.parse(JSON.stringify(this.defaultData.categories)),
+            accounts: JSON.parse(JSON.stringify(this.defaultData.accounts)),
+            cards: JSON.parse(JSON.stringify(this.defaultData.cards)),
+            transactions: []
+        };
+        localStorage.setItem('finance_data', JSON.stringify(this.data));
+    }
+    
+    this.user = this.loadFromStorageSync('finance_user');
+    this.licenseInfo = this.loadFromStorageSync('finance_license');
+    
+    if (!this.user || !this.licenseInfo) {
+        this.initializeTrialSync();
+    }
+    
+    // Verificar trial status
+    if (!this.checkTrialAndLicenseStatusSync()) {
+        this.showTrialExpiredModal();
+        return;
+    }
+    
+    this.darkMode = this.loadFromStorageSync('finance_darkmode') || false;
+    
+    if (this.darkMode) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    
+    const savedTimezoneOffsetInMinutes = this.loadFromStorageSync('finance_timezone_offset');
+    if (savedTimezoneOffsetInMinutes !== null) {
+        this.timezoneOffset = savedTimezoneOffsetInMinutes;
+    } else {
+        this.timezoneOffset = new Date().getTimezoneOffset();
+        localStorage.setItem('finance_timezone_offset', JSON.stringify(this.timezoneOffset));
+    }
+    
+    const usePrevMonth = this.loadFromStorageSync('finance_use_prev_month');
+    if (usePrevMonth === true || usePrevMonth === false) {
+        this.usePreviousMonthBalance = usePrevMonth;
+        console.log(`Configuração carregada (sync): usePreviousMonthBalance = ${usePrevMonth}`);
+    } else {
+        console.log(`Nenhuma configuração encontrada (sync), usando padrão: usePreviousMonthBalance = ${this.usePreviousMonthBalance}`);
+        localStorage.setItem('finance_use_prev_month', JSON.stringify(this.usePreviousMonthBalance));
+    }
+    
+    const paidInvoices = this.loadFromStorageSync('finance_paid_invoices');
+    if (paidInvoices) {
+        this.paidCardInvoices = paidInvoices;
+    }
+    
+    this.renderMainApp();
+    this.navigate('dashboard');
+    // this.setupBackupReminder(); // removido
+}
+
+async initializeTrial() {
+    const currentDate = new Date();
+    const trialData = {
+        startDate: currentDate.toISOString(),
+        endDate: new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(),
+        browserFingerprint: this.generateBrowserFingerprint(),
+        installId: this.generateId(),
+        accessCount: 1
+    };
+    
+    // Criar usuário automático
+    this.user = { 
+        name: '', 
+        email: '', 
+        emoji: '👤' 
+    };
+    
+    // Criar licença de trial
+    this.licenseInfo = { 
+        key: 'TRIAL', 
+        type: 'trial', 
+        validity: '7days', 
+        activationDate: currentDate.toISOString(),
+        isTrialActive: true,
+        trialData: trialData
+    };
+    
+    // Salvar dados de controle em múltiplas chaves para dificultar bypass
+    await this.saveToStorage('finance_user', this.user);
+    await this.saveToStorage('finance_license', this.licenseInfo);
+    await this.saveToStorage('finance_trial_control', trialData);
+    await this.saveToStorage('finance_install_id', trialData.installId);
+    await this.saveToStorage('finance_trial_start', trialData.startDate);
+    
+    this.notificationSystem.show(
+        'Bem-vindo ao FinancePlay 2.0', 
+        'Parabéns pela sua compra! Você tem acesso completo!', 
+        'success', 
+        10000
+    );
+}
+
+generateBrowserFingerprint() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('FinancePlay 2.0 Fingerprint', 2, 2);
+    
+    const fingerprint = {
+        canvas: canvas.toDataURL(),
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
         timestamp: Date.now()
     };
     
@@ -2795,7 +2965,17 @@ async migrateDataFromLocalStorage() {
         return false;
     }
 }
-    setupBackupReminder() { /* removido */ }
+
+setupBackupReminder() {
+    const exibirNotificacao = () => {
+        if (this.notificationSystem && typeof this.notificationSystem.show === 'function' && this.user && this.isFeatureAvailable('import_export')) { 
+            this.notificationSystem.show(
+                'Lembrete de backup',
+                'Faça um backup dos seus dados para evitar perdas! (Configurações > Exportar)',
+                'warning',
+                15000 
+            );
+        }
     };
     
     setTimeout(exibirNotificacao, 30 * 1000); 
@@ -10130,7 +10310,80 @@ function createFilterModal() {
 })();
 
 </script>
+
+<script>
+/* Hora de guardar — mostra quando saldo previsto > 250 */
+(function(){
+  function parseBRL(txt){
+    if(txt == null) return 0;
+    var s = String(txt).replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',', '.');
+    var n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function ensureBox(){
+    var box = document.getElementById('fp-guard-notice');
+    if(box) return box;
+
+    box = document.createElement('div');
+    box.id = 'fp-guard-notice';
+    box.style.display = 'none';
+    box.style.margin = '10px 0 14px';
+    box.style.padding = '12px 14px';
+    box.style.borderRadius = '16px';
+    box.style.border = '1px solid rgba(0,158,227,0.22)';
+    box.style.background = 'linear-gradient(135deg, rgba(0,158,227,0.14), rgba(56,189,248,0.08))';
+    box.style.fontWeight = '600';
+    box.style.color = 'var(--text-color, #0f172a)';
+    box.innerHTML = '💙 <b>Hora de guardar</b> — seu <b>saldo previsto</b> passou de <b>R$ 250,00</b>. Que tal separar um valor para suas metas?';
+
+    var header = document.querySelector('.header') || document.querySelector('.dashboard-header');
+    if(header && header.parentElement){
+      header.parentElement.insertBefore(box, header.nextSibling);
+    } else {
+      var main = document.querySelector('.main-content') || document.querySelector('main') || document.body;
+      main.insertBefore(box, main.firstChild);
+    }
+    return box;
+  }
+
+  function getPredicted(){
+    // se existir campo explícito de previsto, usa ele
+    var el = document.getElementById('predictedBalance')
+          || document.getElementById('predictedFinalBalance')
+          || document.querySelector("[data-role='predicted-balance']")
+          || document.querySelector(".predicted-balance .value")
+          || document.querySelector(".saldo-previsto .value");
+
+    if(el && el.textContent) return parseBRL(el.textContent);
+
+    // fallback: se estiver no modo previsto, usa o saldo final exibido
+    var toggle = document.querySelector('#forecastToggle, #previewModeToggle, input[name="forecast"], input[name="previewMode"]');
+    var isOn = toggle ? !!toggle.checked : false;
+    if(isOn){
+      var elFinal = document.getElementById('finalBalanceValue')
+                || document.querySelector('.stat-card:last-child .stat-value')
+                || document.querySelector('.final-balance .value');
+      if(elFinal && elFinal.textContent) return parseBRL(elFinal.textContent);
+    }
+    return 0;
+  }
+
+  function update(){
+    var box = ensureBox();
+    var v = getPredicted();
+    box.style.display = (v > 250) ? 'block' : 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    update();
+    var obs = new MutationObserver(function(){ update(); });
+    obs.observe(document.body, {childList:true, subtree:true, characterData:true});
+  });
+})();
+</script>
+
 </body>
 </html>
 
-<!-- Hora de guardar methods injection failed to place, manual insert needed -->
+	
