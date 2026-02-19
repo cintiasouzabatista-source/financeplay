@@ -1,32 +1,61 @@
 <!DOCTYPE html>
+<style>
+
+/* COLE AQUI TODO O CSS QUE EU TE ENVIEI */
+
+
+/* ===== Modern Blue Upgrade ===== */
+.card{
+  border: 1px solid rgba(56,189,248,0.18);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  border-radius: 16px;
+}
+
+.btn-primary{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:#fff;
+}
+
+.nav-link.active{
+  background: linear-gradient(135deg, #009EE3, #38BDF8);
+  color:white;
+}
+
+@media (max-width:768px){
+  .header{
+    border-bottom:1px solid rgba(56,189,248,0.18);
+  }
+}
+
+</style>
+
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="theme-color" content="#009EE3">
-<title>FinancePlay 2.0</title>
+    <title>FinancePlay 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-
         :root {
-            --primary-color: #009EE3;
-            --primary-dark: #0077B6;
-            --secondary-color: #22C55E;
-            --secondary-dark: #16A34A;
-            --danger-color: #EF4444;
-            --danger-dark: #DC2626;
-            --warning-color: #F59E0B;
-            --warning-dark: #D97706;
-            --bg-color: #0F172A;
-            --card-bg: #1E293B;
-            --text-color: #E2E8F0;
-            --text-light: #94A3B8;
-            --border-color: rgba(56,189,248,0.18);
+            --primary-color: #9aa3b2;
+            --primary-dark: #7f8897;
+            --secondary-color: #2ecc71;
+            --secondary-dark: #27ae60;
+            --danger-color: #e74c3c;
+            --danger-dark: #c0392b;
+            --warning-color: #f1c40f;
+            --warning-dark: #d4ac0d;
+            --bg-color: #0f1115;
+            --card-bg: #171a21;
+            --text-color: #e6e8ec;
+            --text-light: #9aa3b2;
+            --border-color: #2a2f3a;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-            --border-radius: 12px;
+            --border-radius: 10px;
             --transition: all 0.25s ease;
+
         }
 
 .header-actions{
@@ -68,6 +97,8 @@
             border-radius:999px;
             font-size:12px;
             color:var(--text-light);
+        }
+
         }
 
         [data-theme="dark"] {
@@ -173,11 +204,12 @@
         }
 
         .nav-link:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
         .nav-link.active {
+            background-color: var(--primary-color);
             color: white;
         }
 
@@ -359,7 +391,7 @@
         }
 
         .month-nav-btn:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -373,7 +405,7 @@
         }
 
         .current-month:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -493,7 +525,7 @@
         }
 
         .transaction-item:hover {
-            background-color: rgba(0, 158, 227, 0.08);
+            background-color: rgba(99, 102, 241, 0.05);
         }
         .transaction-item.card-item-pending-preview {
             opacity: 0.6;
@@ -530,7 +562,7 @@
         }
 
         .transfer-icon {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
 
@@ -607,7 +639,7 @@
 
         .action-btn:hover {
             color: var(--primary-color);
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .delete-btn:hover {
@@ -687,7 +719,7 @@
         .drilldown-table th, .drilldown-table td{ padding:10px 8px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; }
         .drilldown-table th{ text-align:left; color: var(--text-light); font-weight: 600; font-size: 0.8rem; letter-spacing: .02em; text-transform: uppercase; }
         .drilldown-table td.amount{ text-align:right; font-weight: 600; white-space: nowrap; }
-        .drilldown-pill{ display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius: 999px; border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-color); background: rgba(0, 158, 227, 0.07); }
+        .drilldown-pill{ display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius: 999px; border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-color); background: rgba(99, 102, 241, 0.06); }
 
 
         .modal-overlay {
@@ -861,7 +893,7 @@
         }
 
         .emoji-item:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .emoji-item.selected {
@@ -998,7 +1030,7 @@
         }
 
         .profile-button:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .profile-avatar {
@@ -1073,7 +1105,7 @@
         }
 
         .dropdown-item:hover {
-            background-color: rgba(0, 158, 227, 0.12);
+            background-color: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
         }
          [data-theme="dark"] .dropdown-item:hover {
@@ -1112,7 +1144,7 @@
             border-radius: 12px;
             background: linear-gradient(145deg, 
                 var(--card-bg) 0%, 
-                rgba(0, 158, 227, 0.03) 100%);
+                rgba(99, 102, 241, 0.02) 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             border: 1px solid rgba(99, 102, 241, 0.08);
         }
@@ -1164,7 +1196,7 @@
         [data-theme="dark"] .chart-container {
             background: linear-gradient(145deg, 
                 var(--card-bg) 0%, 
-                rgba(0, 158, 227, 0.08) 100%);
+                rgba(99, 102, 241, 0.05) 100%);
             border: 1px solid rgba(99, 102, 241, 0.12);
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
@@ -1708,7 +1740,7 @@
         .result-item {
             text-align: center;
             padding: 15px;
-            background-color: rgba(0, 158, 227, 0.08);
+            background-color: rgba(99, 102, 241, 0.05);
             border-radius: var(--border-radius);
         }
 
@@ -1951,7 +1983,7 @@
 
         .card-bill-header {
             padding: 12px 15px;
-            background-color: rgba(0, 158, 227, 0.08); /* Leve destaque */
+            background-color: rgba(99, 102, 241, 0.05); /* Leve destaque */
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
@@ -2154,8 +2186,107 @@
   }
 }
 
-</style>
-<meta name="apple-mobile-web-app-capable" content="yes">
+
+
+/* ===== MOBILE MINIMAL (C) ===== */
+@media (max-width: 900px){
+
+  /* 1) some com sidebar no mobile */
+  .sidebar, .sidebar-container, .side-menu, .sidebar-wrapper, aside{
+    display:none !important;
+  }
+
+  /* 2) conteúdo ocupa 100% */
+  .main-content, main, .content, .container, .page-content, .dashboard-content{
+    margin-left:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  /* 3) reduzir “vazio” e alinhar topo */
+  .header, .topbar, .dashboard-header{
+    padding: 12px 12px !important;
+    border-bottom: 1px solid rgba(56,189,248,0.18) !important;
+  }
+
+  /* 4) mês + setas + ações em bloco compacto */
+  .month-selector, .month-navigation, .period-selector, .month-controls{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:10px !important;
+    margin: 10px 12px 8px !important;
+  }
+
+  /* 5) Modo previsto + Excel + PDF alinhados */
+  .header-actions, .report-actions, .actions, .filters-actions{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:8px !important;
+    flex-wrap:wrap !important;
+  }
+
+  /* 6) grade vira 1 coluna (nada espremido na direita) */
+  .dashboard-grid, .grid-container, .dashboard-container, .dashboard-layout{
+    display:block !important;
+  }
+
+  /* 7) cards do resumo: 2 colunas (Receitas/Despesas) */
+  .summary-cards, .stats-grid, .cards-grid{
+    display:grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap:10px !important;
+    padding: 0 12px !important;
+  }
+
+  /* 8) todos os cards ocupam a largura do mobile */
+  .card, .stat-card, .summary-card{
+    width:100% !important;
+    margin:0 !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(56,189,248,0.18) !important;
+  }
+
+  /* 9) HERO: saldo final em destaque */
+  .stat-card:nth-child(4), .summary-card:nth-child(4){
+    grid-column: 1 / -1 !important;
+    background: linear-gradient(135deg, rgba(0,158,227,0.28), rgba(56,189,248,0.14)) !important;
+    border: 1px solid rgba(56,189,248,0.30) !important;
+    padding: 18px !important;
+  }
+  .stat-card:nth-child(4) .value,
+  .summary-card:nth-child(4) .value{
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 14px rgba(0,158,227,0.35) !important;
+  }
+
+  /* 10) META em largura total (abaixo) */
+  .goal-card, .meta-card, .card-goal, .goal{
+    grid-column: 1 / -1 !important;
+  }
+
+  /* 11) gráficos ocupam tudo e sobem na tela */
+  .chart-card, .charts, .chart-container{
+    margin: 12px 12px 0 !important;
+  }
+
+  /* 12) diminuir altura dos cards de números */
+  .stat-card, .summary-card{
+    padding: 12px !important;
+    min-height: unset !important;
+  }
+
+  /* 13) texto mais clean */
+  .label, .title, .stat-title{
+    color: #94A3B8 !important;
+    font-size: 12px !important;
+  }
+}
+
+</style>    <meta name="theme-color" content="#009EE3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="FinancePlay 2.0">
     <meta name="mobile-web-app-capable" content="yes">
@@ -2212,7 +2343,7 @@
 this.planType = 'completo';
                 this.upgradePlanURL = "https://www.seusite.com/checkout?plan=complete"; // URL PLANO UPGRADE
                 this.emojiList = [  '💰', '💵', '💳', '📈', '📉', '💹', '💸', '🏦', '🏠', '🏢', '🔧', '🧹', '🛋️', '⚡', '💧', '🔥', '📶', '📱', '🚗', '🚕', '🚌', '⛽', '🚲', '✈️',  '🛒', '👕', '👞', '🧴', '🛍️',  '🍔', '🍝', '☕', '🍲', '🍺',  '🎬', '🎮', '📚', '🎭', '🎵', '🏖️', '💊', '🏥', '🦷', '👓', '🧠',  '🏋️', '🧘', '🏃', '💆', '🥗', '💼', '📊', '🖥️', '👔', '🚕', '🎓', '📚', '📝', '💻', '🔬',  '👤', '👨', '👩', '👨‍👩‍👧', '🐱', '🤖', '👑',  '📆', '🔄', '🕒', '🎁', '💫', '🎯', '💰', '🏠', '🚗', '💍', '🌴' ];
-                this.colorList = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#10b981', '#06b6d4', '#0ea5e9', '#3b82f6', '#009EE3', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
+                this.colorList = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#10b981', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
                 this.timezoneList = [ { value: -12, label: '(UTC-12:00) International Date Line West' }, { value: -11, label: '(UTC-11:00) Coordinated Universal Time-11' }, { value: -10, label: '(UTC-10:00) Hawaii' }, { value: -9, label: '(UTC-09:00) Alaska' }, { value: -8, label: '(UTC-08:00) Pacific Time (US & Canada)' }, { value: -7, label: '(UTC-07:00) Mountain Time (US & Canada)' }, { value: -6, label: '(UTC-06:00) Central Time (US & Canada)' }, { value: -5, label: '(UTC-05:00) Eastern Time (US & Canada)' }, { value: -4, label: '(UTC-04:00) Atlantic Time (Canada)' }, { value: -3, label: '(UTC-03:00) Brasilia' }, { value: -2, label: '(UTC-02:00) Mid-Atlantic' }, { value: -1, label: '(UTC-01:00) Azores' }, { value: 0, label: '(UTC+00:00) London, Dublin, Edinburgh' }, { value: 1, label: '(UTC+01:00) Berlin, Paris, Madrid' }, { value: 2, label: '(UTC+02:00) Athens, Istanbul, Helsinki' }, { value: 3, label: '(UTC+03:00) Moscow, St. Petersburg' }, { value: 4, label: '(UTC+04:00) Dubai, Abu Dhabi' }, { value: 5, label: '(UTC+05:00) Islamabad, Karachi' }, { value: 5.5, label: '(UTC+05:30) New Delhi, Mumbai' }, { value: 6, label: '(UTC+06:00) Dhaka' }, { value: 7, label: '(UTC+07:00) Bangkok, Jakarta' }, { value: 8, label: '(UTC+08:00) Beijing, Hong Kong, Singapore' }, { value: 9, label: '(UTC+09:00) Tokyo, Seoul' }, { value: 9.5, label: '(UTC+09:30) Adelaide' }, { value: 10, label: '(UTC+10:00) Sydney, Melbourne' }, { value: 11, label: '(UTC+11:00) Vladivostok' }, { value: 12, label: '(UTC+12:00) Auckland, Wellington' } ];
                 this.app = document.getElementById('app');
                 this.init();
@@ -3624,7 +3755,7 @@ checkPlanLimits(type, currentCount) {
                     
                     if (activeFilters.length > 0) {
                         filterInfo = `
-                            <div style="background-color: rgba(0, 158, 227, 0.12); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <div style="background-color: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-filter" style="color: var(--primary-color);"></i>
                                     <span style="font-weight: 500;">Filtros ativos:</span>
@@ -4739,7 +4870,7 @@ checkPlanLimits(type, currentCount) {
                     
                     if (activeFilters.length > 0) {
                         filterInfo = `
-                            <div style="background-color: rgba(0, 158, 227, 0.12); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <div style="background-color: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-filter" style="color: var(--primary-color);"></i>
                                     <span style="font-weight: 500;">Filtros ativos:</span>
@@ -5485,7 +5616,7 @@ renderInitialBalanceItem(item) {
     return `
         <div class="transaction-item ${this.isPreviewMode ? 'opacity-50' : ''}">
             <div class="transaction-info">
-                <div class="transaction-icon" style="background-color: #009EE320; color: #009EE3"><i class="fas fa-wallet"></i></div>
+                <div class="transaction-icon" style="background-color: #6366f120; color: #6366f1"><i class="fas fa-wallet"></i></div>
                 <div class="transaction-details">
                     <div class="transaction-name">${item.description}</div>
                     <div class="transaction-category">Saldo transferido do mês anterior</div>
@@ -7741,7 +7872,7 @@ if (isEdit) {
                                             <label for="valueInstallmentRadio">Valor da Parcela</label>
                                         </div>
                                     </div>
-                                    <div id="installmentValueDisplay" style="margin-top: 10px; padding: 10px; background-color: rgba(0, 158, 227, 0.12); border-radius: 4px; font-size: 0.95rem; color: var(--primary-color); display: none;">
+                                    <div id="installmentValueDisplay" style="margin-top: 10px; padding: 10px; background-color: rgba(99, 102, 241, 0.1); border-radius: 4px; font-size: 0.95rem; color: var(--primary-color); display: none;">
                                         <span id="installmentValueText"></span>
                                     </div>
                                 </div>
@@ -8634,7 +8765,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
 
                     <div class="settings-section">
                         <h3 class="settings-title">Plano</h3>
-                        <div class="settings-option"><div><div class="settings-label">Tipo</div><div class="settings-description">Seu plano atual</div></div><div><span class="badge" style="background-color: ${licenseTypeDisplay === 'Básico' ? '#009EE3' : licenseTypeDisplay === 'Essencial' ? '#10b981' : '#8b5cf6'}; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600;">${licenseTypeDisplay}</span></div></div>
+                        <div class="settings-option"><div><div class="settings-label">Tipo</div><div class="settings-description">Seu plano atual</div></div><div><span class="badge" style="background-color: ${licenseTypeDisplay === 'Básico' ? '#6366f1' : licenseTypeDisplay === 'Essencial' ? '#10b981' : '#8b5cf6'}; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600;">${licenseTypeDisplay}</span></div></div>
                         <div class="settings-option"><div><div class="settings-label">Status</div><div class="settings-description">Status do seu plano</div></div><div><span style="color: var(--secondary-color); font-weight: 600;">${licenseValidityDisplay}</span></div></div>
                         ${!isCompleteLifetime ? `<div class="settings-option" style="border-bottom: none; padding-bottom: 0;"><div><div class="settings-label">Fazer Upgrade</div><div class="settings-description">Desbloqueie mais recursos com planos superiores</div></div><div><button class="btn btn-secondary" id="upgradeLicenseBtn"><i class="fas fa-rocket"></i><span>Ver Planos</span></button></div></div>` : ''}
                     </div>
