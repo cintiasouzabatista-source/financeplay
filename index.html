@@ -2182,63 +2182,8 @@
 }
 
     
-/* ===== Metas ===== */
-.goal-item{
-  padding:12px;
-  border:1px solid var(--border-color);
-  border-radius:16px;
-  background: var(--card-bg);
-  margin-bottom:10px;
-}
-.goal-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-}
-.goal-name{
-  font-weight:800;
-}
-.goal-values{
-  color: var(--text-light);
-  font-size: 0.9rem;
-  margin-top:4px;
-}
-.goal-progress{
-  margin-top:10px;
-  height:10px;
-  background: rgba(15,23,42,0.08);
-  border-radius:999px;
-  overflow:hidden;
-}
-[data-theme="dark"] .goal-progress{
-  background: rgba(255,255,255,0.08);
-}
-.goal-progress > div{
-  height:100%;
-  background: linear-gradient(135deg, #009EE3, #38BDF8);
-  border-radius:999px;
-  width:0%;
-}
-.goal-actions{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-  flex-wrap:wrap;
-}
-.goal-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:4px 10px;
-  border-radius:999px;
-  border: 1px solid rgba(56,189,248,0.22);
-  color: var(--text-light);
-  font-size: 12px;
-}
-.goal-pill.warn{
-  border-color: rgba(245,158,11,0.35);
-}
+/* ===== Ajustes solicitados: remover Simulador (UI), remover Saldo Inicial (Dashboard), remover Modo Previsto ===== */
+.toggle-switch-container { display: none !important; }
 
 </style>
 
@@ -2283,8 +2228,8 @@ if ("serviceWorker" in navigator) {
                 
                 this.user = null;
                 this.licenseInfo = null;
-                this.isPreviewMode = false; 
-this.darkMode = false;
+                this.isPreviewMode = this.isFeatureAvailable('preview_mode'); 
+                this.darkMode = false;
                 this.currentMonth = new Date().getMonth();
                 this.currentYear = new Date().getFullYear();
                 this.transactionsSortOrder = 'asc'; 
@@ -3214,7 +3159,7 @@ showTrialExpiredModal() {
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="categories"><i class="fas fa-tags nav-icon"></i><span>Categorias</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="simulator"><i class="fas fa-calculator nav-icon"></i><span>Simulador</span></a></li>
+                                <li class="nav-item"><a href="#" class="nav-link" data-page="simulator"><i class="fas fa-calculator nav-icon"></i><span>Metas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog nav-icon"></i><span>Configurações</span></a></li>
                             </ul>
                         </aside>
@@ -3677,7 +3622,11 @@ checkPlanLimits(type, currentCount) {
                         </div>
                     </div>
                     <div class="grid-container">
-` : ''}
+<div class="card stat-card"><div class="stat-title">Receitas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-positive" id="dashboardIncome">R$ ${this.formatCurrency(monthData.dashboardIncome)}</div></div> 
+                        <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
+                        <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
+                    </div>
+                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
                 `;
                 
@@ -8834,6 +8783,47 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 <div class="card simulator-card">
                     <div class="card-header"><h3 class="card-title">Simulador Financeiro</h3></div>
                     <div class="card-body">
+                        
+                    <div class="card" id="goalsCard">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-bullseye"></i> Metas</h3>
+                            <p class="card-subtitle">Crie metas (incluindo Reserva de Emergência) e acompanhe seu progresso.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row-inline">
+                                <div class="form-row">
+                                    <label class="form-label" for="goalName">Nome da meta</label>
+                                    <input class="form-input" id="goalName" placeholder="Ex.: Reserva de Emergência">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label" for="goalTarget">Valor alvo (R$)</label>
+                                    <input class="form-input" id="goalTarget" placeholder="0,00">
+                                </div>
+                            </div>
+
+                            <div class="form-row-inline">
+                                <div class="form-row">
+                                    <label class="form-label" for="goalCurrent">Já guardado (R$)</label>
+                                    <input class="form-input" id="goalCurrent" placeholder="0,00">
+                                </div>
+                                <div class="form-row" style="display:flex; align-items:flex-end;">
+                                    <button class="btn btn-primary" id="addGoalBtn" type="button" style="width:100%;">
+                                        <i class="fas fa-plus"></i> Criar Meta
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning" id="reserveAlert" style="display:none; margin-top:12px;">
+                                <i class="fas fa-triangle-exclamation"></i>
+                                Sua <strong>Reserva de Emergência</strong> está baixa. Que tal acrescentar mais um pouco?
+                            </div>
+
+                            <div id="goalsList" style="margin-top:14px; display:flex; flex-direction:column; gap:10px;"></div>
+                        </div>
+                    </div>
+
+                    <div id="simulatorLegacy" style="display:none;">
+
                         <form id="simulatorForm">
                             <div class="form-row-inline">
                                 <div class="form-row"><label class="form-label" for="initialInvestment">Investimento Inicial (R$)</label><input type="text" class="form-input" id="initialInvestment" placeholder="0,00" value="10.000,00"></div>
@@ -8845,6 +8835,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                             </div>
                             <div class="form-row"><button type="button" class="btn btn-primary" id="calculateBtnSimulator"><i class="fas fa-calculator"></i><span>Calcular</span></button></div>
                         </form>
+                    </div>
                         <div class="simulator-result" id="simulatorResult" style="display: none;">
                             <h4 class="result-title">Resultado da Simulação</h4>
                             <div class="result-grid">
@@ -10282,36 +10273,6 @@ function createFilterModal() {
     </div>
   </div>
 </div>
-
-
-    <!-- Modal Metas -->
-    <div class="modal-overlay" id="goalModal" style="display:none;">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="goalModalTitle">Nova Meta</h3>
-                <button class="modal-close" id="goalModalClose">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Nome</label>
-                    <input class="form-input" id="goalName" placeholder="Ex.: Reserva de Emergência" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Valor alvo (R$)</label>
-                    <input class="form-input" id="goalTarget" type="number" min="0" step="0.01" placeholder="Ex.: 10000" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Quanto já juntou (R$)</label>
-                    <input class="form-input" id="goalCurrent" type="number" min="0" step="0.01" placeholder="Ex.: 250" />
-                </div>
-                <small style="color: var(--text-light);">Dica: a Reserva é fundamental. Mantemos um mínimo de R$ 10,00 para não ficar zerada.</small>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outlined" id="goalModalCancel">Cancelar</button>
-                <button class="btn btn-primary" id="goalModalSave">Salvar</button>
-            </div>
-        </div>
-    </div>
 
 </body>
 </html>
