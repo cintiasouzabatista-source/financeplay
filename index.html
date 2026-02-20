@@ -3167,6 +3167,7 @@ showTrialExpiredModal() {
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
 <li class="nav-item"><a href="#" class="nav-link" data-page="reports"><i class="fas fa-file-export nav-icon"></i><span>Relatórios</span></a></li>
+<li class="nav-item"><a href="#" class="nav-link" data-page="data"><i class="fas fa-database nav-icon"></i><span>Dados</span></a></li>
 <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog nav-icon"></i><span>Configurações</span></a></li>
                             </ul>
                         </aside>
@@ -3498,6 +3499,7 @@ showTrialExpiredModal() {
                             this.renderCards(pageContent); 
                             break;
                         case 'reports': this.renderReports(pageContent); break;
+                        case 'data': this.renderDataPage(pageContent); break;
                         case 'settings': this.renderSettings(pageContent); break;
                         case 'simulator': 
                             this.renderSimulator(pageContent); 
@@ -8654,6 +8656,77 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
 
 
 
+
+            renderDataPage(container) {
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="settings-section">
+                            <h3 class="settings-title">Dados</h3>
+
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Exportar Dados</div>
+                                    <div class="settings-description">Baixar seus dados em formato JSON</div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" id="exportDataBtn"><i class="fas fa-download"></i><span>Exportar</span></button>
+                                </div>
+                            </div>
+
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Importar Dados</div>
+                                    <div class="settings-description">Carregar dados de um arquivo JSON (substitui dados atuais)</div>
+                                </div>
+                                <div>
+                                    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                                    <button class="btn btn-primary" id="importDataBtn"><i class="fas fa-upload"></i><span>Importar</span></button>
+                                </div>
+                            </div>
+
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Limpar Dados</div>
+                                    <div class="settings-description">Remover todos os dados do aplicativo (ação irreversível)</div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-danger" id="clearDataBtn"><i class="fas fa-trash"></i><span>Limpar</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Eventos (reaproveita as funções já existentes no app)
+                const exportBtn = document.getElementById('exportDataBtn');
+                if (exportBtn) exportBtn.addEventListener('click', () => this.exportData());
+
+                const importBtn = document.getElementById('importDataBtn');
+                const fileInput = document.getElementById('importFileInput');
+                if (importBtn && fileInput) {
+                    importBtn.addEventListener('click', () => fileInput.click());
+                    fileInput.addEventListener('change', (e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                            this.importData(e.target.files[0]);
+                            e.target.value = null;
+                        }
+                    });
+                }
+
+                const clearBtn = document.getElementById('clearDataBtn');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        if (confirm('ATENÇÃO! Tem certeza que deseja limpar TODOS os seus dados (transações, categorias, contas, cartões)? Esta ação é IRREVERSÍVEL!')) {
+                            if (prompt('Para confirmar, digite a palavra "LIMPAR" em maiúsculas:') === 'LIMPAR') {
+                                this.clearData();
+                            } else {
+                                this.notificationSystem.show('Ação cancelada', 'Confirmação incorreta. Nenhum dado foi apagado.', 'info', 4000);
+                            }
+                        }
+                    });
+                }
+            }
+
             renderSettings(container) {
                 const user = this.user; 
                 const licenseInfo = this.licenseInfo; 
@@ -8686,28 +8759,12 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                         <div class="settings-option"><div><div class="settings-label">Emoji</div><div class="settings-description">Emoji do seu perfil</div></div><div class="form-row" style="margin: 0;"><button class="btn btn-outlined" id="changeEmojiBtn"><span id="currentEmoji">${user.emoji}</span><i class="fas fa-edit" style="margin-left: 5px;"></i></button></div></div>
                         <div class="settings-option" style="border-bottom: none; padding-bottom: 0;"><div></div><div><button class="btn btn-primary" id="saveProfileBtn"><i class="fas fa-save"></i><span>Salvar Perfil</span></button></div></div>
                     </div>
-
-                    <div class="settings-section">
-                        <h3 class="settings-title">Plano</h3>
-                        <div class="settings-option"><div><div class="settings-label">Tipo</div><div class="settings-description">Seu plano atual</div></div><div><span class="badge" style="background-color: ${licenseTypeDisplay === 'Básico' ? '#6366f1' : licenseTypeDisplay === 'Essencial' ? '#10b981' : '#8b5cf6'}; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600;">${licenseTypeDisplay}</span></div></div>
-                        <div class="settings-option"><div><div class="settings-label">Status</div><div class="settings-description">Status do seu plano</div></div><div><span style="color: var(--secondary-color); font-weight: 600;">${licenseValidityDisplay}</span></div></div>
-                        ${!isCompleteLifetime ? `<div class="settings-option" style="border-bottom: none; padding-bottom: 0;"><div><div class="settings-label">Fazer Upgrade</div><div class="settings-description">Desbloqueie mais recursos com planos superiores</div></div><div><button class="btn btn-secondary" id="upgradeLicenseBtn"><i class="fas fa-rocket"></i><span>Ver Planos</span></button></div></div>` : ''}
-                    </div>
-
-                    <div class="settings-section">
+<div class="settings-section">
                         <h3 class="settings-title">Aparência e Exibição</h3>
                         <div class="settings-option"><div><div class="settings-label">Modo Escuro</div><div class="settings-description">Ativar/desativar modo escuro</div></div><div><label class="toggle-switch"><input type="checkbox" id="darkModeToggle" ${this.darkMode ? 'checked' : ''}><span class="toggle-slider"></span></label></div></div>
                         <div class="settings-option"><div><div class="settings-label">Fuso Horário</div><div class="settings-description">Ajustar fuso horário para exibição correta das datas</div></div><div style="flex: 1; max-width: 300px;"><select class="form-select" id="timezoneSelect">${timezoneOptions}</select></div></div>
                         <div class="settings-option" style="border-bottom: none; padding-bottom: 0;"><div><div class="settings-label">Usar saldo final do mês anterior como saldo inicial</div><div class="settings-description">Calcula o saldo inicial do mês com base no saldo final do mês anterior</div></div><div><label class="toggle-switch"><input type="checkbox" id="usePrevMonthToggle" ${this.usePreviousMonthBalance ? 'checked' : ''}><span class="toggle-slider"></span></label></div></div>
                     </div>
-
-                    ${this.isFeatureAvailable('import_export') ? `
-                    <div class="settings-section">
-                        <h3 class="settings-title">Dados</h3>
-                        <div class="settings-option"><div><div class="settings-label">Exportar Dados</div><div class="settings-description">Baixar seus dados em formato JSON</div></div><div><button class="btn btn-primary" id="exportDataBtn"><i class="fas fa-download"></i><span>Exportar</span></button></div></div>
-                        <div class="settings-option"><div><div class="settings-label">Importar Dados</div><div class="settings-description">Carregar dados de um arquivo JSON (substitui dados atuais)</div></div><div><input type="file" id="importFileInput" accept=".json" style="display: none;"><button class="btn btn-primary" id="importDataBtn"><i class="fas fa-upload"></i><span>Importar</span></button></div></div>
-                        <div class="settings-option" style="border-bottom: none; padding-bottom: 0;"><div><div class="settings-label">Limpar Dados</div><div class="settings-description">Remover todos os dados do aplicativo (ação irreversível)</div></div><div><button class="btn btn-danger" id="clearDataBtn"><i class="fas fa-trash"></i><span>Limpar</span></button></div></div>
-                    </div>` : ''}
                 </div>`;
 
                 document.getElementById('saveProfileBtn').addEventListener('click', () => { 
@@ -8754,18 +8811,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                     this.notificationSystem.show('Sucesso', `Cálculo de saldo inicial atualizado!`, 'success'); 
                 });
 
-                if (this.isFeatureAvailable('import_export')) { 
-                    document.getElementById('exportDataBtn').addEventListener('click', () => this.exportData()); 
-                    
-                    const importBtn = document.getElementById('importDataBtn'); 
-                    const fileInput = document.getElementById('importFileInput'); 
-                    importBtn.addEventListener('click', () => fileInput.click()); 
-                    fileInput.addEventListener('change', (e) => { 
-                        if (e.target.files.length > 0) { 
-                            this.importData(e.target.files[0]); 
-                            e.target.value = null; 
-                        } 
-                    }); 
+                }); 
                     document.getElementById('clearDataBtn').addEventListener('click', () => { 
                         if (confirm('ATENÇÃO! Tem certeza que deseja limpar TODOS os seus dados (transações, categorias, contas, cartões)? Esta ação é IRREVERSÍVEL!')) { 
                             if (prompt('Para confirmar, digite a palavra "LIMPAR" em maiúsculas:') === 'LIMPAR') { 
