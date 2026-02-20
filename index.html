@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minhas Finanças</title>
 
   <!-- Anti-cache básico (ajuda em deploys, mas não substitui limpar SW/caches) -->
@@ -12,64 +12,207 @@
 
   <style>
     :root{
-      --bg:#f5f5f5;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --side:#111827;
-      --sideHover:rgba(255,255,255,.08);
-      --sideActive:rgba(99,102,241,.28);
+      --bg:#0b1220;
+      --panel:#0f172a;
+      --card:#0b1428;
+      --card2:#0b1730;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --line:rgba(148,163,184,.18);
+      --side:#0b1220;
+      --sideHover:rgba(255,255,255,.06);
+      --sideActive:rgba(148,163,184,.16);
       --primary:#6366f1;
       --danger:#ef4444;
-      --radius:10px;
+      --ok:#22c55e;
+      --radius:14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
-    body { font-family: Arial, sans-serif; background:var(--bg); margin:0; color:var(--text); }
+    html,body{height:100%}
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(99,102,241,.18), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(34,197,94,.10), transparent 55%),
+                  var(--bg);
+      margin:0;
+      color:var(--text);
+    }
+
     .layout{display:flex; min-height:100vh;}
-    .sidebar { width:240px; background:var(--side); color:white; padding:18px 16px; position:fixed; inset:0 auto 0 0; overflow:auto; }
-    .brand{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
-    .brand h2 { font-size:18px; margin:0; }
-    .version { font-size:12px; opacity:0.65; }
-    .nav{margin-top:10px; display:flex; flex-direction:column; gap:6px;}
+
+    .sidebar {
+      width:260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%),
+                  var(--side);
+      color:var(--text);
+      padding:18px 14px;
+      position:fixed;
+      inset:0 auto 0 0;
+      overflow:auto;
+      border-right:1px solid var(--line);
+    }
+    .brand{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:10px; padding:6px 8px 12px 8px;
+    }
+    .brand h2 {
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .version {
+      font-size:12px;
+      opacity:0.7;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      white-space:nowrap;
+    }
+
+    .nav{margin-top:8px; display:flex; flex-direction:column; gap:6px; padding:0 6px;}
     .nav a{
-      display:flex; align-items:center; gap:10px;
-      color:white; text-decoration:none; padding:10px 12px;
-      border-radius:10px; transition:.15s ease;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      color:var(--text); text-decoration:none;
+      padding:10px 12px;
+      border-radius:12px;
+      transition:.15s ease;
+      border:1px solid transparent;
     }
     .nav a:hover{background:var(--sideHover);}
-    .nav a.active{background:var(--sideActive); outline:1px solid rgba(99,102,241,.35);}
-    .nav .spacer{height:10px;}
-    .main { margin-left:240px; padding:20px; width:100%; }
-    .header{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:14px;}
-    .title{font-size:20px; margin:0;}
-    .subtitle{font-size:13px; color:var(--muted); margin:4px 0 0 0;}
-    .card { background:var(--card); padding:18px; border-radius:var(--radius); box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:14px; }
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid rgba(15,23,42,.08);}
-    .row:last-child{border-bottom:none}
-    .row .label{font-weight:700}
-    .row .desc{font-size:12px; color:var(--muted); margin-top:3px}
-    button { padding:10px 14px; border:none; border-radius:10px; cursor:pointer; }
-    .btn-primary { background:var(--primary); color:white; }
-    .btn-danger { background:var(--danger); color:white; }
-    .btn-muted { background:rgba(15,23,42,.06); color:var(--text); }
-    input, select{
-      width:100%; max-width:320px;
-      padding:10px 12px; border-radius:10px;
-      border:1px solid rgba(15,23,42,.15); background:#fff;
+    .nav a.active{
+      background:var(--sideActive);
+      border-color: rgba(148,163,184,.22);
+      box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
     }
-    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:7px 10px; border-radius:999px; background:rgba(99,102,241,.10); border:1px solid rgba(99,102,241,.18); color:var(--text); font-size:12px;}
+    .nav .left{display:flex; align-items:center; gap:10px;}
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: rgba(148,163,184,.45);
+    }
+    .nav a.active .dot{background: rgba(99,102,241,.9);}
+    .nav .spacer{height:14px;}
+
+    .main {
+      margin-left:260px;
+      padding:22px 22px 28px 22px;
+      width:100%;
+    }
+
+    .topbar{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:14px;
+    }
+    .title{font-size:20px; margin:0;}
+    .subtitle{font-size:13px; color:var(--muted); margin:6px 0 0 0; max-width:820px; line-height:1.35;}
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 24%),
+                  var(--card);
+      padding:18px;
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      border:1px solid var(--line);
+      margin-bottom:14px;
+    }
+    .card h3{margin:0 0 10px 0; font-size:14px; letter-spacing:.2px;}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px;}
+    .metric{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 26%),
+                  var(--card2);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      min-height:112px;
+    }
+    .metric .label{font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center;}
+    .metric .value{font-size:22px; margin:10px 0 0 0; font-weight:800;}
+    .metric .hint{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.35;}
+
+    .row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:12px 0; border-bottom:1px solid var(--line);
+    }
+    .row:last-child{border-bottom:none}
+    .row .label{font-weight:800}
+    .row .desc{font-size:12px; color:var(--muted); margin-top:3px; line-height:1.3}
+
+    button {
+      padding:10px 14px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0)),
+                  var(--primary);
+      color:white;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .btn-danger {
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0)),
+                  var(--danger);
+      color:white;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .btn-muted {
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    input, select{
+      width:100%;
+      max-width:340px;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(2,6,23,.55);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color: rgba(148,163,184,.7);}
+    input:focus, select:focus{border-color: rgba(99,102,241,.75); box-shadow: 0 0 0 3px rgba(99,102,241,.18);}
+
     .note{font-size:13px; color:var(--muted); line-height:1.35;}
-    @media (max-width: 900px){
-      .sidebar{position:static; width:100%; height:auto;}
+    .link{color: rgba(165,180,252,.95); cursor:pointer; text-decoration:underline;}
+    .badge-ok{color: var(--ok); font-weight:800;}
+    .badge-warn{color: #fbbf24; font-weight:800;}
+
+    /* Mobile */
+    @media (max-width: 980px){
+      .sidebar{position:static; width:100%; height:auto; border-right:none; border-bottom:1px solid var(--line);}
       .main{margin-left:0}
       .layout{flex-direction:column}
+      .grid{grid-template-columns:1fr}
+      input, select{max-width:100%}
     }
   </style>
 
   <script>
-    // Versão visível para confirmar deploy
-    window.__BUILD_ID__ = "v2026.02.20-03";
+    window.__BUILD_ID__ = "v2026.02.20-04";
+
+    async function sha256(text){
+      const enc = new TextEncoder();
+      const data = enc.encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     function clearAppCache(){
       try{
@@ -85,7 +228,6 @@
         }
       }catch(e){}
       alert("Cache limpo. O app será recarregado.");
-      // location.reload(true) é deprecated; usamos reload normal + cache-buster
       const url = new URL(location.href);
       url.searchParams.set("v", window.__BUILD_ID__ + "-" + Date.now());
       location.href = url.toString();
@@ -94,11 +236,70 @@
     function confirmAndClearData(){
       const typed = prompt('Ação irreversível. Digite "LIMPAR" para confirmar:');
       if (typed !== "LIMPAR") return alert("Cancelado.");
-      // Aqui você pode integrar sua lógica real de limpar dados (IndexedDB/localStorage).
-      // Nesta versão simples, limpamos localStorage como exemplo.
       try{ localStorage.clear(); }catch(e){}
       alert("Dados apagados.");
       location.reload();
+    }
+
+    function getAuthConfig(){
+      try{ return JSON.parse(localStorage.getItem("auth_config") || "null"); }catch(e){ return null; }
+    }
+    function setAuthSession(isLogged){
+      localStorage.setItem("auth_session", JSON.stringify({ loggedIn: !!isLogged, ts: Date.now() }));
+    }
+    function isLoggedIn(){
+      try{
+        const s = JSON.parse(localStorage.getItem("auth_session") || "null");
+        return !!(s && s.loggedIn);
+      }catch(e){ return false; }
+    }
+
+    async function handleLoginSubmit(){
+      const cpf = (document.getElementById("loginCpf")?.value || "").replace(/\D/g,'');
+      const pass = (document.getElementById("loginPass")?.value || "");
+      const cfg = getAuthConfig();
+
+      if (!cpf || cpf.length !== 11) return alert("CPF inválido. Digite 11 números.");
+      if (!pass || pass.length < 4) return alert("Senha muito curta (mín. 4).");
+
+      if (!cfg){
+        return alert("Nenhuma credencial cadastrada. Clique em “Criar acesso”.");
+      }
+
+      const passHash = await sha256(pass);
+      if (cpf === cfg.cpf && passHash === cfg.passHash && cfg.status !== "bloqueado"){
+        setAuthSession(true);
+        alert("Login OK!");
+        renderPage("dashboard");
+      } else {
+        alert("CPF/Senha inválidos ou acesso bloqueado.");
+      }
+    }
+
+    async function handleCreateAccess(){
+      const cpf = (document.getElementById("loginCpf")?.value || "").replace(/\D/g,'');
+      const pass = (document.getElementById("loginPass")?.value || "");
+      if (!cpf || cpf.length !== 11) return alert("CPF inválido. Digite 11 números.");
+      if (!pass || pass.length < 4) return alert("Senha muito curta (mín. 4).");
+
+      const passHash = await sha256(pass);
+      const payload = {
+        cpf,
+        passHash,
+        plan: { period: "mensal", payment: "", status: "ativo" },
+        status: "ativo",
+        createdAt: Date.now()
+      };
+      localStorage.setItem("auth_config", JSON.stringify(payload));
+      setAuthSession(true);
+      alert("Acesso criado e login realizado!");
+      renderPage("dashboard");
+    }
+
+    function handleLogout(){
+      setAuthSession(false);
+      alert("Você saiu.");
+      renderPage("login");
     }
 
     function renderPage(page){
@@ -106,7 +307,13 @@
       const subEl = document.getElementById("pageSubtitle");
       const mainEl = document.getElementById("pageBody");
 
-      // ativa link
+      // Gate: se não logado, força login (exceto página de login)
+      const needAuth = true; // mantém ligado por padrão
+      if (needAuth && !isLoggedIn() && page !== "login") {
+        page = "login";
+        location.hash = "#login";
+      }
+
       document.querySelectorAll(".nav a[data-page]").forEach(a=>{
         a.classList.toggle("active", a.getAttribute("data-page") === page);
       });
@@ -117,15 +324,15 @@
           sub: "Resumo rápido do mês e do seu saldo.",
           html: `
             <div class="grid">
-              <div class="card">
-                <div class="pill">💰 Saldo</div>
-                <h3 style="margin:10px 0 0 0;">R$ 0,00</h3>
-                <p class="note">Você pode conectar isso ao seu cálculo real depois.</p>
+              <div class="metric">
+                <div class="label"><span class="dot"></span> Saldo</div>
+                <div class="value">R$ 0,00</div>
+                <div class="hint">Depois conectamos isso ao seu cálculo real.</div>
               </div>
-              <div class="card">
-                <div class="pill">🛡 Reserva</div>
-                <h3 style="margin:10px 0 0 0;">R$ 0,00</h3>
-                <p class="note">Reserva separada do dia a dia.</p>
+              <div class="metric">
+                <div class="label"><span class="dot"></span> Reserva</div>
+                <div class="value">R$ 0,00</div>
+                <div class="hint">Reserva separada do dia a dia.</div>
               </div>
             </div>
           `
@@ -134,6 +341,11 @@
           title: "Transações",
           sub: "Entradas, saídas e transferências.",
           html: `<div class="card"><p class="note">Tela de transações (placeholder nesta versão).</p></div>`
+        },
+        categories: {
+          title: "Categorias",
+          sub: "Organize suas categorias de entrada e saída.",
+          html: `<div class="card"><p class="note">Tela de categorias (placeholder nesta versão).</p></div>`
         },
         accounts: {
           title: "Contas",
@@ -152,7 +364,7 @@
         },
         graphs: {
           title: "Gráficos",
-          sub: "Visualizações (fica fora da tela inicial para manter tudo limpo).",
+          sub: "Visualizações (fora da tela inicial para manter tudo limpo).",
           html: `<div class="card"><p class="note">Aqui entram os gráficos semestrais/anuais quando integrarmos no app completo.</p></div>`
         },
         data: {
@@ -198,8 +410,8 @@
             <div class="card">
               <div class="row" style="align-items:flex-start">
                 <div style="flex:1; min-width:180px;">
-                  <div class="label">Período</div>
-                  <div class="desc">Mensal / Semestral / Anual</div>
+                  <div class="label">Mensal / Semestral / Anual</div>
+                  <div class="desc">Defina o período do plano</div>
                 </div>
                 <select id="planPeriod">
                   <option value="mensal">Mensal</option>
@@ -209,15 +421,15 @@
               </div>
               <div class="row" style="align-items:flex-start">
                 <div style="flex:1; min-width:180px;">
-                  <div class="label">Forma de PGto</div>
+                  <div class="label">Forma PGto</div>
                   <div class="desc">Cartão / PIX / Boleto</div>
                 </div>
                 <input id="planPayment" placeholder="Ex.: PIX" />
               </div>
               <div class="row" style="align-items:flex-start">
                 <div style="flex:1; min-width:180px;">
-                  <div class="label">Status</div>
-                  <div class="desc">Ativo / Bloqueado</div>
+                  <div class="label">Ativo / Bloqueado</div>
+                  <div class="desc">Controle de status</div>
                 </div>
                 <select id="planStatus">
                   <option value="ativo">Ativo</option>
@@ -225,21 +437,72 @@
                 </select>
               </div>
               <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-                <button class="btn-muted" onclick="alert('Cancelar')">Cancelar</button>
+                <button class="btn-muted" onclick="alert('Cancelado')">Cancelar</button>
                 <button class="btn-primary" onclick="savePlanSettings()">Salvar</button>
               </div>
-              <p class="note" style="margin-top:12px">Obs.: Nesta versão simples, salvamos no localStorage. No app completo, podemos integrar ao seu storage principal.</p>
+              <p class="note" style="margin-top:12px">
+                Dica: “Bloqueado” impede login. Útil se quiser travar o acesso.
+              </p>
             </div>
           `
         },
         settings: {
           title: "Configurações",
-          sub: "Preferências do app. (A seção de Planos foi removida daqui).",
+          sub: "Preferências do app. (Planos e Dados ficam na lateral).",
           html: `
             <div class="card">
-              <p class="note">Configurações básicas (placeholder nesta versão).</p>
-              <p class="note">✅ “Planos” foi movido para o menu lateral.</p>
-              <p class="note">✅ “Dados” foi movido para o menu lateral.</p>
+              <p class="note">✅ Layout preto/cinza aplicado.</p>
+              <p class="note">✅ “Planos” e “Dados” foram movidos para o menu lateral.</p>
+              <p class="note">Se quiser, posso colocar aqui um campo para trocar senha/CPF também.</p>
+            </div>
+          `
+        },
+        login: {
+          title: "Login",
+          sub: "Acesso com CPF e senha.",
+          html: `
+            <div class="card">
+              <h3>Entrar</h3>
+              <div class="row" style="align-items:flex-start">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">CPF</div>
+                  <div class="desc">Digite apenas números</div>
+                </div>
+                <input id="loginCpf" inputmode="numeric" placeholder="00000000000" maxlength="14" />
+              </div>
+              <div class="row" style="align-items:flex-start">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Senha</div>
+                  <div class="desc">Mínimo 4 caracteres</div>
+                </div>
+                <input id="loginPass" type="password" placeholder="••••" />
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                <button class="btn-muted" onclick="handleCreateAccess()">Criar acesso</button>
+                <button class="btn-primary" onclick="handleLoginSubmit()">Entrar</button>
+              </div>
+
+              <p class="note" style="margin-top:12px">
+                Primeiro acesso? Use <span class="link" onclick="handleCreateAccess()">Criar acesso</span> para cadastrar CPF e senha neste dispositivo.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="row">
+                <div>
+                  <div class="label">Status</div>
+                  <div class="desc">Se estiver bloqueado, não entra.</div>
+                </div>
+                <div id="loginStatus" class="badge-ok">Pronto</div>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Sair</div>
+                  <div class="desc">Encerrar sessão atual.</div>
+                </div>
+                <button class="btn-danger" onclick="handleLogout()">Sair</button>
+              </div>
             </div>
           `
         }
@@ -250,7 +513,7 @@
       subEl.textContent = p.sub;
       mainEl.innerHTML = p.html;
 
-      // pós-render: preencher dados de Planos se existir
+      // pós-render: preencher Planos
       if(page === "plans"){
         try{
           const saved = JSON.parse(localStorage.getItem("ui_plan_settings") || "null");
@@ -261,6 +524,28 @@
           }
         }catch(e){}
       }
+
+      // pós-render: status login
+      if(page === "login"){
+        const cfg = getAuthConfig();
+        const el = document.getElementById("loginStatus");
+        if(!el) return;
+        if(!cfg){
+          el.textContent = "Sem cadastro";
+          el.className = "badge-warn";
+        } else if(cfg.status === "bloqueado") {
+          el.textContent = "Bloqueado";
+          el.className = "badge-warn";
+        } else {
+          el.textContent = "Ativo";
+          el.className = "badge-ok";
+        }
+      }
+
+      // update URL hash (sem duplicar history quando forçado)
+      if(location.hash.replace("#","") !== page){
+        location.hash = "#" + page;
+      }
     }
 
     function savePlanSettings(){
@@ -270,26 +555,34 @@
         status: document.getElementById("planStatus")?.value || "ativo"
       };
       localStorage.setItem("ui_plan_settings", JSON.stringify(payload));
+
+      // Se já existir auth_config, espelha status lá (pra bloquear login)
+      try{
+        const cfg = getAuthConfig();
+        if(cfg){
+          cfg.status = payload.status;
+          cfg.plan = { period: payload.period, payment: payload.payment, status: payload.status };
+          localStorage.setItem("auth_config", JSON.stringify(cfg));
+        }
+      }catch(e){}
+
       alert("Planos: configurações salvas.");
     }
 
     function initNav(){
+      // build tags
+      document.getElementById("buildTag").textContent = window.__BUILD_ID__;
+      document.getElementById("buildPill").textContent = "Build " + window.__BUILD_ID__;
+
       document.querySelectorAll(".nav a[data-page]").forEach(a=>{
         a.addEventListener("click", (e)=>{
           e.preventDefault();
           const page = a.getAttribute("data-page");
-          const url = new URL(location.href);
-          url.hash = page;
-          history.pushState({}, "", url.toString());
           renderPage(page);
         });
       });
 
-      window.addEventListener("popstate", ()=>{
-        const page = (location.hash || "#dashboard").replace("#","");
-        renderPage(page);
-      });
-
+      // Primeiro carregamento: respeita hash, mas aplica gate
       const initial = (location.hash || "#dashboard").replace("#","");
       renderPage(initial);
     }
@@ -301,36 +594,34 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
-        <h2>Minhas Finanças</h2>
-        <div class="version" title="Build ID" id="buildTag"></div>
+        <h2>Minhas<br/>Finanças</h2>
+        <div class="version" id="buildTag"></div>
       </div>
 
       <nav class="nav">
-        <a href="#dashboard" data-page="dashboard" class="active">Visão Geral</a>
-        <a href="#transactions" data-page="transactions">Transações</a>
-        <a href="#accounts" data-page="accounts">Contas</a>
-        <a href="#cards" data-page="cards">Cartões</a>
-        <a href="#reports" data-page="reports">Relatórios</a>
+        <a href="#dashboard" data-page="dashboard" class="active"><span class="left"><span class="dot"></span>Visão Geral</span></a>
+        <a href="#transactions" data-page="transactions"><span class="left"><span class="dot"></span>Transações</span></a>
+        <a href="#categories" data-page="categories"><span class="left"><span class="dot"></span>Categorias</span></a>
+        <a href="#accounts" data-page="accounts"><span class="left"><span class="dot"></span>Contas</span></a>
+        <a href="#cards" data-page="cards"><span class="left"><span class="dot"></span>Cartões</span></a>
+        <a href="#reports" data-page="reports"><span class="left"><span class="dot"></span>Relatórios</span></a>
 
-        <!-- Gráficos: abaixo de Relatórios (como você pediu) -->
-        <a href="#graphs" data-page="graphs">Gráficos</a>
+        <!-- Gráficos: abaixo de Relatórios -->
+        <a href="#graphs" data-page="graphs"><span class="left"><span class="dot"></span>Gráficos</span></a>
 
         <div class="spacer"></div>
 
-        <!-- Dados e Planos ficam na lateral (áreas técnicas/admin) -->
-        <a href="#data" data-page="data">Dados</a>
-        <a href="#plans" data-page="plans">Planos</a>
+        <a href="#data" data-page="data"><span class="left"><span class="dot"></span>Dados</span></a>
+        <a href="#plans" data-page="plans"><span class="left"><span class="dot"></span>Planos</span></a>
+        <a href="#settings" data-page="settings"><span class="left"><span class="dot"></span>Configurações</span></a>
 
-        <a href="#settings" data-page="settings">Configurações</a>
+        <!-- Login no final -->
+        <a href="#login" data-page="login"><span class="left"><span class="dot"></span>Login</span></a>
       </nav>
-
-      <div class="version" style="margin-top:14px;">
-        <span id="buildTag2"></span>
-      </div>
     </aside>
 
     <main class="main">
-      <div class="header">
+      <div class="topbar">
         <div>
           <h1 class="title" id="pageTitle">Visão Geral</h1>
           <p class="subtitle" id="pageSubtitle">Resumo rápido do mês e do seu saldo.</p>
@@ -341,12 +632,5 @@
       <section id="pageBody"></section>
     </main>
   </div>
-
-  <script>
-    // carimbo visível
-    document.getElementById("buildTag").textContent = window.__BUILD_ID__;
-    document.getElementById("buildTag2").textContent = window.__BUILD_ID__;
-    document.getElementById("buildPill").textContent = "Build " + window.__BUILD_ID__;
-  </script>
 </body>
 </html>
