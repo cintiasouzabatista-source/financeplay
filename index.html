@@ -2098,21 +2098,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-        navigator.serviceWorker.register("./service-worker.js")
-            .then(function(registration) {
-                console.log("SW registered: ", registration);
-            }, function(registrationError) {
-                console.log("SW registration failed: ", registrationError);
-            });
-    });
-}
-</script></head>
+</head>
 <body>
     <div id="app">
-        </div>
+  <div style="max-width:560px;margin:48px auto;padding:18px;border-radius:12px;background:rgba(0,0,0,0.06);font-family:Poppins,Arial,sans-serif;">    <div style="font-weight:700;font-size:18px;margin-bottom:6px;">Carregando…</div>    <div style="opacity:.8;font-size:14px;">Se ficar nessa tela, tem algo impedindo a inicialização.</div>  </div>
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
@@ -10135,6 +10125,43 @@ function createFilterModal() {
     </div>
   </div>
 </div>
+
+
+<script>
+// ===== Bootstrap de segurança: garante que o app inicialize mesmo se a rotina antiga falhar =====
+(function(){
+  function safeShowError(err){
+    try { console.error(err); } catch(e){}
+    try { if (typeof displayErrorMessage === 'function') displayErrorMessage(); } catch(e){}
+    // fallback visível
+    try {
+      const appDiv = document.getElementById('app');
+      if (appDiv && !appDiv.innerText.trim()) {
+        appDiv.innerHTML = '<div style="max-width:680px;margin:48px auto;padding:18px;border-radius:12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);font-family:Poppins,Arial,sans-serif;">'
+          + '<div style="font-weight:800;font-size:18px;margin-bottom:8px;">Não foi possível iniciar o app</div>'
+          + '<div style="font-size:14px;opacity:.9;white-space:pre-wrap;">' + (err && (err.stack||err.message) ? (err.stack||err.message) : 'Erro desconhecido') + '</div>'
+          + '<button style="margin-top:14px;padding:10px 14px;border-radius:10px;border:none;background:#2563eb;color:#fff;cursor:pointer;" onclick="location.reload()">Recarregar</button>'
+          + '</div>';
+      }
+    } catch(e){}
+  }
+
+  async function boot(){
+    try{
+      // Não bloqueia por Chart.js; o app deve abrir mesmo sem gráficos
+      if (!window.app && typeof FinanceApp === 'function') {
+        window.app = new FinanceApp();
+        await window.app.init();
+      }
+    } catch(err){
+      safeShowError(err);
+    }
+  }
+
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot);
+})();
+</script>
 
 </body>
 </html>
