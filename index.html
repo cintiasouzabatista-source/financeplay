@@ -2119,7 +2119,12 @@
             transform: translateX(20px); /* Deslocamento do círculo */
         }
 
-    </style>
+    
+        /* UX: esconder Exportar nas Transações (export fica em Relatórios) */
+        #exportTransactionsBtn{display:none !important;}
+        /* UX: simplificar cadastro (ocultar grade de emojis em Contas/Cartões) */
+        #accountEmojiPicker, #cardEmojiPicker{display:none !important;}
+</style>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#6366f1">
@@ -10878,5 +10883,35 @@ function createFilterModal() {
 })();
 </script>
 
+
+<script>
+/* UX: esconder seleção de emojis (Contas/Cartões) para manter cadastro simples */
+(function(){
+  function hideEmojiRows(){
+    ['accountEmojiPicker','cardEmojiPicker'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){
+        var row = el.closest ? el.closest('.form-row') : null;
+        if(row) row.style.display = 'none';
+      }
+    });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      hideEmojiRows();
+      try{
+        var obs = new MutationObserver(hideEmojiRows);
+        obs.observe(document.body, {childList:true, subtree:true});
+      }catch(e){}
+    });
+  } else {
+    hideEmojiRows();
+    try{
+      var obs2 = new MutationObserver(hideEmojiRows);
+      obs2.observe(document.body, {childList:true, subtree:true});
+    }catch(e){}
+  }
+})();
+</script>
 </body>
 </html>
