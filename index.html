@@ -2124,6 +2124,41 @@
         #exportTransactionsBtn{display:none !important;}
         /* UX: simplificar cadastro (ocultar grade de emojis em Contas/Cartões) */
         #accountEmojiPicker, #cardEmojiPicker{display:none !important;}
+
+        /* Dashboard: coluna lateral para gráficos (interface mais limpa) */
+        .dashboard-layout{
+            display:flex;
+            gap:20px;
+            align-items:flex-start;
+        }
+        .dashboard-main{
+            flex:1;
+            min-width:0;
+        }
+        .dashboard-side{
+            width:360px;
+            max-width:100%;
+            flex:0 0 auto;
+            position: sticky;
+            top: 90px;
+        }
+        .dashboard-side .card{ margin-bottom: 20px; }
+        .dashboard-chart-select{
+            max-width: 220px;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 992px){
+            .dashboard-layout{
+                flex-direction: column;
+            }
+            .dashboard-side{
+                position: static;
+                width: 100%;
+                top: auto;
+            }
+        }
+
 </style>
 
     <link rel="manifest" href="./manifest.json">
@@ -3635,7 +3670,48 @@ checkPlanLimits(type, currentCount) {
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
                     </div>
-                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
+                    ${this.isFeatureAvailable('dashboard_advanced') ? `
+                        <div class="dashboard-layout">
+                            <div class="dashboard-main">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3>
+                                        </div>
+                                        <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3>
+                                        </div>
+                                        <div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3>
+                                        </div>
+                                        <div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-side">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Gráfico</h3>
+                                        <div class="header-buttons">
+                                            <select id="dashboardChartSelect" class="form-select dashboard-chart-select">
+                                                <option value="incomeExpense">Receitas x Despesas (${this.customDateFilterEnabled ? 'Período Filtrado' : 'Últimos 6 meses'})</option>
+                                                <option value="futureIncomeExpense">Receitas x Despesas (${this.customDateFilterEnabled ? 'Período Filtrado' : 'Próximos 6 meses'})</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container" id="chartIncomeExpenseWrap"><canvas id="incomeExpenseChart"></canvas></div>
+                                    <div class="chart-container" id="chartFutureIncomeExpenseWrap" style="display:none;"><canvas id="futureIncomeExpenseChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
                 `;
                 
@@ -3696,14 +3772,45 @@ checkPlanLimits(type, currentCount) {
                 }
                 
                 if (this.isFeatureAvailable('dashboard_advanced')) { 
-                    this.renderIncomeExpenseChart(); 
-                    this.renderFutureIncomeExpenseChart();
+                    this.setupDashboardChartSidebar();
                     this.renderCategoryChart(monthData); 
                     this.renderIncomeCategoryChart(monthData);
                 }
             }
 
-            renderCategoryProgress(categoriesData) {
+            
+            setupDashboardChartSidebar() {
+                const select = document.getElementById('dashboardChartSelect');
+                const wrapIncome = document.getElementById('chartIncomeExpenseWrap');
+                const wrapFuture = document.getElementById('chartFutureIncomeExpenseWrap');
+                if (!select || !wrapIncome || !wrapFuture) return;
+
+                const apply = (value) => {
+                    const v = value || 'incomeExpense';
+                    if (v === 'futureIncomeExpense') {
+                        wrapIncome.style.display = 'none';
+                        wrapFuture.style.display = 'block';
+                        // Renderizar somente quando visível para evitar canvas com tamanho 0
+                        this.renderFutureIncomeExpenseChart();
+                    } else {
+                        wrapFuture.style.display = 'none';
+                        wrapIncome.style.display = 'block';
+                        this.renderIncomeExpenseChart();
+                    }
+                };
+
+                // default: último 6 meses
+                if (!select.value) select.value = 'incomeExpense';
+                apply(select.value);
+
+                // evitar múltiplos listeners ao navegar
+                if (!select.dataset.bound) {
+                    select.addEventListener('change', () => apply(select.value));
+                    select.dataset.bound = '1';
+                }
+            }
+
+renderCategoryProgress(categoriesData) {
                 if (!categoriesData || categoriesData.length === 0) { 
                     return '<div class="no-data"><i class="fas fa-chart-bar"></i><p>Nenhuma categoria encontrada.</p></div>'; 
                 }
