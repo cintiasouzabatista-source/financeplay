@@ -3732,7 +3732,7 @@ checkPlanLimits(type, currentCount) {
                 }
                 let html = ''; 
                 accountsData.forEach(account => { 
-                    html += `<div class="transaction-item"><div class="transaction-info"><div class="transaction-icon" style="background-color: ${account.color}20; color: ${account.color}">${account.emoji}</div><div class="transaction-details"><div class="transaction-name">${account.name}</div></div></div><div class="transaction-amount ${account.finalBalance >= 0 ? 'income-amount' : 'expense-amount'}">R$ ${this.formatCurrency(account.finalBalance)}</div></div>`; 
+                    html += `<div class="transaction-item"><div class="transaction-info">${brandIconHtml(account.name, account.emoji, account.color)}<div class="transaction-details"><div class="transaction-name">${account.name}</div></div></div><div class="transaction-amount ${account.finalBalance >= 0 ? 'income-amount' : 'expense-amount'}">R$ ${this.formatCurrency(account.finalBalance)}</div></div>`; 
                 }); 
                 return html;
             }
@@ -3762,13 +3762,13 @@ checkPlanLimits(type, currentCount) {
                         const dueDate = new Date(invoice.year, invoice.month, card.dueDay);
                         const formattedDueDate = `${dueDate.getDate().toString().padStart(2, '0')}/${(dueDate.getMonth() + 1).toString().padStart(2, '0')}/${dueDate.getFullYear()}`;
                         
-                        html += `<div class="transaction-item"><div class="transaction-info"><div class="transaction-icon" style="background-color: ${card.color}20; color: ${card.color}">${card.emoji}</div><div class="transaction-details"><div class="transaction-name">${card.name} (*${card.lastDigits}) ${statusTag}</div><div class="transaction-category">Vence em ${formattedDueDate}</div></div></div><div style="text-align: right;"><div class="transaction-amount expense-amount">Fatura: R$ ${this.formatCurrency(invoice.totalAmount)}</div></div></div>`;
+                        html += `<div class="transaction-item"><div class="transaction-info">${brandIconHtml(card.name, card.emoji, card.color)}<div class="transaction-details"><div class="transaction-name">${card.name} (*${card.lastDigits}) ${statusTag}</div><div class="transaction-category">Vence em ${formattedDueDate}</div></div></div><div style="text-align: right;"><div class="transaction-amount expense-amount">Fatura: R$ ${this.formatCurrency(invoice.totalAmount)}</div></div></div>`;
                     });
                 } else {
                     cardsData.forEach(card => { 
                         const isPaid = this.isCardInvoicePaid(card.id, this.currentMonth, this.currentYear); 
                         const statusTag = isPaid ? '<span class="status-tag status-paid"><i class="fas fa-check-circle"></i> Pago</span>' : ''; 
-                        html += `<div class="transaction-item"><div class="transaction-info"><div class="transaction-icon" style="background-color: ${card.color}20; color: ${card.color}">${card.emoji}</div><div class="transaction-details"><div class="transaction-name">${card.name} (*${card.lastDigits}) ${statusTag}</div><div class="transaction-category">Vence dia ${card.dueDay}</div></div></div><div style="text-align: right;"><div class="transaction-amount expense-amount">Fatura: R$ ${this.formatCurrency(card.totalFaturaMes)}</div></div></div>`; 
+                        html += `<div class="transaction-item"><div class="transaction-info">${brandIconHtml(card.name, card.emoji, card.color)}<div class="transaction-details"><div class="transaction-name">${card.name} (*${card.lastDigits}) ${statusTag}</div><div class="transaction-category">Vence dia ${card.dueDay}</div></div></div><div style="text-align: right;"><div class="transaction-amount expense-amount">Fatura: R$ ${this.formatCurrency(card.totalFaturaMes)}</div></div></div>`; 
                     });
                 }
                 
@@ -6839,7 +6839,7 @@ renderInitialBalanceItem(item) {
                 return categories.map(category => `
                     <div class="transaction-item">
                         <div class="transaction-info">
-                            <div class="transaction-icon" style="background-color: ${category.color}20; color: ${category.color}">${category.emoji}</div>
+                            ${brandIconHtml(category.name, category.emoji, category.color)}
                             <div class="transaction-details">
                                 <div class="transaction-name">${category.name}</div>
                                 ${type === 'expense' && category.limit ? `<div class="transaction-category">Limite: R$ ${this.formatCurrency(category.limit)}</div>` : ''}
@@ -7058,7 +7058,7 @@ attachCategoryEventListeners() {
                     return `
                         <div class="transaction-item">
                             <div class="transaction-info">
-                                <div class="transaction-icon" style="background-color: ${originalAccount.color}20; color: ${originalAccount.color}">${originalAccount.emoji}</div>
+                                ${brandIconHtml(originalAccount.name, originalAccount.emoji, originalAccount.color)}
                                 <div class="transaction-details">
                                     <div class="transaction-name">${originalAccount.name}</div>
                                     <div class="transaction-category" title="Saldo inicial conforme cadastro da conta.">Saldo Cadastrado: R$ ${this.formatCurrency(initialBalanceRegistered)}</div>
@@ -7992,7 +7992,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                     return `
                     <div class="transaction-item">
                         <div class="transaction-info">
-                            <div class="transaction-icon" style="background-color: ${originalCard.color}20; color: ${originalCard.color}">${originalCard.emoji}</div>
+                            ${brandIconHtml(originalCard.name, originalCard.emoji, originalCard.color)}
                             <div class="transaction-details">
                                 <div class="transaction-name">${originalCard.name} (*${originalCard.lastDigits}) ${statusTag}</div>
                                 <div class="transaction-category">Vencimento: Dia ${originalCard.dueDay} (Próx.: ${this.formatDateShort(nextDueDate)})${account ? `<br>Conta Débito: ${account.name}` : ''}</div>
@@ -8067,7 +8067,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                         <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 200px;">
                                 <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
-                                    <div class="transaction-icon" style="background-color: ${card.color}20; color: ${card.color}">${card.emoji}</div>
+                                    ${brandIconHtml(card.name, card.emoji, card.color)}
                                     <div><div style="font-weight: 600;">${card.name}</div><div style="font-size: 0.85rem; color: var(--text-light);">**** **** **** ${card.lastDigits}</div></div>
                                 </div>
                                 <div style="margin-bottom: 10px;"><div style="font-size: 0.85rem; color: var(--text-light);">Limite Total</div><div style="font-weight: 600;">R$ ${this.formatCurrency(card.limit)}</div></div>
@@ -10200,6 +10200,31 @@ class IndexedDBManager {
             }
             
             
+
+// --- Brand logos (simple initials) ---
+function getBrandInfo(name){
+  const n = (name||"").toString().toLowerCase();
+  const brands = [
+    {key:"nubank", match:["nubank","nu"], label:"N", color:"#7c3aed"},
+    {key:"mercadopago", match:["mercado pago","mercadopago","mp"], label:"MP", color:"#22c55e"},
+    {key:"picpay", match:["picpay","pic pay","pp"], label:"PP", color:"#10b981"},
+    {key:"itau", match:["itaú","itau"], label:"IT", color:"#f97316"},
+    {key:"bradesco", match:["bradesco"], label:"BR", color:"#ef4444"},
+    {key:"santander", match:["santander"], label:"SA", color:"#dc2626"},
+    {key:"caixa", match:["caixa"], label:"CX", color:"#2563eb"},
+  ];
+  for(const b of brands){
+    if(b.match.some(m => n.includes(m))) return b;
+  }
+  return null;
+}
+function brandIconHtml(name, fallbackEmoji, fallbackColor){
+  const b = getBrandInfo(name);
+  const c = (b && b.color) || fallbackColor || "var(--primary-color)";
+  const label = (b && b.label) || fallbackEmoji || "💳";
+  return `<div class="transaction-icon" style="background-color:${c}20;color:${c};font-weight:700;letter-spacing:-0.02em;">${label}</div>`;
+}
+
 // ========= Verdão 2.0: Drilldown + Export =========
 function _fg_escapeCsv(value){
   const s = String(value ?? '');
