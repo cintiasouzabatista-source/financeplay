@@ -2217,7 +2217,9 @@
                 this.currentYear = new Date().getFullYear();
                 this.transactionsSortOrder = 'asc'; 
                 
-                this.showSixMonthExpenseChart = JSON.parse(localStorage.getItem('showSixMonthExpenseChart') || 'false');
+                const _sixChartStored = localStorage.getItem('showSixMonthExpenseChart');
+                this.showSixMonthExpenseChart = (_sixChartStored === null) ? true : JSON.parse(_sixChartStored);
+                if(_sixChartStored === null) localStorage.setItem('showSixMonthExpenseChart', JSON.stringify(true));
 this.selectedFilterAccount = 'all';
                 this.customDateFilterEnabled = false;
                 this.customDateStart = null;
