@@ -2216,7 +2216,9 @@
                 this.currentMonth = new Date().getMonth();
                 this.currentYear = new Date().getFullYear();
                 this.transactionsSortOrder = 'asc'; 
-                this.selectedFilterAccount = 'all';
+                
+                this.showSixMonthExpenseChart = JSON.parse(localStorage.getItem('showSixMonthExpenseChart') || 'false');
+this.selectedFilterAccount = 'all';
                 this.customDateFilterEnabled = false;
                 this.customDateStart = null;
                 this.customDateEnd = null; 
@@ -3284,6 +3286,36 @@ showTrialExpiredModal() {
                         this.openFilterModal();
                     });
                 }
+
+
+            setupDashboardChartToggle() {
+                // Só existe no dashboard
+                const toggle = document.getElementById('toggleSixMonthExpenseChart');
+                const section = document.getElementById('sixMonthExpenseChartSection');
+                const off = document.getElementById('sixMonthExpenseChartOff');
+                if (!toggle) return;
+
+                // Evitar múltiplos listeners em re-renders
+                if (toggle.dataset.bound === '1') return;
+                toggle.dataset.bound = '1';
+
+                toggle.addEventListener('change', () => {
+                    this.showSixMonthExpenseChart = !!toggle.checked;
+                    localStorage.setItem('showSixMonthExpenseChart', JSON.stringify(this.showSixMonthExpenseChart));
+
+                    if (section) section.style.display = this.showSixMonthExpenseChart ? 'block' : 'none';
+                    if (off) off.style.display = this.showSixMonthExpenseChart ? 'none' : 'block';
+
+                    // Renderiza/destrói o gráfico
+                    if (this.showSixMonthExpenseChart) {
+                        setTimeout(() => this.renderSixMonthExpenseChart(), 0);
+                    } else if (window.sixMonthExpenseChartInstance) {
+                        window.sixMonthExpenseChartInstance.destroy();
+                        window.sixMonthExpenseChartInstance = null;
+                    }
+                });
+            }
+
             }
 
             openFilterModal() {
@@ -3506,6 +3538,7 @@ showTrialExpiredModal() {
                     setTimeout(() => {
                         this.setupFilterToggles();
                         this.populateFilters();
+                        this.setupDashboardChartToggle();
                     }, 100);
                 }
                 
@@ -3635,7 +3668,7 @@ checkPlanLimits(type, currentCount) {
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
                     </div>
-                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
+                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class=\"card\"><div class=\"card-header\" style=\"align-items:flex-start; gap:10px; flex-wrap:wrap;\"><div><h3 class=\"card-title\">Despesas (Jan–Jun/${this.currentYear})</h3><div style=\"font-size:0.85rem;color: var(--text-light); margin-top: 2px;\">Opcional — mostra só o total de despesas dos 6 primeiros meses.</div></div><div class=\"header-buttons\" style=\"margin-left:auto;\"><label class=\"toggle-switch\" title=\"Mostrar/ocultar gráfico\"><input type=\"checkbox\" id=\"toggleSixMonthExpenseChart\" ${this.showSixMonthExpenseChart ? 'checked' : ''}><span class=\"toggle-slider\"></span></label><span class=\"toggle-label\" style=\"margin-left:8px;\">Mostrar</span></div></div><div id=\"sixMonthExpenseChartOff\" class=\"no-data\" style=\"margin: 10px 0 0; ${this.showSixMonthExpenseChart ? 'display:none;' : ''}\"><i class=\"fas fa-chart-bar\"></i><p>Gráfico desativado.</p></div><div id=\"sixMonthExpenseChartSection\" style=\"${this.showSixMonthExpenseChart ? '' : 'display:none;'}\"><div class=\"chart-container\" style=\"height: 320px;\"><canvas id=\"sixMonthExpenseChart\"></canvas></div></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
                 `;
                 
@@ -3696,8 +3729,7 @@ checkPlanLimits(type, currentCount) {
                 }
                 
                 if (this.isFeatureAvailable('dashboard_advanced')) { 
-                    this.renderIncomeExpenseChart(); 
-                    this.renderFutureIncomeExpenseChart();
+                    if (this.showSixMonthExpenseChart) { this.renderSixMonthExpenseChart(); }
                     this.renderCategoryChart(monthData); 
                     this.renderIncomeCategoryChart(monthData);
                 }
@@ -6559,6 +6591,105 @@ renderInitialBalanceItem(item) {
                 } 
                 return { labels, income: incomeData, expense: expenseData }; 
             }
+
+
+            getFirstSemesterExpenseChartData(year = this.currentYear) {
+                const labels = [];
+                const expenseData = [];
+                for (let month = 0; month < 6; month++) {
+                    const monthSummary = this.getMonthData(month, year, 'all');
+                    labels.push(this.getMonthName(month).substring(0, 3));
+                    expenseData.push(monthSummary.dashboardExpense);
+                }
+                return { labels, expense: expenseData };
+            }
+
+            renderSixMonthExpenseChart() {
+                const canvasElement = document.getElementById('sixMonthExpenseChart');
+                if (!canvasElement) return;
+
+                const ctx = canvasElement.getContext('2d');
+                const chartData = this.getFirstSemesterExpenseChartData(this.currentYear);
+
+                const total = (chartData.expense || []).reduce((a, b) => a + b, 0);
+
+                const container = canvasElement.parentElement;
+                if (total <= 0) {
+                    canvasElement.style.display = 'none';
+                    if (container && !container.querySelector('.no-data-chart')) {
+                        container.insertAdjacentHTML('beforeend',
+                            '<div class="no-data no-data-chart" style="height: 100%; display:flex; flex-direction:column; align-items:center; justify-content:center;"><i class="fas fa-chart-bar"></i><p>Sem despesas no 1º semestre para exibir.</p></div>'
+                        );
+                    }
+                    return;
+                } else {
+                    canvasElement.style.display = 'block';
+                    if (container && container.querySelector('.no-data-chart')) {
+                        container.querySelector('.no-data-chart').remove();
+                    }
+                }
+
+                if (window.sixMonthExpenseChartInstance) {
+                    window.sixMonthExpenseChartInstance.destroy();
+                }
+
+                window.sixMonthExpenseChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: '💸 Despesas',
+                            data: chartData.expense,
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 0,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: 'rgba(239, 68, 68, 0.95)',
+                            hoverBorderColor: 'rgba(239, 68, 68, 1)',
+                            hoverBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        interaction: { intersect: false, mode: 'nearest' },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: this.darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
+                                    lineWidth: 1
+                                },
+                                border: { display: false },
+                                ticks: {
+                                    color: this.darkMode ? '#FFFFFF' : 'var(--text-light)',
+                                    callback: value => 'R$ ' + Number(value).toLocaleString('pt-BR')
+                                }
+                            },
+                            y: {
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: {
+                                    color: this.darkMode ? '#FFFFFF' : 'var(--text-light)',
+                                    font: { family: 'Poppins' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: context => `Despesas: R$ ${Number(context.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                }
+                            }
+                        },
+                        animation: { duration: 800, easing: 'easeOutQuart' }
+                    }
+                });
+            }
+
 
             getNextDueDate(dueDay) { 
                 const today = new Date(); 
