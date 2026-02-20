@@ -2098,6 +2098,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -8164,6 +8165,13 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                                 <button class="btn btn-outlined btn-sm" id="repMonthlyBtn"><i class="fas fa-calendar"></i> Mensal</button>
                                 <button class="btn btn-outlined btn-sm" id="repSemiBtn"><i class="fas fa-calendar-alt"></i> Semestral</button>
                                 <button class="btn btn-outlined btn-sm" id="repAnnualBtn"><i class="fas fa-calendar-check"></i> Anual</button>
+<div class="reports-charts-toggle">
+  <label class="toggle-switch">
+    <input type="checkbox" id="reportsToggleCharts">
+    <span class="toggle-slider"></span>
+  </label>
+  <span class="toggle-label">Mostrar gráficos</span>
+</div>
                                 <button class="btn btn-secondary btn-sm" id="repExportCsv"><i class="fas fa-file-excel"></i> Excel (CSV)</button>
                                 <button class="btn btn-primary btn-sm" id="repExportPdf"><i class="fas fa-file-pdf"></i> PDF</button>
                             </div>
@@ -8196,7 +8204,9 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                     </div>
                 `;
 
-                const getRange = (mode) => {
+                
+try{ if(window.__reportsAfterRender) window.__reportsAfterRender(filteredTransactions || transactionsFiltered || filtered || [], startDateStr || startDate || periodStart || '', endDateStr || endDate || periodEnd || ''); }catch(e){}
+const getRange = (mode) => {
                     const start = new Date(ym.year, ym.month, 1);
                     let end = new Date(ym.year, ym.month + 1, 0);
                     if (mode === 'semi') {
@@ -10473,5 +10483,175 @@ function createFilterModal() {
 })();
 </script>
 
+<script>
+(function(){
+  function getReportsChartsPref(){
+    try { return localStorage.getItem('reports_show_charts') === '1'; } catch(e){ return false; }
+  }
+  function setReportsChartsPref(v){
+    try { localStorage.setItem('reports_show_charts', v ? '1' : '0'); } catch(e){}
+  }
+  function destroyIfExists(key){
+    if(window.__reportsCharts && window.__reportsCharts[key]){
+      try{ window.__reportsCharts[key].destroy(); }catch(e){}
+      window.__reportsCharts[key] = null;
+    }
+  }
+  function buildSeries(transactions, startDate, endDate){
+    const byDay = new Map();
+    let totalIn = 0, totalOut = 0;
+
+    function toISO(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${da}`;
+    }
+    function parseAnyDate(s){
+      if(!s) return null;
+      if(typeof s !== 'string') return null;
+      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s+'T00:00:00');
+      if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){
+        const [dd,mm,yy]=s.split('/').map(Number);
+        return new Date(yy, mm-1, dd);
+      }
+      const t = Date.parse(s);
+      return isNaN(t) ? null : new Date(t);
+    }
+
+    const sd = parseAnyDate(startDate) || new Date();
+    const ed = parseAnyDate(endDate) || new Date();
+    sd.setHours(0,0,0,0); ed.setHours(0,0,0,0);
+
+    (transactions||[]).forEach(t=>{
+      const d = parseAnyDate(t.data || t.date || t.Data || t.DATA);
+      if(!d) return;
+      d.setHours(0,0,0,0);
+      if(d < sd || d > ed) return;
+
+      const iso = toISO(d);
+      const tipo = (t.tipo || t.type || '').toString().toLowerCase();
+      const valor = Number(t.valor ?? t.value ?? 0) || 0;
+
+      const isIncome = tipo.includes('receita') || tipo === 'income';
+      const isExpense = tipo.includes('despesa') || tipo === 'expense' || tipo.includes('cart');
+      if(isIncome) totalIn += valor;
+      if(isExpense) totalOut += valor;
+
+      const net = (isIncome ? valor : 0) - (isExpense ? valor : 0);
+      byDay.set(iso, (byDay.get(iso) || 0) + net);
+    });
+
+    const labels = [];
+    const cumSeries = [];
+    let cum = 0;
+
+    const cur = new Date(sd.getTime());
+    while(cur <= ed){
+      const dd = String(cur.getDate()).padStart(2,'0');
+      const mm = String(cur.getMonth()+1).padStart(2,'0');
+      labels.push(`${dd}/${mm}`);
+      const iso = toISO(cur);
+      cum += (byDay.get(iso) || 0);
+      cumSeries.push(cum);
+      cur.setDate(cur.getDate()+1);
+    }
+
+    return { labels, totalIn, totalOut, cumSeries };
+  }
+
+  function renderReportsCharts(transactions, startDate, endDate){
+    const chartsWrap = document.getElementById('reportsCharts');
+    if(!chartsWrap) return;
+
+    if(!window.Chart){
+      chartsWrap.style.display = 'none';
+      const f1 = document.getElementById('reportsChartsFallback1');
+      const f2 = document.getElementById('reportsChartsFallback2');
+      if(f1) f1.style.display = 'block';
+      if(f2) f2.style.display = 'block';
+      return;
+    }
+
+    chartsWrap.style.display = 'block';
+    window.__reportsCharts = window.__reportsCharts || {};
+
+    const series = buildSeries(transactions, startDate, endDate);
+
+    const c1 = document.getElementById('reportsChartBars');
+    if(c1){
+      destroyIfExists('bars');
+      window.__reportsCharts.bars = new Chart(c1, {
+        type: 'bar',
+        data: {
+          labels: ['Receitas', 'Despesas'],
+          datasets: [{ label: 'Total', data: [series.totalIn, series.totalOut] }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { callback: (v)=> 'R$ ' + Number(v).toLocaleString('pt-BR') } }
+          }
+        }
+      });
+    }
+
+    const c2 = document.getElementById('reportsChartLine');
+    if(c2){
+      destroyIfExists('line');
+      window.__reportsCharts.line = new Chart(c2, {
+        type: 'line',
+        data: {
+          labels: series.labels,
+          datasets: [{ label: 'Saldo acumulado', data: series.cumSeries, tension: 0.25, pointRadius: 0 }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { callback: (v)=> 'R$ ' + Number(v).toLocaleString('pt-BR') } },
+            x: { ticks: { maxTicksLimit: 8 } }
+          }
+        }
+      });
+    }
+  }
+
+  function setupWhenReportsVisible(){
+    const toggle = document.getElementById('reportsToggleCharts');
+    const chartsWrap = document.getElementById('reportsCharts');
+    if(!toggle || !chartsWrap) return false;
+
+    toggle.checked = getReportsChartsPref();
+    chartsWrap.style.display = toggle.checked ? 'block' : 'none';
+
+    toggle.addEventListener('change', function(){
+      setReportsChartsPref(!!this.checked);
+      chartsWrap.style.display = this.checked ? 'block' : 'none';
+      destroyIfExists('bars'); destroyIfExists('line');
+      if(this.checked && window.__reportsLast){
+        renderReportsCharts(window.__reportsLast.transactions, window.__reportsLast.startDate, window.__reportsLast.endDate);
+      }
+    });
+
+    if(toggle.checked && window.__reportsLast){
+      renderReportsCharts(window.__reportsLast.transactions, window.__reportsLast.startDate, window.__reportsLast.endDate);
+    }
+    return true;
+  }
+
+  const obs = new MutationObserver(()=>{ setupWhenReportsVisible(); });
+  obs.observe(document.documentElement, {childList:true, subtree:true});
+
+  window.__reportsAfterRender = function(transactions, startDate, endDate){
+    window.__reportsLast = { transactions, startDate, endDate };
+    const toggle = document.getElementById('reportsToggleCharts');
+    if(toggle && toggle.checked){
+      renderReportsCharts(transactions, startDate, endDate);
+    }
+  };
+})();
+</script>
 </body>
 </html>
