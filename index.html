@@ -3590,11 +3590,41 @@ checkPlanLimits(type, currentCount) {
                         <div class="card stat-card"><div class="stat-title">Despesas ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value stat-negative" id="dashboardExpense">R$ ${this.formatCurrency(monthData.dashboardExpense)}</div></div> 
                         <div class="card stat-card"><div class="stat-title">Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'}</div><div class="stat-value ${monthData.dashboardFinalBalance >= 0 ? 'stat-positive' : 'stat-negative'}" id="dashboardFinalBalance">R$ ${this.formatCurrency(monthData.dashboardFinalBalance)}</div></div> 
                     </div>
+                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div>` : ''}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"> <div class="card"><div class="card-header"><h3 class="card-title">Contas (Saldo Final ${this.customDateFilterEnabled ? 'Período' : 'Mês'})</h3></div><div id="accountsListDashboard">${this.renderAccountsListDashboard(monthData.accounts)}</div></div> ${this.isFeatureAvailable('cards') ? `<div class="card"><div class="card-header"><h3 class="card-title">Cartões (Faturas do ${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="cardsListDashboard">${this.renderCardsListDashboard(monthData.cards)}</div></div>` : ''} </div>
-                    ${this.isFeatureAvailable('dashboard_advanced') ? `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div class="card"><div class="card-header"><h3 class="card-title">Despesas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas por Categoria (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div class="chart-container"><canvas id="incomeCategoryChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Limites de Categorias (${this.customDateFilterEnabled ? 'Período Atual' : 'Mês Atual'})</h3></div><div id="categoryProgressDashboard">${this.renderCategoryProgress(monthData.categories)}</div></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3></div><div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div></div><div class="card"><div class="card-header"><h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3></div><div class="chart-container"><canvas id="futureIncomeExpenseChart"></canvas></div></div>` : ''}
-                    
                 `;
                 
+                
+                // Reordenação do Painel: Contas/Cartões para cima e Gráficos para o final
+                try {
+                    const insertAfter = (newNode, referenceNode) => {
+                        if (!newNode || !referenceNode || !referenceNode.parentNode) return;
+                        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+                    };
+
+                    const summaryGrid = container.querySelector('.grid-container');
+                    const accList = container.querySelector('#accountsListDashboard');
+                    const accountsCard = accList ? accList.closest('.card') : null;
+
+                    const cardsList = container.querySelector('#cardsListDashboard');
+                    const cardsCard = cardsList ? cardsList.closest('.card') : null;
+
+                    if (summaryGrid) {
+                        if (accountsCard) insertAfter(accountsCard, summaryGrid);
+                        if (cardsCard) insertAfter(cardsCard, accountsCard || summaryGrid);
+                    }
+
+                    const chart1Canvas = container.querySelector('#incomeExpenseChart');
+                    const chart1Card = chart1Canvas ? chart1Canvas.closest('.card') : null;
+                    const chart2Canvas = container.querySelector('#futureIncomeExpenseChart');
+                    const chart2Card = chart2Canvas ? chart2Canvas.closest('.card') : null;
+
+                    if (chart1Card) container.appendChild(chart1Card);
+                    if (chart2Card) container.appendChild(chart2Card);
+                } catch (e) {
+                    console.warn('Reordenação do painel falhou:', e);
+                }
+
                 const previewToggle = document.getElementById('previewToggleDashboard'); 
                 if (previewToggle) { 
                     previewToggle.addEventListener('change', () => { 
