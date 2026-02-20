@@ -2848,21 +2848,44 @@ async migrateDataFromLocalStorage() {
 }
 
 setupBackupReminder() {
+    // Agora: aviso "Tá na hora de guardar" (saldo previsto > R$ 500)
     const exibirNotificacao = () => {
-        if (this.notificationSystem && typeof this.notificationSystem.show === 'function' && this.user && this.isFeatureAvailable('import_export')) { 
-            this.notificationSystem.show(
-                'Lembrete de backup',
-                'Faça um backup dos seus dados para evitar perdas! (Configurações > Exportar)',
-                'warning',
-                15000 
-            );
+        try {
+            if (!this.notificationSystem || typeof this.notificationSystem.show !== 'function') return;
+            // saldo previsto depende do Modo Previsto ligado
+            if (!this.isPreviewMode) return;
+
+            const filterAccountId = this.hasActiveTransactionFilters ? (this.hasActiveTransactionFilters() ? this.getEffectiveAccountFilter() : this.selectedFilterAccount) : 'all';
+            const monthData = this.customDateFilterEnabled
+                ? this.getCustomPeriodData(this.customDateStart, this.customDateEnd, filterAccountId)
+                : this.getMonthData(this.currentMonth, this.currentYear, filterAccountId);
+
+            const saldoPrevisto = Number(monthData && monthData.dashboardFinalBalance || 0);
+
+            if (saldoPrevisto > 500) {
+                // evita spam: 1x por dia
+                const todayKey = new Date().toISOString().slice(0,10);
+                const last = localStorage.getItem('fp_guardar_last');
+                if (last === todayKey) return;
+                localStorage.setItem('fp_guardar_last', todayKey);
+
+                this.notificationSystem.show(
+                    'Tá na hora de guardar',
+                    `Seu saldo previsto está em R$ ${this.formatCurrency(saldoPrevisto)}. Que tal separar uma parte para sua reserva/metas?`,
+                    'success',
+                    15000
+                );
+            }
+        } catch (e) {
+            // silencioso
+            console.log('Aviso guardar: erro', e);
         }
     };
-    
-    setTimeout(exibirNotificacao, 30 * 1000); 
-    setInterval(exibirNotificacao, 30 * 60 * 1000); 
+
+    setTimeout(exibirNotificacao, 25 * 1000);
+    setInterval(exibirNotificacao, 30 * 60 * 1000);
 }
-            validateLicense(key) {
+validateLicense(key) {
     // Verificar se é trial
     if (key === 'TRIAL') {
         if (this.licenseInfo && this.licenseInfo.activationDate) {
@@ -3413,6 +3436,7 @@ showTrialExpiredModal() {
                     case 'categories': return 'Categorias'; 
                     case 'accounts': return 'Contas'; 
                     case 'cards': return 'Cartões'; 
+                    case 'reports': return 'Relatórios'; 
                     case 'settings': return 'Configurações'; 
                     case 'simulator': return 'Simulador Financeiro'; 
                     default: return 'Minhas Finanças';
@@ -8127,6 +8151,281 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                     this.notificationSystem.show('Sucesso', `Cartão ${isEdit ? 'atualizado' : 'adicionado'} com sucesso!`, 'success'); 
                 });
             }
+            renderReports(container) {
+                // Extrato: mensal / semestral / anual (receitas e despesas)
+                const now = new Date();
+                const ym = { year: this.currentYear ?? now.getFullYear(), month: this.currentMonth ?? now.getMonth() };
+
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="card-header" style="flex-wrap:wrap; gap:10px;">
+                            <h3 class="card-title"><i class="fas fa-file-invoice"></i> Relatórios</h3>
+                            <div class="header-buttons" style="flex-wrap:wrap;">
+                                <button class="btn btn-outlined btn-sm" id="repMonthlyBtn"><i class="fas fa-calendar"></i> Mensal</button>
+                                <button class="btn btn-outlined btn-sm" id="repSemiBtn"><i class="fas fa-calendar-alt"></i> Semestral</button>
+                                <button class="btn btn-outlined btn-sm" id="repAnnualBtn"><i class="fas fa-calendar-check"></i> Anual</button>
+                                <button class="btn btn-secondary btn-sm" id="repExportCsv"><i class="fas fa-file-excel"></i> Excel (CSV)</button>
+                                <button class="btn btn-primary btn-sm" id="repExportPdf"><i class="fas fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+
+                        <div class="grid-container" style="margin-top:10px;">
+                            <div class="card stat-card">
+                                <div class="stat-title">Receitas</div>
+                                <div class="stat-value stat-positive" id="repIncome">R$ 0,00</div>
+                            </div>
+                            <div class="card stat-card">
+                                <div class="stat-title">Despesas</div>
+                                <div class="stat-value stat-negative" id="repExpense">R$ 0,00</div>
+                            </div>
+                            <div class="card stat-card">
+                                <div class="stat-title">Saldo</div>
+                                <div class="stat-value" id="repNet">R$ 0,00</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:14px; color: var(--text-light); font-size: 0.9rem;" id="repRange"></div>
+
+                        <div class="transaction-list" style="margin-top:14px;">
+                            <div class="card no-data" id="repEmpty" style="display:none;">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Nenhuma transação encontrada para o período.</p>
+                            </div>
+                            <div id="repTableWrap"></div>
+                        </div>
+                    </div>
+                `;
+
+                const getRange = (mode) => {
+                    const start = new Date(ym.year, ym.month, 1);
+                    let end = new Date(ym.year, ym.month + 1, 0);
+                    if (mode === 'semi') {
+                        const startMonth = Math.floor(ym.month / 6) * 6;
+                        return {
+                            start: new Date(ym.year, startMonth, 1),
+                            end: new Date(ym.year, startMonth + 6, 0)
+                        };
+                    }
+                    if (mode === 'annual') {
+                        return { start: new Date(ym.year, 0, 1), end: new Date(ym.year, 12, 0) };
+                    }
+                    return { start, end };
+                };
+
+                const formatDate = (d) => {
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const yy = d.getFullYear();
+                    return `${dd}/${mm}/${yy}`;
+                };
+
+                const buildRows = (mode) => {
+                    const { start, end } = getRange(mode);
+
+                    const tx = (this.data?.transactions || [])
+                        .filter(t => {
+                            const dt = this.parseDate(t.date);
+                            if (isNaN(dt.getTime())) return false;
+                            if (dt < start || dt > end) return false;
+
+                            // considerar apenas receitas e despesas (inclui cartão como despesa)
+                            if (t.type === 'income') return true;
+                            if (t.type === 'expense') return true;
+                            if (t.type === 'card') return true;
+                            return false;
+                        })
+                        .sort((a,b) => this.parseDate(a.date) - this.parseDate(b.date));
+
+                    let income = 0, expense = 0;
+                    const rows = tx.map(t => {
+                        const dt = this.parseDate(t.date);
+                        const isIncome = t.type === 'income';
+                        const isExpense = (t.type === 'expense' || t.type === 'card');
+                        const val = Number(t.amount || 0);
+
+                        if (!this.isPreviewMode && t.completed === false) {
+                            // no modo real, não soma pendentes
+                        } else {
+                            if (isIncome) income += val;
+                            if (isExpense) expense += val;
+                        }
+
+                        const cat = t.categoryName || t.category || (t.type === 'card' ? 'Cartão' : '');
+                        const desc = t.description || t.name || t.title || '';
+                        const conta = t.accountName || t.account || (t.type === 'card' ? (t.cardName || t.card || '') : '');
+
+                        return {
+                            date: formatDate(dt),
+                            type: isIncome ? 'Receita' : 'Despesa',
+                            category: cat || '-',
+                            description: desc || '-',
+                            account: conta || '-',
+                            amount: val,
+                            completed: t.completed !== false
+                        };
+                    });
+
+                    return { rows, income, expense, start, end };
+                };
+
+                const renderTable = (mode) => {
+                    const { rows, income, expense, start, end } = buildRows(mode);
+                    const net = income - expense;
+
+                    const incomeEl = document.getElementById('repIncome');
+                    const expenseEl = document.getElementById('repExpense');
+                    const netEl = document.getElementById('repNet');
+                    const rangeEl = document.getElementById('repRange');
+                    const emptyEl = document.getElementById('repEmpty');
+                    const wrap = document.getElementById('repTableWrap');
+
+                    if (incomeEl) incomeEl.textContent = `R$ ${this.formatCurrency(income)}`;
+                    if (expenseEl) expenseEl.textContent = `R$ ${this.formatCurrency(expense)}`;
+                    if (netEl) {
+                        netEl.textContent = `R$ ${this.formatCurrency(net)}`;
+                        netEl.classList.toggle('stat-positive', net >= 0);
+                        netEl.classList.toggle('stat-negative', net < 0);
+                    }
+                    if (rangeEl) rangeEl.textContent = `Período: ${formatDate(start)} até ${formatDate(end)}`;
+
+                    if (!wrap) return;
+
+                    if (rows.length === 0) {
+                        wrap.innerHTML = '';
+                        if (emptyEl) emptyEl.style.display = 'block';
+                        return;
+                    }
+                    if (emptyEl) emptyEl.style.display = 'none';
+
+                    wrap.innerHTML = `
+                        <table class="drilldown-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Categoria</th>
+                                    <th>Descrição</th>
+                                    <th>Conta</th>
+                                    <th style="text-align:right;">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows.map(r => `
+                                    <tr>
+                                        <td>${r.date}</td>
+                                        <td>${r.type}${r.completed ? '' : ' (pendente)'}</td>
+                                        <td>${r.category}</td>
+                                        <td>${r.description}</td>
+                                        <td>${r.account}</td>
+                                        <td class="amount">${r.type === 'Receita' ? '' : '-'}R$ ${this.formatCurrency(r.amount)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+
+                    // store for export
+                    container.dataset.repMode = mode;
+                    container.dataset.repRows = JSON.stringify(rows);
+                    container.dataset.repRange = JSON.stringify({start: start.toISOString(), end: end.toISOString()});
+                    container.dataset.repTotals = JSON.stringify({income, expense, net});
+                };
+
+                const exportCsv = () => {
+                    const rows = JSON.parse(container.dataset.repRows || '[]');
+                    const totals = JSON.parse(container.dataset.repTotals || '{"income":0,"expense":0,"net":0}');
+                    const range = JSON.parse(container.dataset.repRange || '{}');
+
+                    const lines = [];
+                    lines.push(['Data','Tipo','Categoria','Descrição','Conta','Valor'].join(';'));
+                    rows.forEach(r => {
+                        const v = (r.type === 'Receita' ? r.amount : -r.amount);
+                        lines.push([r.date, r.type, r.category, r.description, r.account, v.toFixed(2).replace('.',',')].join(';'));
+                    });
+                    lines.push('');
+                    lines.push(`Receitas;${totals.income.toFixed(2).replace('.',',')}`);
+                    lines.push(`Despesas;${totals.expense.toFixed(2).replace('.',',')}`);
+                    lines.push(`Saldo;${totals.net.toFixed(2).replace('.',',')}`);
+
+                    const blob = new Blob(["\ufeff" + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'relatorio.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                };
+
+                const exportPdf = () => {
+                    const rows = JSON.parse(container.dataset.repRows || '[]');
+                    const totals = JSON.parse(container.dataset.repTotals || '{"income":0,"expense":0,"net":0}');
+                    const range = JSON.parse(container.dataset.repRange || '{}');
+
+                    const { jsPDF } = window.jspdf || {};
+                    if (!jsPDF) {
+                        alert('PDF indisponível (biblioteca não carregou).');
+                        return;
+                    }
+
+                    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+                    let y = 40;
+
+                    doc.setFontSize(14);
+                    doc.text('Relatório - Receitas e Despesas', 40, y); y += 18;
+
+                    doc.setFontSize(10);
+                    if (range.start && range.end) {
+                        const s = new Date(range.start);
+                        const e = new Date(range.end);
+                        doc.text(`Período: ${formatDate(s)} até ${formatDate(e)}`, 40, y); y += 16;
+                    }
+
+                    doc.text(`Receitas: R$ ${this.formatCurrency(totals.income)} | Despesas: R$ ${this.formatCurrency(totals.expense)} | Saldo: R$ ${this.formatCurrency(totals.net)}`, 40, y); y += 18;
+
+                    // Table header
+                    doc.setFontSize(9);
+                    doc.text('Data', 40, y);
+                    doc.text('Tipo', 95, y);
+                    doc.text('Categoria', 160, y);
+                    doc.text('Descrição', 260, y);
+                    doc.text('Valor', 520, y, { align: 'right' });
+                    y += 10;
+                    doc.line(40, y, 555, y); y += 12;
+
+                    rows.slice(0, 120).forEach(r => {
+                        if (y > 770) { doc.addPage(); y = 40; }
+                        const val = (r.type === 'Receita' ? r.amount : -r.amount);
+                        doc.text(r.date, 40, y);
+                        doc.text(r.type, 95, y);
+                        doc.text(String(r.category).slice(0,16), 160, y);
+                        doc.text(String(r.description).slice(0,26), 260, y);
+                        doc.text(`R$ ${this.formatCurrency(val)}`, 520, y, { align: 'right' });
+                        y += 14;
+                    });
+
+                    doc.save('relatorio.pdf');
+                };
+
+                // Bind buttons
+                const b1 = document.getElementById('repMonthlyBtn');
+                const b2 = document.getElementById('repSemiBtn');
+                const b3 = document.getElementById('repAnnualBtn');
+                const bCsv = document.getElementById('repExportCsv');
+                const bPdf = document.getElementById('repExportPdf');
+
+                if (b1) b1.addEventListener('click', () => renderTable('monthly'));
+                if (b2) b2.addEventListener('click', () => renderTable('semi'));
+                if (b3) b3.addEventListener('click', () => renderTable('annual'));
+                if (bCsv) bCsv.addEventListener('click', exportCsv);
+                if (bPdf) bPdf.addEventListener('click', exportPdf);
+
+                // default
+                renderTable('monthly');
+            }
+
+
 
             renderSettings(container) {
                 const user = this.user; 
