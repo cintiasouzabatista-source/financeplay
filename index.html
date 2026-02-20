@@ -2455,13 +2455,6 @@ async initializeTrial() {
     await this.saveToStorage('finance_trial_control', trialData);
     await this.saveToStorage('finance_install_id', trialData.installId);
     await this.saveToStorage('finance_trial_start', trialData.startDate);
-    
-    this.notificationSystem.show(
-        'Bem-vindo ao Minhas Finanças', 
-        'Parabéns pela sua compra! Você tem acesso completo!', 
-        'success', 
-        10000
-    );
 }
 
 generateBrowserFingerprint() {
@@ -2559,13 +2552,6 @@ initializeTrialSync() {
     localStorage.setItem('finance_trial_control', JSON.stringify(trialData));
     localStorage.setItem('finance_install_id', JSON.stringify(trialData.installId));
     localStorage.setItem('finance_trial_start', JSON.stringify(trialData.startDate));
-    
-    this.notificationSystem.show(
-        'Bem-vindo ao Minhas Finanças', 
-        'Parabéns pela sua compra! Você terá acesso completo por 7 dias, após este período receberá sua chave vitalícia na área de membros.', 
-        'success', 
-        10000
-    );
 }
 
 checkTrialAndLicenseStatusSync() {
@@ -3160,15 +3146,14 @@ showTrialExpiredModal() {
                         <aside class="sidebar" id="sidebar">
                             <div class="sidebar-header"> <div class="sidebar-title"><span>Minhas Finanças</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
                             <ul class="nav-menu">
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Visão Geral</span></a></li>
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="charts"><i class="fas fa-chart-bar nav-icon"></i><span>Gráficos</span></a></li>
-<li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
+                                <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Visão Geral</span></a></li><li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="categories"><i class="fas fa-tags nav-icon"></i><span>Categorias</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
 <li class="nav-item"><a href="#" class="nav-link" data-page="reports"><i class="fas fa-file-export nav-icon"></i><span>Relatórios</span></a></li>
 <li class="nav-item"><a href="#" class="nav-link" data-page="data"><i class="fas fa-database nav-icon"></i><span>Dados</span></a></li>
 <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog nav-icon"></i><span>Configurações</span></a></li>
+<li class="nav-item"><a href="#" class="nav-link" data-page="charts"><i class="fas fa-chart-bar nav-icon"></i><span>Gráficos</span></a></li>
                             </ul>
                         </aside>
                         <main class="main-content sidebar-active-overlay" id="mainContent">
