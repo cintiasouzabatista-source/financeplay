@@ -3162,7 +3162,7 @@ showTrialExpiredModal() {
                             <ul class="nav-menu">
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Visão Geral</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="charts"><i class="fas fa-chart-bar nav-icon"></i><span>Gráficos</span></a></li>
-                                <li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
+<li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="categories"><i class="fas fa-tags nav-icon"></i><span>Categorias</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="accounts"><i class="fas fa-university nav-icon"></i><span>Contas</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="cards"><i class="fas fa-credit-card nav-icon"></i><span>Cartões</span></a></li>
@@ -3490,6 +3490,7 @@ showTrialExpiredModal() {
                     pageContent.innerHTML = ''; 
                     switch (page) {
                         case 'dashboard': this.renderDashboard(pageContent); break;
+                        case 'charts': this.renderCharts(pageContent); break;
                         case 'transactions': this.renderTransactions(pageContent); break;
                         case 'categories': this.renderCategories(pageContent); break;
                         case 'accounts': this.renderAccounts(pageContent); break;
@@ -3497,7 +3498,6 @@ showTrialExpiredModal() {
                             this.renderCards(pageContent); 
                             break;
                         case 'reports': this.renderReports(pageContent); break;
-                        case 'charts': this.renderCharts(pageContent); break;
                         case 'settings': this.renderSettings(pageContent); break;
                         case 'simulator': 
                             this.renderSimulator(pageContent); 
@@ -3523,13 +3523,13 @@ showTrialExpiredModal() {
             
             getPageTitle(page) {
                 switch (page) {
+                    case 'charts': return 'Gráficos'; 
                     case 'dashboard': return 'Visão Geral'; 
                     case 'transactions': return 'Transações'; 
                     case 'categories': return 'Categorias'; 
                     case 'accounts': return 'Contas'; 
                     case 'cards': return 'Cartões'; 
                     case 'reports': return 'Relatórios'; 
-                    case 'charts': return 'Gráficos'; 
                     case 'settings': return 'Configurações'; 
                     case 'simulator': return 'Simulador Financeiro'; 
                     default: return 'Minhas Finanças';
@@ -3703,6 +3703,86 @@ this.renderCategoryChart(monthData);
                     this.renderIncomeCategoryChart(monthData);
                 }
             }
+
+
+            renderCharts(container) {
+                // Página dedicada de gráficos (mantém Visão Geral limpa)
+                if (!this.isFeatureAvailable('dashboard_advanced')) {
+                    container.innerHTML = `
+                        <div class="card no-data">
+                            <i class="fas fa-lock"></i>
+                            <h3 style="margin: 10px 0;">Recurso indisponível</h3>
+                            <p style="margin-bottom: 15px;">Os gráficos estão disponíveis no plano completo.</p>
+                            <button class="btn btn-primary" id="upgradeFromChartsBtn"><i class="fas fa-crown"></i> Ver planos</button>
+                        </div>
+                    `;
+                    const b = document.getElementById('upgradeFromChartsBtn');
+                    if (b) b.addEventListener('click', () => this.showUpgradeModal('dashboard_advanced'));
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                            <h3 class="card-title" style="margin-right:auto;">Gráficos (Semestral)</h3>
+                            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                <label class="filter-label" style="margin:0; white-space:nowrap;">Escolher:</label>
+                                <select class="form-select" id="chartsSelect" style="min-width: 220px; max-width: 320px;">
+                                    <option value="last">Últimos 6 meses</option>
+                                    <option value="future">Próximos 6 meses</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="chartsLastWrap">
+                            <div class="card" style="box-shadow:none; border:1px solid var(--border-color); margin:0; margin-top: 12px;">
+                                <div class="card-header">
+                                    <h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="incomeExpenseChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="chartsFutureWrap" style="display:none;">
+                            <div class="card" style="box-shadow:none; border:1px solid var(--border-color); margin:0; margin-top: 12px;">
+                                <div class="card-header">
+                                    <h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="futureIncomeExpenseChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const select = document.getElementById('chartsSelect');
+                const lastWrap = document.getElementById('chartsLastWrap');
+                const futureWrap = document.getElementById('chartsFutureWrap');
+
+                const show = (mode) => {
+                    const isLast = mode === 'last';
+                    if (lastWrap) lastWrap.style.display = isLast ? 'block' : 'none';
+                    if (futureWrap) futureWrap.style.display = isLast ? 'none' : 'block';
+
+                    // Renderiza o gráfico somente quando ele estiver visível (evita problemas de layout)
+                    setTimeout(() => {
+                        if (isLast) this.renderIncomeExpenseChart();
+                        else this.renderFutureIncomeExpenseChart();
+                    }, 50);
+                };
+
+                if (select) {
+                    select.addEventListener('change', () => show(select.value));
+                }
+
+                // padrão: últimos 6 meses
+                show('last');
+            }
+
+
 
             renderCategoryProgress(categoriesData) {
                 if (!categoriesData || categoriesData.length === 0) { 
@@ -4639,57 +4719,7 @@ this.renderCategoryChart(monthData);
                 });
             }
 
-            
-            renderCharts(container) {
-                if (!this.isFeatureAvailable('dashboard_advanced')) {
-                    container.innerHTML = `
-                        <div class="card no-data">
-                            <i class="fas fa-lock"></i>
-                            <p>Os gráficos estão disponíveis no plano completo.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Últimos 6 meses)'}</h3>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="incomeExpenseChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Receitas x Despesas ${this.customDateFilterEnabled ? '(Período Filtrado)' : '(Próximos 6 meses)'}</h3>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="futureIncomeExpenseChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Como usar</h3>
-                        </div>
-                        <div style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">
-                            <p style="margin-bottom:8px;">• Esses gráficos mostram a comparação de <b>receitas</b> e <b>despesas</b> em 6 meses.</p>
-                            <p style="margin-bottom:8px;">• Se você ativar um filtro de período nas transações, os gráficos respeitam o período filtrado.</p>
-                            <p>• Se preferir, use apenas os totais do mês na Visão Geral e ignore os gráficos.</p>
-                        </div>
-                    </div>
-                `;
-
-                // Renderizar após inserir os canvas no DOM
-                setTimeout(() => {
-                    this.renderIncomeExpenseChart();
-                    this.renderFutureIncomeExpenseChart();
-                }, 0);
-            }
-
-renderTransactions(container) {
+            renderTransactions(container) {
                 const filterAccountId = this.hasActiveTransactionFilters() ? this.getEffectiveAccountFilter() : this.selectedFilterAccount;
                 const monthData = this.customDateFilterEnabled ? 
                     this.getCustomPeriodData(this.customDateStart, this.customDateEnd, filterAccountId) :
@@ -5525,8 +5555,8 @@ renderInitialBalanceItem(item) {
                         if (cardsListContainer) cardsListContainer.innerHTML = this.renderCardsListDashboard(monthData.cards); 
                     } 
                     if (this.isFeatureAvailable('dashboard_advanced')) { 
-                         
-                        
+                        this.renderIncomeExpenseChart(); 
+                        this.renderFutureIncomeExpenseChart();
                         this.renderCategoryChart(monthData); 
                         this.renderIncomeCategoryChart(monthData);
                     } 
@@ -10275,6 +10305,23 @@ function brandIconHtml(name, fallbackEmoji, fallbackColor){
   const label = (b && b.label) || fallbackEmoji || "💳";
   return `<div class="transaction-icon" style="background-color:${c}20;color:${c};font-weight:700;letter-spacing:-0.02em;">${label}</div>`;
 }
+
+// --- Compat: evita erro "brandControl is not defined" (mantém app estável) ---
+(function(){
+  if (typeof window.brandControl === "undefined") {
+    function brandControl(name){
+      try { return (typeof getBrandInfo === "function") ? getBrandInfo(name) : null; }
+      catch(e){ return null; }
+    }
+    brandControl.iconHtml = function(name, fallbackEmoji, fallbackColor){
+      try { return (typeof brandIconHtml === "function") ? brandIconHtml(name, fallbackEmoji, fallbackColor) : ""; }
+      catch(e){ return ""; }
+    };
+    window.brandControl = brandControl;
+  }
+})();
+
+
 
 // ========= Verdão 2.0: Drilldown + Export =========
 function _fg_escapeCsv(value){
