@@ -648,6 +648,37 @@
         .drilldown-pill{ display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius: 999px; border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-color); background: rgba(99, 102, 241, 0.06); }
 
 
+        
+/* Modal - Tipo de transação (mobile friendly) */
+.type-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:10px;
+}
+.type-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:12px 10px;
+    border-radius: 12px;
+    border:1px solid var(--border-color);
+    background: rgba(99,102,241,0.05);
+    color: var(--text-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select:none;
+}
+.type-btn i{ font-size: 1.05rem; opacity: .95; }
+.type-btn span{ font-size: .95rem; }
+.type-btn[aria-pressed="true"]{
+    border-color: var(--primary-color);
+    background: rgba(99,102,241,0.16);
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.18) inset;
+}
+.type-btn:active{ transform: translateY(1px); }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -2088,111 +2119,7 @@
             transform: translateX(20px); /* Deslocamento do círculo */
         }
 
-    /* === Mobile-first polish (Relatórios + Modal) === */
-.reports-charts-toggle{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:6px 10px;
-  border:1px solid var(--border-color);
-  border-radius:999px;
-  background: rgba(99,102,241,0.06);
-}
-.reports-charts-toggle .toggle-label{ margin-left:0; white-space:nowrap; }
-.reports-charts-toggle .toggle-switch{ flex:0 0 auto; }
-
-@media (max-width: 900px){
-  .header{ gap:12px; flex-wrap:wrap; }
-  .header-actions{ flex-wrap:wrap; justify-content:flex-start; width:100%; }
-  .header-buttons{ width:100%; }
-}
-
-/* Relatórios: filtros e botões como "chips" roláveis no mobile */
-@media (max-width: 768px){
-  .card{ padding:16px; }
-  .card-header{ gap:10px; align-items:flex-start; flex-wrap:wrap; }
-  .header-buttons{
-    display:flex;
-    gap:8px;
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:4px;
-  }
-  .header-buttons::-webkit-scrollbar{ height:6px; }
-  .header-buttons::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.15); border-radius:999px; }
-  .btn{ white-space:nowrap; }
-  .btn.btn-sm{ padding:6px 10px; }
-  .reports-charts-toggle{ flex:0 0 auto; }
-  #reportsCharts .grid-container{ gap:12px; }
-}
-
-/* Modal: virar "tela cheia" no celular (clean) */
-@media (max-width: 600px){
-  .modal-overlay{ padding:0 !important; }
-  .modal{
-    width:100% !important;
-    max-width:none !important;
-    height:100% !important;
-    max-height:none !important;
-    border-radius:0 !important;
-  }
-  .modal-header{
-    position: sticky;
-    top: 0;
-    background: var(--card-bg);
-    z-index: 2;
-  }
-  .modal-body{ padding:16px !important; }
-  .form-row{ margin-bottom:12px !important; }
-  .form-input, .form-select{ padding:10px 12px; }
-}
-
-
-/* ===== Ajustes mobile-first: Modal Nova Transação (mais clean) ===== */
-@media (max-width: 640px){
-  .modal{ width:100% !important; max-width:100% !important; height:100vh; max-height:100vh; border-radius:0 !important; }
-  .modal-header{ position: sticky; top:0; z-index: 2; background: var(--card-bg); }
-  .modal-body{ padding: 16px !important; }
-  .modal-footer{ position: sticky; bottom:0; z-index:2; background: var(--card-bg); border-top: 1px solid var(--border-color); padding: 12px 16px !important; }
-  .modal-footer .btn{ flex: 1; justify-content:center; }
-}
-.modal .form-row{ margin-bottom: 12px; }
-.modal .form-label{ font-size: .9rem; color: var(--text-light); margin-bottom: 6px; }
-.modal .form-input, .modal .form-select{ padding: 11px 12px; border-radius: 10px; }
-
-.form-grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media (max-width: 640px){ .form-grid-2{ grid-template-columns: 1fr; } }
-
-/* Radio -> botões segmentados */
-.segmented{ display:flex; gap:8px; flex-wrap: wrap; }
-.segmented input{ position:absolute; opacity:0; pointer-events:none; }
-.segmented label{
-  display:inline-flex; align-items:center; justify-content:center;
-  padding: 10px 12px; border-radius: 999px;
-  border: 1px solid var(--border-color);
-  background: rgba(99,102,241,0.06);
-  color: var(--text-color);
-  font-weight: 600; font-size: .9rem;
-  cursor:pointer; user-select:none;
-  transition: var(--transition);
-}
-.segmented label:hover{ border-color: var(--primary-color); }
-.segmented input:checked + label{
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-  color: #fff;
-}
-
-/* Toggles inline */
-.inline-toggles{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
-.inline-toggles .mini-check{ display:flex; gap:8px; align-items:center; font-size:.92rem; }
-.inline-toggles .mini-check input{ width: 18px; height: 18px; }
-
-/* Footer */
-.modal-footer{ display:flex; gap:10px; justify-content:flex-end; padding: 14px 20px; }
-
-</style>
+    </style>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#6366f1">
@@ -2202,7 +2129,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -7378,11 +7304,33 @@ if (isEdit) {
                 modalContentEl.innerHTML = `
                     <div class="modal-header"><h3 class="modal-title">${modalTitle}</h3><button class="modal-close" id="modalCloseTransaction">&times;</button></div>
                     <div class="modal-body">
-                        <div class="form-row"><label class="form-label">Tipo de Transação</label><div class="segmented">
-<input type="radio" name="transactionType" id="typeIncome" value="income" ${defaultType === 'income' ? 'checked' : ''}>
-<label for="typeIncome">Receita</label>
-</div></div><div class="form-check"><input type="radio" name="transactionType" id="typeExpense" value="expense" ${defaultType === 'expense' ? 'checked' : ''}><label for="typeExpense">Despesa</label></div><div class="form-check"><input type="radio" name="transactionType" id="typeTransfer" value="transfer" ${defaultType === 'transfer' ? 'checked' : ''}><label for="typeTransfer">Transferência</label></div><div class="form-check"><input type="radio" name="transactionType" id="typeCard" value="card" ${defaultType === 'card' ? 'checked' : ''}><label for="typeCard">Despesa Cartão</label></div></div></div>
-                        <div class="form-row"><label class="form-label" for="description">Descrição</label><input type="text" class="form-input" id="description" value="${defaultDescription}"></div>
+                        <div class="form-row">
+  <label class="form-label">Tipo de Transação</label>
+
+  <div class="type-inputs" style="display:none">
+    <input type="radio" name="transactionType" id="typeIncome" value="income" ${defaultType === 'income' ? 'checked' : ''}>
+    <input type="radio" name="transactionType" id="typeExpense" value="expense" ${defaultType === 'expense' ? 'checked' : ''}>
+    <input type="radio" name="transactionType" id="typeCard" value="card" ${defaultType === 'card' ? 'checked' : ''}>
+    <input type="radio" name="transactionType" id="typeTransfer" value="transfer" ${defaultType === 'transfer' ? 'checked' : ''}>
+  </div>
+
+  <div class="type-grid" id="txTypeGrid">
+    <button type="button" class="type-btn" data-type="income" aria-pressed="${defaultType === 'income' ? 'true' : 'false'}">
+      <i class="fa-solid fa-circle-plus"></i><span>Receita</span>
+    </button>
+    <button type="button" class="type-btn" data-type="expense" aria-pressed="${defaultType === 'expense' ? 'true' : 'false'}">
+      <i class="fa-solid fa-circle-minus"></i><span>Despesa</span>
+    </button>
+    <button type="button" class="type-btn" data-type="card" aria-pressed="${defaultType === 'card' ? 'true' : 'false'}">
+      <i class="fa-solid fa-credit-card"></i><span>Cartão</span>
+    </button>
+    <button type="button" class="type-btn" data-type="transfer" aria-pressed="${defaultType === 'transfer' ? 'true' : 'false'}">
+      <i class="fa-solid fa-right-left"></i><span>Transferência</span>
+    </button>
+  </div>
+</div>
+
+<div class="form-row"><label class="form-label" for="description">Descrição</label><input type="text" class="form-input" id="description" value="${defaultDescription}"></div>
                         <div class="form-row">
                             <label class="form-label" for="amount">Valor</label>
                             <input type="text" class="form-input" id="amount" value="${defaultAmount}" placeholder="0,00">
@@ -7419,7 +7367,7 @@ if (isEdit) {
      <div class="form-row" id="cardCategoryRow"><label class="form-label" for="cardCategory">Categoria da Despesa do Cartão</label><select class="form-select" id="cardCategory"><option value="">Selecione uma categoria</option></select></div>
 </div>
                         <div class="form-row" id="dateRow" ${defaultType === 'card' ? 'style="display: none;"' : ''}><label class="form-label" for="transactionDate">Data</label><input type="date" class="form-input" id="transactionDate" value="${defaultDate}"></div>
-                        ${!isBasicPlan ? `<div class="form-row" id="completedRow" ${defaultType === 'card' ? 'style="display: none;"' : ''}><div class="form-check"><input type="checkbox" id="completed" ${defaultCompleted ? 'checked' : ''}><label for="completed">Realizada</label></div></div>` : ''}
+                        ${!isBasicPlan ? `<div class="form-row" id="completedRow" ${defaultType === 'card' ? 'style="display: none;"' : ''}><div class="form-check"><input type="checkbox" id="completed" ${defaultCompleted ? 'checked' : ''}><label for="completed">Realizada (opcional)</label></div></div>` : ''}
                     </div>
                     <div class="form-footer"><button class="btn btn-outlined" id="cancelTransactionBtn">Cancelar</button><button class="btn btn-primary" id="saveTransactionBtn">${isEdit ? 'Atualizar' : 'Salvar'}</button></div>
                 `;
@@ -7520,6 +7468,37 @@ if (isEdit) {
         recurringPeriodSelect.value = 'months';
     }
 };
+                
+// Botões com ícones (mobile): sincroniza com os radios escondidos
+const typeGrid = document.getElementById('txTypeGrid');
+const setTypeUI = (type) => {
+    // marca radio correspondente
+    const map = { income: 'typeIncome', expense: 'typeExpense', card: 'typeCard', transfer: 'typeTransfer' };
+    const id = map[type];
+    if (id) {
+        const radio = document.getElementById(id);
+        if (radio) {
+            radio.checked = true;
+            // dispara o mesmo fluxo de 'change' já existente
+            radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+    // aria-pressed
+    if (typeGrid) {
+        typeGrid.querySelectorAll('.type-btn').forEach(btn => {
+            btn.setAttribute('aria-pressed', btn.dataset.type === type ? 'true' : 'false');
+        });
+    }
+};
+
+if (typeGrid) {
+    typeGrid.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', () => setTypeUI(btn.dataset.type));
+    });
+    // inicializa
+    const checked = document.querySelector('input[name="transactionType"]:checked');
+    setTypeUI(checked ? checked.value : (defaultType || 'expense'));
+}
                 document.querySelectorAll('input[name="transactionType"]').forEach(radio => { 
                     radio.addEventListener('change', (e) => { 
                         const type = e.target.value; 
@@ -8272,13 +8251,6 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                                 <button class="btn btn-outlined btn-sm" id="repMonthlyBtn"><i class="fas fa-calendar"></i> Mensal</button>
                                 <button class="btn btn-outlined btn-sm" id="repSemiBtn"><i class="fas fa-calendar-alt"></i> Semestral</button>
                                 <button class="btn btn-outlined btn-sm" id="repAnnualBtn"><i class="fas fa-calendar-check"></i> Anual</button>
-<div class="reports-charts-toggle">
-  <label class="toggle-switch">
-    <input type="checkbox" id="reportsToggleCharts">
-    <span class="toggle-slider"></span>
-  </label>
-  <span class="toggle-label">Mostrar gráficos</span>
-</div>
                                 <button class="btn btn-secondary btn-sm" id="repExportCsv"><i class="fas fa-file-excel"></i> Excel (CSV)</button>
                                 <button class="btn btn-primary btn-sm" id="repExportPdf"><i class="fas fa-file-pdf"></i> PDF</button>
                             </div>
@@ -8311,9 +8283,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                     </div>
                 `;
 
-                
-try{ if(window.__reportsAfterRender) window.__reportsAfterRender(filteredTransactions || transactionsFiltered || filtered || [], startDateStr || startDate || periodStart || '', endDateStr || endDate || periodEnd || ''); }catch(e){}
-const getRange = (mode) => {
+                const getRange = (mode) => {
                     const start = new Date(ym.year, ym.month, 1);
                     let end = new Date(ym.year, ym.month + 1, 0);
                     if (mode === 'semi') {
@@ -10590,175 +10560,5 @@ function createFilterModal() {
 })();
 </script>
 
-<script>
-(function(){
-  function getReportsChartsPref(){
-    try { return localStorage.getItem('reports_show_charts') === '1'; } catch(e){ return false; }
-  }
-  function setReportsChartsPref(v){
-    try { localStorage.setItem('reports_show_charts', v ? '1' : '0'); } catch(e){}
-  }
-  function destroyIfExists(key){
-    if(window.__reportsCharts && window.__reportsCharts[key]){
-      try{ window.__reportsCharts[key].destroy(); }catch(e){}
-      window.__reportsCharts[key] = null;
-    }
-  }
-  function buildSeries(transactions, startDate, endDate){
-    const byDay = new Map();
-    let totalIn = 0, totalOut = 0;
-
-    function toISO(d){
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const da = String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${da}`;
-    }
-    function parseAnyDate(s){
-      if(!s) return null;
-      if(typeof s !== 'string') return null;
-      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s+'T00:00:00');
-      if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){
-        const [dd,mm,yy]=s.split('/').map(Number);
-        return new Date(yy, mm-1, dd);
-      }
-      const t = Date.parse(s);
-      return isNaN(t) ? null : new Date(t);
-    }
-
-    const sd = parseAnyDate(startDate) || new Date();
-    const ed = parseAnyDate(endDate) || new Date();
-    sd.setHours(0,0,0,0); ed.setHours(0,0,0,0);
-
-    (transactions||[]).forEach(t=>{
-      const d = parseAnyDate(t.data || t.date || t.Data || t.DATA);
-      if(!d) return;
-      d.setHours(0,0,0,0);
-      if(d < sd || d > ed) return;
-
-      const iso = toISO(d);
-      const tipo = (t.tipo || t.type || '').toString().toLowerCase();
-      const valor = Number(t.valor ?? t.value ?? 0) || 0;
-
-      const isIncome = tipo.includes('receita') || tipo === 'income';
-      const isExpense = tipo.includes('despesa') || tipo === 'expense' || tipo.includes('cart');
-      if(isIncome) totalIn += valor;
-      if(isExpense) totalOut += valor;
-
-      const net = (isIncome ? valor : 0) - (isExpense ? valor : 0);
-      byDay.set(iso, (byDay.get(iso) || 0) + net);
-    });
-
-    const labels = [];
-    const cumSeries = [];
-    let cum = 0;
-
-    const cur = new Date(sd.getTime());
-    while(cur <= ed){
-      const dd = String(cur.getDate()).padStart(2,'0');
-      const mm = String(cur.getMonth()+1).padStart(2,'0');
-      labels.push(`${dd}/${mm}`);
-      const iso = toISO(cur);
-      cum += (byDay.get(iso) || 0);
-      cumSeries.push(cum);
-      cur.setDate(cur.getDate()+1);
-    }
-
-    return { labels, totalIn, totalOut, cumSeries };
-  }
-
-  function renderReportsCharts(transactions, startDate, endDate){
-    const chartsWrap = document.getElementById('reportsCharts');
-    if(!chartsWrap) return;
-
-    if(!window.Chart){
-      chartsWrap.style.display = 'none';
-      const f1 = document.getElementById('reportsChartsFallback1');
-      const f2 = document.getElementById('reportsChartsFallback2');
-      if(f1) f1.style.display = 'block';
-      if(f2) f2.style.display = 'block';
-      return;
-    }
-
-    chartsWrap.style.display = 'block';
-    window.__reportsCharts = window.__reportsCharts || {};
-
-    const series = buildSeries(transactions, startDate, endDate);
-
-    const c1 = document.getElementById('reportsChartBars');
-    if(c1){
-      destroyIfExists('bars');
-      window.__reportsCharts.bars = new Chart(c1, {
-        type: 'bar',
-        data: {
-          labels: ['Receitas', 'Despesas'],
-          datasets: [{ label: 'Total', data: [series.totalIn, series.totalOut] }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { ticks: { callback: (v)=> 'R$ ' + Number(v).toLocaleString('pt-BR') } }
-          }
-        }
-      });
-    }
-
-    const c2 = document.getElementById('reportsChartLine');
-    if(c2){
-      destroyIfExists('line');
-      window.__reportsCharts.line = new Chart(c2, {
-        type: 'line',
-        data: {
-          labels: series.labels,
-          datasets: [{ label: 'Saldo acumulado', data: series.cumSeries, tension: 0.25, pointRadius: 0 }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { ticks: { callback: (v)=> 'R$ ' + Number(v).toLocaleString('pt-BR') } },
-            x: { ticks: { maxTicksLimit: 8 } }
-          }
-        }
-      });
-    }
-  }
-
-  function setupWhenReportsVisible(){
-    const toggle = document.getElementById('reportsToggleCharts');
-    const chartsWrap = document.getElementById('reportsCharts');
-    if(!toggle || !chartsWrap) return false;
-
-    toggle.checked = getReportsChartsPref();
-    chartsWrap.style.display = toggle.checked ? 'block' : 'none';
-
-    toggle.addEventListener('change', function(){
-      setReportsChartsPref(!!this.checked);
-      chartsWrap.style.display = this.checked ? 'block' : 'none';
-      destroyIfExists('bars'); destroyIfExists('line');
-      if(this.checked && window.__reportsLast){
-        renderReportsCharts(window.__reportsLast.transactions, window.__reportsLast.startDate, window.__reportsLast.endDate);
-      }
-    });
-
-    if(toggle.checked && window.__reportsLast){
-      renderReportsCharts(window.__reportsLast.transactions, window.__reportsLast.startDate, window.__reportsLast.endDate);
-    }
-    return true;
-  }
-
-  const obs = new MutationObserver(()=>{ setupWhenReportsVisible(); });
-  obs.observe(document.documentElement, {childList:true, subtree:true});
-
-  window.__reportsAfterRender = function(transactions, startDate, endDate){
-    window.__reportsLast = { transactions, startDate, endDate };
-    const toggle = document.getElementById('reportsToggleCharts');
-    if(toggle && toggle.checked){
-      renderReportsCharts(transactions, startDate, endDate);
-    }
-  };
-})();
-</script>
 </body>
 </html>
