@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças GO!</title>
+    <title>Minhas Finanças</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2377,7 +2377,7 @@ async initializeTrial() {
     await this.saveToStorage('finance_trial_start', trialData.startDate);
     
     this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
+        'Bem-vindo ao Minhas Finanças', 
         'Parabéns pela sua compra! Você tem acesso completo!', 
         'success', 
         10000
@@ -2389,7 +2389,7 @@ generateBrowserFingerprint() {
     const ctx = canvas.getContext('2d');
     ctx.textBaseline = 'top';
     ctx.font = '14px Arial';
-    ctx.fillText('Finanças GO! Fingerprint', 2, 2);
+    ctx.fillText('Minhas Finanças Fingerprint', 2, 2);
     
     const fingerprint = {
         canvas: canvas.toDataURL(),
@@ -2481,7 +2481,7 @@ initializeTrialSync() {
     localStorage.setItem('finance_trial_start', JSON.stringify(trialData.startDate));
     
     this.notificationSystem.show(
-        'Bem-vindo ao Finanças GO!', 
+        'Bem-vindo ao Minhas Finanças', 
         'Parabéns pela sua compra! Você terá acesso completo por 7 dias, após este período receberá sua chave vitalícia na área de membros.', 
         'success', 
         10000
@@ -3055,7 +3055,7 @@ showTrialExpiredModal() {
                 this.app.innerHTML = `
                     <div class="app-container">
                         <aside class="sidebar" id="sidebar">
-                            <div class="sidebar-header"> <div class="sidebar-title"><i class="fas fa-wallet logo-icon"></i><span>Finanças GO!</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
+                            <div class="sidebar-header"> <div class="sidebar-title"><span>Minhas Finanças</span></div> <button class="menu-toggle" id="menuToggleClose"><i class="fas fa-times"></i></button> </div>
                             <ul class="nav-menu">
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-chart-line nav-icon"></i><span>Dashboard</span></a></li>
                                 <li class="nav-item"><a href="#" class="nav-link" data-page="transactions"><i class="fas fa-exchange-alt nav-icon"></i><span>Transações</span></a></li>
@@ -3424,7 +3424,7 @@ showTrialExpiredModal() {
                     case 'cards': return 'Cartões'; 
                     case 'settings': return 'Configurações'; 
                     case 'simulator': return 'Simulador Financeiro'; 
-                    default: return 'Finanças GO!';
+                    default: return 'Minhas Finanças';
                 }
             }
 // Verificar limites do plano atual
@@ -9135,7 +9135,7 @@ if (!transactionDate || isNaN(transactionDate.getTime())) {
                 doc.setFont('helvetica');
                 doc.setFontSize(16);
                 doc.setTextColor(99, 102, 241);
-                doc.text('Finanças GO! - Relatório de Transações', 20, 20);
+                doc.text('Minhas Finanças - Relatório de Transações', 20, 20);
                 
                 let yPosition = 35;
                 doc.setFontSize(10);
