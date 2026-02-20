@@ -2088,7 +2088,67 @@
             transform: translateX(20px); /* Deslocamento do círculo */
         }
 
-    </style>
+    /* === Mobile-first polish (Relatórios + Modal) === */
+.reports-charts-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 10px;
+  border:1px solid var(--border-color);
+  border-radius:999px;
+  background: rgba(99,102,241,0.06);
+}
+.reports-charts-toggle .toggle-label{ margin-left:0; white-space:nowrap; }
+.reports-charts-toggle .toggle-switch{ flex:0 0 auto; }
+
+@media (max-width: 900px){
+  .header{ gap:12px; flex-wrap:wrap; }
+  .header-actions{ flex-wrap:wrap; justify-content:flex-start; width:100%; }
+  .header-buttons{ width:100%; }
+}
+
+/* Relatórios: filtros e botões como "chips" roláveis no mobile */
+@media (max-width: 768px){
+  .card{ padding:16px; }
+  .card-header{ gap:10px; align-items:flex-start; flex-wrap:wrap; }
+  .header-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:4px;
+  }
+  .header-buttons::-webkit-scrollbar{ height:6px; }
+  .header-buttons::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.15); border-radius:999px; }
+  .btn{ white-space:nowrap; }
+  .btn.btn-sm{ padding:6px 10px; }
+  .reports-charts-toggle{ flex:0 0 auto; }
+  #reportsCharts .grid-container{ gap:12px; }
+}
+
+/* Modal: virar "tela cheia" no celular (clean) */
+@media (max-width: 600px){
+  .modal-overlay{ padding:0 !important; }
+  .modal{
+    width:100% !important;
+    max-width:none !important;
+    height:100% !important;
+    max-height:none !important;
+    border-radius:0 !important;
+  }
+  .modal-header{
+    position: sticky;
+    top: 0;
+    background: var(--card-bg);
+    z-index: 2;
+  }
+  .modal-body{ padding:16px !important; }
+  .form-row{ margin-bottom:12px !important; }
+  .form-input, .form-select{ padding:10px 12px; }
+}
+
+</style>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#6366f1">
