@@ -2158,18 +2158,27 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="./assets/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-512x512.png">
+
 <script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-        navigator.serviceWorker.register("./service-worker.js")
-            .then(function(registration) {
-                console.log("SW registered: ", registration);
-            }, function(registrationError) {
-                console.log("SW registration failed: ", registrationError);
-            });
-    });
-}
-</script></head>
+// ===== Recovery: desativar Service Worker e limpar cache (evita "tela branca" por cache antigo) =====
+(async function(){
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) { try { await r.unregister(); } catch(e){} }
+    }
+    if (window.caches && caches.keys) {
+      const keys = await caches.keys();
+      for (const k of keys) { try { await caches.delete(k); } catch(e){} }
+    }
+    console.log('Finanças: cache limpo (SW desativado)');
+  } catch (e) {
+    console.log('Finanças: não foi possível limpar cache', e);
+  }
+})();
+</script>
+
+</head>
 <body>
     <div id="app">
         </div>
