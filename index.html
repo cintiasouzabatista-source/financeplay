@@ -499,29 +499,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,.22);
     }
     
-
-    /* Contas: cards dinâmicos */
-    .acc-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;}
-    .acc-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 26%), var(--card2);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding:14px;
-      position:relative;
-      overflow:hidden;
-    }
-    .acc-card .acc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
-    .acc-card .acc-name{font-weight:900; letter-spacing:.2px;}
-    .acc-card .acc-sub{color:var(--muted); font-size:12px; margin-top:4px;}
-    .acc-card .acc-balance{font-size:18px; font-weight:900; margin-top:10px;}
-    .acc-card .acc-actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-top:12px;}
-    .acc-pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid var(--line); font-size:12px;}
-    .acc-pill.off{opacity:.75}
-
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-31S";
+    window.__BUILD_ID__ = "v2026.02.20-25";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -550,36 +531,8 @@
     }
 
     
-    // ===== Lembretes rápidos a vencer (ao abrir o app) =====
-    
-    // ===== Contas (armazenamento simples) =====
-    function loadAccounts(){
-      try{
-        const arr = JSON.parse(localStorage.getItem("accounts_data") || "[]");
-        return Array.isArray(arr) ? arr : [];
-      }catch(e){ return []; }
-    }
-    function saveAccounts(arr){
-      localStorage.setItem("accounts_data", JSON.stringify(arr || []));
-    }
-
-    // Extrai "contas fixas" do módulo Contas (híbrido de alertas)
-    function getFixedFromAccounts(){
-      const acc = loadAccounts();
-      return acc
-        .filter(a => a && a.isFixed === true && a.enabled !== false)
-        .map(a => ({
-          id: a.id || ("acc_" + (a.name||"Conta") + "_" + (a.dueDay||"")),
-          name: a.name || "Conta",
-          dueDay: a.dueDay,
-          amount: a.amount,
-          enabled: a.enabled !== false,
-          source: "accounts"
-        }));
-    }
-
-    // Lembretes rápidos (Configurações)
-function loadFixedBills(){
+    // ===== Alertas de contas a vencer (ao abrir o app) =====
+    function loadFixedBills(){
       try{
         const arr = JSON.parse(localStorage.getItem("fixed_bills") || "[]");
         return Array.isArray(arr) ? arr : [];
@@ -661,7 +614,7 @@ function loadFixedBills(){
         ov.id = "toastOverlay";
         ov.className = "toast-overlay";
         ov.innerHTML = `
-          <div class="toast-card" role="dialog" aria-modal="true" aria-label="Lembretes rápidos">
+          <div class="toast-card" role="dialog" aria-modal="true" aria-label="Alertas de contas">
             <div class="toast-head">
               <div class="toast-title">🔔 Contas a vencer</div>
               <button class="btn-muted" id="toastCloseBtn" style="padding:8px 10px; border-radius:10px;">Fechar</button>
@@ -705,7 +658,7 @@ function loadFixedBills(){
         </div>
         ${list}
         <div style="margin-top:10px; font-size:12px; color:#64748b;">
-          Dica: você pode cadastrar em <b>Contas</b> (conta fixa) ou como <b>Lembrete rápido</b> em Configurações.
+          Dica: cadastre as contas fixas em <b>Configurações</b> para o alerta funcionar sempre.
         </div>
       `;
 
@@ -719,21 +672,7 @@ function loadFixedBills(){
 
     
     function getBillsAlertsForDashboard(){
-      // híbrido: Contas fixas (Contas) + Lembretes rápidos (Configurações)
-      const fromAccounts = getFixedFromAccounts();
-      const quick = loadFixedBills().filter(b => b && b.enabled !== false).map(b => ({...b, source:"quick"}));
-      const all = [...fromAccounts, ...quick];
-
-      // dedupe por nome+dia (prioriza Contas)
-      const seen = new Map();
-      for(const it of all){
-        const key = (it.name||"").trim().toLowerCase() + "|" + String(it.dueDay||"");
-        if(!key) continue;
-        if(!seen.has(key) || it.source === "accounts"){
-          seen.set(key, it);
-        }
-      }
-      const bills = Array.from(seen.values());
+      const bills = loadFixedBills().filter(b => b && b.enabled !== false);
       if(!bills.length) return { total:0, items:[] };
 
       const now = new Date();
@@ -747,14 +686,14 @@ function loadFixedBills(){
           dueDay: b.dueDay,
           amount: b.amount,
           due,
-          diff,
-          source: b.source || "quick"
+          diff
         };
       }).filter(x => x.diff <= soonDays)
         .sort((a,b)=> a.diff - b.diff);
 
       return { total: items.length, items };
     }
+
     function updateAlertsBadges(){
       try{
         const payload = getBillsAlertsForDashboard();
@@ -779,7 +718,7 @@ function loadFixedBills(){
           <div class="card">
             <h3>🔔 Próximos vencimentos</h3>
             <p class="note">Nenhuma conta vencendo nos próximos 3 dias.</p>
-            <p class="note">Cadastre em <b>Transações → Contas fixas</b> (marque a conta como <b>fixa</b>) ou em <b>Configurações → Lembretes rápidos</b>.</p>
+            <p class="note">Cadastre em <b>Configurações → Alertas de contas</b>.</p>
           </div>
         `;
       }
@@ -911,7 +850,7 @@ function loadFixedBills(){
       const mainEl = document.getElementById("pageBody");
 
       // Gate: se não logado, força login (exceto página de login)
-      const needAuth = false;
+      const needAuth = true; // mantém ligado por padrão
       if (needAuth && !isLoggedIn() && page !== "login") {
         page = "login";
         location.hash = "#login";
@@ -944,40 +883,8 @@ function loadFixedBills(){
         },
         transactions: {
           title: "Transações",
-          sub: "Entradas, saídas e transferências (e configuração de contas fixas).",
-          html: `
-            <div class="card">
-              <h3>🧾 Transações</h3>
-              <p class="note">Tela de transações (placeholder nesta versão). Aqui depois entraremos com entradas/saídas/⇄.</p>
-            </div>
-
-            <div class="section-divider"></div>
-
-            <div class="card">
-              <h3>🔔 Contas fixas (vencimentos)</h3>
-              <p class="note">Aqui você marca uma conta como <b>fixa</b> e define o <b>dia de vencimento</b> (e valor opcional). Isso alimenta o alerta da Visão Geral.</p>
-
-              <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-top:10px;">
-                <div style="flex:1; min-width:240px;">
-                  <div class="note" style="margin-bottom:6px;">Conta</div>
-                  <select id="txFixedAccount"></select>
-                </div>
-                <div style="width:150px; min-width:140px;">
-                  <div class="note" style="margin-bottom:6px;">Dia</div>
-                  <input id="txFixedDueDay" inputmode="numeric" placeholder="1-31" />
-                </div>
-                <div style="width:190px; min-width:170px;">
-                  <div class="note" style="margin-bottom:6px;">Valor (opcional)</div>
-                  <input id="txFixedAmount" placeholder="0,00" />
-                </div>
-                <button class="btn-primary" onclick="setAccountFixedFromUI()">Salvar</button>
-                <button class="btn-muted" onclick="unsetAccountFixedFromUI()">Remover fixa</button>
-              </div>
-
-              <div class="section-divider"></div>
-              <div id="fixedAccountsList"></div>
-            </div>
-          `
+          sub: "Entradas, saídas e transferências.",
+          html: `<div class="card"><p class="note">Tela de transações (placeholder nesta versão).</p></div>`
         },
         categories: {
           title: "Categorias",
@@ -986,55 +893,8 @@ function loadFixedBills(){
         },
         accounts: {
           title: "Contas",
-          sub: "Cadastre e organize suas contas. (Vencimentos/alertas ficam em Transações → Despesas fixas).",
-          html: `
-            <div class="card">
-              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-                <div>
-                  <h3 style="margin:0;">🏦 Contas</h3>
-                  <p class="note" style="margin:8px 0 0 0;">
-                    Aqui você cadastra <b>onde o dinheiro está</b> (Mercado Pago, Nubank, Dinheiro, VR, VA).
-                    <br/>🔔 <b>Vencimentos</b> (IPVA, seguro, internet...) ficam em <b>Transações → Despesas fixas</b>.
-                  </p>
-                </div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                  <button class="btn-muted" onclick="seedDefaultAccounts()">Sugestão de contas</button>
-                  <button class="btn-primary" onclick="focusAddAccount()">+ Nova conta</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="card" id="addAccountCard">
-              <h3>➕ Nova conta</h3>
-              <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                <div style="flex:1; min-width:240px;">
-                  <div class="note" style="margin-bottom:6px;">Nome</div>
-                  <input id="accName" placeholder="Ex: Mercado Pago / Nubank / Dinheiro / VR / VA" />
-                </div>
-                <div style="width:220px; min-width:180px;">
-                  <div class="note" style="margin-bottom:6px;">Saldo inicial (opcional)</div>
-                  <input id="accBalance" placeholder="0,00" />
-                </div>
-                <button class="btn-primary" onclick="addAccountFromUI()">Salvar</button>
-              </div>
-              <div class="note" style="margin-top:10px;">
-                Dica: você pode deixar o saldo em branco e preencher depois quando conectarmos o cálculo real.
-              </div>
-            </div>
-
-            <div class="section-divider"></div>
-
-            <div class="card">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-                <h3 style="margin:0;">📋 Suas contas</h3>
-                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                  <input id="accSearch" placeholder="Buscar conta..." style="max-width:260px;" />
-                  <button class="btn-muted" onclick="toggleShowDisabledAccounts()">Mostrar desativadas</button>
-                </div>
-              </div>
-              <div id="accountsList" style="margin-top:12px;"></div>
-            </div>
-          `
+          sub: "Gerencie suas contas e saldos.",
+          html: `<div class="card"><p class="note">Tela de contas (placeholder nesta versão).</p></div>`
         },
         cards: {
           title: "Cartões",
@@ -1088,20 +948,190 @@ function loadFixedBills(){
         
         settings: {
           title: "Configurações",
-          sub: "Preferências do app (modo simplificado para testes).",
+          sub: "Preferências do app. (Planos e Dados ficam na lateral).",
           html: `
             <div class="card">
-              <h3>⚙️ Preferências</h3>
-              <p class="note">Esta é a versão <b>simplificada</b> para testes e ajustes rápidos.</p>
-              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-                <button class="btn-muted" onclick="renderPage('categories')">Abrir Categorias</button>
-                <button class="btn-muted" onclick="renderPage('data')">Abrir Dados</button>
+              <p class="note">Preferências do app.</p>
+              <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn-muted" onclick="renderPage('categories')">Categorias</button>
+                
+              </div>
+              <p class="note" style="margin-top:10px;">Categorias fica em Configurações para deixar o menu lateral mais simples.</p>
+            </div>
+
+            <div class="section-divider"></div>
+            <div class="card">
+              <h3>🔔 Alertas de contas</h3>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Nome da conta</div>
+                  <div class="desc">Ex: IPVA, Licenciamento, Internet...</div>
+                </div>
+                <input id="billName" placeholder="Ex: IPVA" />
+              </div>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Dia do vencimento</div>
+                  <div class="desc">1 a 31</div>
+                </div>
+                <input id="billDueDay" inputmode="numeric" placeholder="Ex: 15" />
+              </div>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Valor (opcional)</div>
+                  <div class="desc">Pode deixar em branco</div>
+                </div>
+                <input id="billAmount" inputmode="decimal" placeholder="Ex: 120,50" />
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                <button class="btn-primary" onclick="addFixedBill()">Adicionar conta</button>
+              </div>
+
+              <div style="margin-top:14px;">
+                <div class="note" style="margin-bottom:8px;">Contas cadastradas:</div>
+                <div id="fixedBillsList"></div>
               </div>
             </div>
 
             <div class="card">
-              <h3>🔔 Alertas</h3>
-              <p class="note">Os alertas de vencimento são cadastrados em <b>Transações → Despesas fixas</b> (nesta fase de testes).</p>
+              <h3>🗂️ Dados</h3>
+              <div class="row">
+                <div>
+                  <div class="label">Exportar</div>
+                  <div class="desc">Baixar seus dados em formato JSON</div>
+                </div>
+                <button class="btn-primary" onclick="alert('Exportar: conecte aqui sua função real.')">Exportar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Importar</div>
+                  <div class="desc">Carregar dados de um arquivo JSON (substitui dados atuais)</div>
+                </div>
+                <button class="btn-muted" onclick="alert('Importar: conecte aqui sua função real.')">Importar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Limpar Dados</div>
+                  <div class="desc">Remove tudo do app (ação irreversível)</div>
+                </div>
+                <button class="btn-danger" onclick="confirmAndClearData()">Limpar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Limpar Cache do App</div>
+                  <div class="desc">Resolve tela desatualizada (Service Worker / cache)</div>
+                </div>
+                <button class="btn-danger" onclick="clearAppCache()">Limpar Cache</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>🧾 Planos</h3>
+
+              <div id="planEditableWrap">
+                <div class="row" style="align-items:flex-start;">
+                  <div style="flex:1; min-width:180px;">
+                    <div class="label">Tipo</div>
+                    <div class="desc">Mensal / Semestral / Anual</div>
+                  </div>
+                  <select id="planTypeSelect">
+                    <option value="mensal">Mensal</option>
+                    <option value="semestral">Semestral</option>
+                    <option value="anual">Anual</option>
+                  </select>
+                </div>
+
+                <div class="row" style="align-items:flex-start;">
+                  <div style="flex:1; min-width:180px;">
+                    <div class="label">Forma PGTO</div>
+                    <div class="desc">Cartão / PIX / Boleto</div>
+                  </div>
+                  <input id="planPaymentInput" placeholder="Ex: PIX" />
+                </div>
+              </div>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Status</div>
+                  <div class="desc">Ativo / Bloqueado (somente Admin)</div>
+                </div>
+                <select id="planStatusSelect" disabled>
+                  <option value="ativo">Ativo</option>
+                  <option value="bloqueado">Bloqueado</option>
+                </select>
+              </div>
+
+              <div class="inline-actions">
+                <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
+                <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
+
+                <!-- Admin oculto -->
+                <div class="inline-actions" id="planAdminActions" style="display:none; width:100%; justify-content:flex-end;">
+                  <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
+                  <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+                </div>
+
+                <p class="note" style="margin:0; width:100%; text-align:right;">
+                  <span id="adminHint" style="opacity:.7;"></span>
+                </p>
+              </div>
+
+              <p class="note" style="margin-top:10px;">
+                Dica: para entrar no modo Admin, toque 7x no <b>Build</b> (no topo).
+              </p>
+            </div>
+          `
+        },
+        login: {
+          title: "Login",
+          sub: "Acesso com CPF e senha.",
+          html: `
+            <div class="card">
+              <h3>Entrar</h3>
+              <div class="row" style="align-items:flex-start">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">CPF</div>
+                  <div class="desc">Digite apenas números</div>
+                </div>
+                <input id="loginCpf" inputmode="numeric" placeholder="00000000000" maxlength="14" />
+              </div>
+              <div class="row" style="align-items:flex-start">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Senha</div>
+                  <div class="desc">Mínimo 4 caracteres</div>
+                </div>
+                <input id="loginPass" type="password" placeholder="••••" />
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                <button class="btn-muted" onclick="handleCreateAccess()">Criar acesso</button>
+                <button class="btn-primary" onclick="handleLoginSubmit()">Entrar</button>
+              </div>
+
+              <p class="note" style="margin-top:12px">
+                Primeiro acesso? Use <span class="link" onclick="handleCreateAccess()">Criar acesso</span> para cadastrar CPF e senha neste dispositivo.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="row">
+                <div>
+                  <div class="label">Status</div>
+                  <div class="desc">Se estiver bloqueado, não entra.</div>
+                </div>
+                <div id="loginStatus" class="badge-ok">Pronto</div>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Sair</div>
+                  <div class="desc">Encerrar sessão atual.</div>
+                </div>
+                <button class="btn-danger" onclick="handleLogout()">Sair</button>
+              </div>
             </div>
           `
         }
@@ -1116,10 +1146,6 @@ function loadFixedBills(){
       try{ updateAlertsBadges(); }catch(e){}
 
       // pós-render: preencher Planos
-      if(page === "accounts"){ try{ renderAccountsList(); }catch(e){}; try{ document.getElementById("accSearch")?.addEventListener("input", renderAccountsList); }catch(e){} }catch(e){} }
-
-      if(page === "transactions"){ try{ refreshAccountsSelect(); }catch(e){}; try{ renderFixedAccountsList(); }catch(e){} }
-
       if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
 
       if(page === "plans"){
@@ -1186,216 +1212,6 @@ function loadFixedBills(){
       const v = Number(norm);
       return isNaN(v) ? null : v;
     }
-
-    // ===== Contas: UI e CRUD =====
-    function addAccountFromUI(){
-      const name = (document.getElementById("accName")?.value || "").trim();
-      const bal = parseBRL(document.getElementById("accBalance")?.value || "");
-
-      if(!name) return alert("Digite o nome da conta.");
-
-    
-function renderAccountsList(){
-      const host = document.getElementById("accountsList");
-      if(!host) return;
-
-      const q = (document.getElementById("accSearch")?.value || "").trim().toLowerCase();
-      const showDisabled = localStorage.getItem("ui_show_disabled_accounts") === "1";
-
-      const acc = loadAccounts()
-        .filter(a => a && (showDisabled ? true : (a.enabled !== false)))
-        .filter(a => !q || String(a.name||"").toLowerCase().includes(q));
-
-      if(!acc.length){
-        host.innerHTML = '<div class="note">Nenhuma conta encontrada.</div>';
-        return;
-      }
-
-
-    function focusAddAccount(){
-      const el = document.getElementById("accName");
-      if(el){ el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
-    }
-
-    function seedDefaultAccounts(){
-      // cria sugestões apenas se não existir nenhuma conta ainda
-      const existing = loadAccounts();
-      if(existing && existing.length){
-        return alert("Você já tem contas cadastradas.");
-      }
-      const defaults = [
-        { name: "Mercado Pago", balance: null },
-        { name: "Nubank", balance: null },
-        { name: "Dinheiro", balance: null },
-        { name: "VR (Vale Refeição)", balance: null },
-        { name: "VA (Vale Alimentação)", balance: null },
-        { name: "Auxílio Combustível", balance: null }
-      ];
-      const acc = defaults.map(d=> ({
-        id: "acc_" + Date.now() + "_" + Math.random().toString(16).slice(2),
-        name: d.name,
-        balance: d.balance,
-        isFixed: false, dueDay: null, amount: null,
-        enabled: true
-      }));
-      saveAccounts(acc);
-      renderAccountsList();
-      try{ refreshAccountsSelect(); }catch(e){}
-      alert("Sugestões criadas! Agora você pode ajustar os saldos.");
-    }
-
-    function toggleShowDisabledAccounts(){
-      const cur = localStorage.getItem("ui_show_disabled_accounts") === "1";
-      localStorage.setItem("ui_show_disabled_accounts", cur ? "0" : "1");
-      renderAccountsList();
-    }
-
-    function editAccountBalancePrompt(id){
-      const acc = loadAccounts();
-      const a = acc.find(x=>x.id===id);
-      if(!a) return;
-      const current = (a.balance===null || a.balance===undefined) ? "" : String(a.balance).replace(".",",");
-      const val = prompt("Novo saldo (ex: 123,45). Deixe em branco para limpar:", current);
-      if(val === null) return;
-      const parsed = parseBRL(val);
-      a.balance = (val.trim()==="") ? null : parsed;
-      saveAccounts(acc);
-      renderAccountsList();
-    }
-
-
-      const fmt = (v)=> (v===null || v===undefined || v==="") ? "—" : ("R$ " + Number(v).toFixed(2).replace(".",","));
-      host.innerHTML = `
-        <div class="acc-grid">
-          ${acc.map(a=>{
-            const bal = fmt(a.balance);
-            const status = (a.enabled === false) ? "Desativada" : "Ativa";
-            const statusClass = (a.enabled === false) ? "acc-pill off" : "acc-pill";
-            return `
-              <div class="acc-card">
-                <div class="acc-top">
-                  <div>
-                    <div class="acc-name">${a.name}</div>
-                    <div class="acc-sub">Status: <span class="${statusClass}">${status}</span></div>
-                  </div>
-                  <div title="Conta">
-                    🏦
-                  </div>
-                </div>
-                <div class="acc-balance">${bal}</div>
-
-                <div class="acc-actions">
-                  <button class="btn-muted" onclick="editAccountBalancePrompt('${a.id}')">Editar saldo</button>
-                  <button class="btn-muted" onclick="toggleAccountEnabled('${a.id}')">${a.enabled === false ? 'Ativar' : 'Desativar'}</button>
-                  <button class="btn-danger" onclick="removeAccount('${a.id}')">Excluir</button>
-                </div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-      `;
-    }
-
-    function removeAccount(id){
-      const acc = loadAccounts().filter(a=>a.id!==id);
-      saveAccounts(acc);
-      renderAccountsList();
-      try{ refreshAccountsSelect(); }catch(e){}
-      try{ renderFixedAccountsList(); }catch(e){}
-      try{ updateAlertsBadges(); }catch(e){}
-    }
-
-    function toggleAccountEnabled(id){
-      const acc = loadAccounts();
-      const a = acc.find(x=>x.id===id);
-      if(!a) return;
-      a.enabled = !(a.enabled !== false);
-      saveAccounts(acc);
-      renderAccountsList();
-      try{ updateAlertsBadges(); }catch(e){}
-    }
-
-
-    // ===== Transações: configurar conta fixa (alerta) =====
-    function refreshAccountsSelect(){
-      const sel = document.getElementById("txFixedAccount");
-      if(!sel) return;
-      const acc = loadAccounts().filter(a=>a && a.enabled !== false);
-      sel.innerHTML = acc.length
-        ? acc.map(a=>`<option value="${a.id}">${a.name}</option>`).join("")
-        : `<option value="">(Cadastre uma conta primeiro)</option>`;
-    }
-
-    function renderFixedAccountsList(){
-      const host = document.getElementById("fixedAccountsList");
-      if(!host) return;
-      const fixed = loadAccounts().filter(a=>a && a.enabled !== false && a.isFixed);
-      if(!fixed.length){
-        host.innerHTML = '<div class="note">Nenhuma conta fixa cadastrada ainda.</div>';
-        return;
-      }
-      host.innerHTML = fixed.map(a=>{
-        const dd = String(a.dueDay||"").padStart(2,'0');
-        const amt = (a.amount !== null && a.amount !== undefined) ? ('R$ ' + Number(a.amount).toFixed(2).replace('.',',')) : '—';
-        return `
-          <div class="row" style="align-items:center">
-            <div style="flex:1; min-width:220px;">
-              <div class="label">${a.name}</div>
-              <div class="desc">Vence dia <b>${dd}</b> • Valor: <b>${amt}</b></div>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-              <button class="btn-muted" onclick="unsetAccountFixed('${a.id}')">Remover fixa</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function setAccountFixedFromUI(){
-      const sel = document.getElementById("txFixedAccount");
-      const id = sel?.value || "";
-      if(!id) return alert("Selecione uma conta.");
-      const dueDay = Number((document.getElementById("txFixedDueDay")?.value || "").replace(/\D/g,''));
-      if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Dia inválido (1-31).");
-      const amount = parseBRL(document.getElementById("txFixedAmount")?.value || "");
-
-      const acc = loadAccounts();
-      const a = acc.find(x=>x.id===id);
-      if(!a) return alert("Conta não encontrada.");
-
-      a.isFixed = true;
-      a.dueDay = dueDay;
-      a.amount = amount;
-      saveAccounts(acc);
-
-      renderFixedAccountsList();
-      try{ updateAlertsBadges(); }catch(e){}
-      alert("Conta marcada como fixa!");
-    }
-
-    function unsetAccountFixed(id){
-      const acc = loadAccounts();
-      const a = acc.find(x=>x.id===id);
-      if(!a) return;
-      a.isFixed = false;
-      a.dueDay = null;
-      a.amount = null;
-      saveAccounts(acc);
-      renderFixedAccountsList();
-      try{ updateAlertsBadges(); }catch(e){}
-    }
-
-    function unsetAccountFixedFromUI(){
-      const id = (document.getElementById("txFixedAccount")?.value || "");
-      if(!id) return alert("Selecione uma conta.");
-      unsetAccountFixed(id);
-    }
-
-      saveAccounts(acc);
-      renderAccountsList();
-      try{ updateAlertsBadges(); }catch(e){}
-    }
-
 
     function addFixedBill(){
       const name = (document.getElementById("billName")?.value || "").trim();
@@ -1469,6 +1285,25 @@ function renderAccountsList(){
     function savePlanConfig(cfg){
       localStorage.setItem("ui_plan_config", JSON.stringify(cfg));
     }
+    async function ensureAdminPin(){
+      // Se não existir PIN, cria um
+      const existing = localStorage.getItem("admin_pin_hash");
+      if(existing) return true;
+      const pin = prompt("Definir PIN Admin (4 dígitos):");
+      if(!pin) return false;
+      const clean = String(pin).replace(/\D/g,"");
+      if(clean.length != 4) { alert("PIN inválido. Use 4 dígitos."); return false; }
+      const h = await sha256(clean);
+      localStorage.setItem("admin_pin_hash", h);
+      alert("PIN Admin definido!");
+      return true;
+    }
+    async function verifyAdminPin(){
+      const h = localStorage.getItem("admin_pin_hash");
+      if(!h){
+        const ok = await ensureAdminPin();
+        return ok;
+      }
       const pin = prompt("Digite o PIN Admin (4 dígitos):");
       if(!pin) return false;
       const clean = String(pin).replace(/\D/g,"");
@@ -1517,6 +1352,29 @@ function renderAccountsList(){
       lockPlanFields(cfg.locked);
       alert("Plano salvo.");
     }
+
+    async function adminToggleStatus(){
+      const ok = await verifyAdminPin();
+      if(!ok) return;
+      const statusEl = document.getElementById("planStatusSelect");
+      if(!statusEl) return;
+      const cur = statusEl.value || "ativo";
+      const next = (cur === "ativo") ? "bloqueado" : "ativo";
+      statusEl.value = next;
+      // salva sem destravar campos
+      const cfg = loadPlanConfig() || {};
+      cfg.status = next;
+      cfg.locked = (cfg.locked !== false);
+      savePlanConfig(cfg);
+      alert("Status alterado para: " + (next === "ativo" ? "Ativo" : "Bloqueado"));
+    }
+
+    async function adminChangePin(){
+      const exists = !!localStorage.getItem("admin_pin_hash");
+      if(exists){
+        const ok = await verifyAdminPin();
+        if(!ok) return;
+      }
       const pin = prompt("Novo PIN Admin (4 dígitos):");
       if(!pin) return;
       const clean = String(pin).replace(/\D/g,"");
@@ -1528,6 +1386,30 @@ function renderAccountsList(){
 
 
     // ===== Admin gate: não mostrar botões de admin para usuários =====
+    function revealAdminUI(){
+      const el = document.getElementById("planAdminActions");
+      const hint = document.getElementById("adminHint");
+      if(el) el.style.display = "flex";
+      if(hint) hint.textContent = "Modo Admin ativo";
+    }
+
+    function hideAdminUI(){
+      const el = document.getElementById("planAdminActions");
+      const hint = document.getElementById("adminHint");
+      if(el) el.style.display = "none";
+      if(hint) hint.textContent = "";
+    }
+
+    async function tryEnterAdminMode(){
+      const ok = await verifyAdminPin(); // cria PIN se não existir
+      if(ok){
+        sessionStorage.setItem("admin_mode", "1");
+        revealAdminUI();
+      }
+    }
+
+    function isAdminMode(){
+      return sessionStorage.getItem("admin_mode") === "1";
     }
 
 
@@ -1582,83 +1464,58 @@ function renderAccountsList(){
       });
     }
 
-
-function closeMobileDrawer(){
-  const overlay = document.getElementById("drawerOverlay");
-  const sb = document.querySelector(".sidebar");
-  if(sb) sb.classList.remove("open");
-  if(overlay) overlay.classList.remove("active");
-  document.body.classList.remove("drawer-open");
-}
-
-function openMobileDrawer(){
-  const overlay = document.getElementById("drawerOverlay");
-  const sb = document.querySelector(".sidebar");
-  if(sb) sb.classList.add("open");
-  if(overlay) overlay.classList.add("active");
-  document.body.classList.add("drawer-open");
-}
-
-function toggleMobileDrawer(){
-  const sb = document.querySelector(".sidebar");
-  if(sb && sb.classList.contains("open")) closeMobileDrawer();
-  else openMobileDrawer();
-}
-
 function initNav(){
-  // build tags
-  const buildTag = document.getElementById("buildTag");
-  const buildPill = document.getElementById("buildPill");
-  const buildPillMobile = document.getElementById("buildPillMobile");
-  if(buildTag) buildTag.textContent = window.__BUILD_ID__;
-  if(buildPill) buildPill.textContent = "Build " + window.__BUILD_ID__;
-  if(buildPillMobile) buildPillMobile.textContent = "Build " + window.__BUILD_ID__;
+      // build tags
+      document.getElementById("buildTag").textContent = window.__BUILD_ID__;
+      document.getElementById("buildPill").textContent = "Build " + window.__BUILD_ID__;
 
-  // sidebar collapsed state (PC)
-  const sb = document.querySelector(".sidebar");
-  const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
-  if(sb && savedCollapsed) sb.classList.add("collapsed");
-  const toggleBtn = document.getElementById("sidebarToggle");
-  if(toggleBtn && sb){
-    toggleBtn.onclick = ()=>{
-      sb.classList.toggle("collapsed");
-      localStorage.setItem("ui_sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
-    };
-  }
+      // build pill no mobile
+      const bpm = document.getElementById("buildPillMobile");
+      if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
 
-  // Menu links
-  document.querySelectorAll(".nav a[data-page]").forEach(a=>{
-    a.addEventListener("click", (e)=>{
-      e.preventDefault();
-      const page = a.getAttribute("data-page");
-      location.hash = "#" + page; // hashchange cuidará do render
-      closeMobileDrawer();
-    });
-  });
+      const sb = document.querySelector(".sidebar");
 
-  // Mobile drawer buttons
-  const mobileBtn = document.getElementById("mobileMenuBtn");
-  const fallbackBtn = document.getElementById("fallbackMenuBtn");
-  const overlay = document.getElementById("drawerOverlay");
-  if(mobileBtn) mobileBtn.onclick = (e)=>{ e.preventDefault(); toggleMobileDrawer(); };
-  if(fallbackBtn) fallbackBtn.onclick = (e)=>{ e.preventDefault(); toggleMobileDrawer(); };
-  if(overlay) overlay.onclick = ()=> closeMobileDrawer();
+      // build pill no mobile// gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
+      let adminTapCount = 0;
+      const adminTap = ()=>{
+        adminTapCount += 1;
+        if(adminTapCount >= 7){
+          adminTapCount = 0;
+          tryEnterAdminMode();
+        }
+      };
+      document.getElementById("buildPill")?.addEventListener("click", adminTap);
+      document.getElementById("buildPillMobile")?.addEventListener("click", adminTap);
+      // mobile drawer
+      try{ setupMobileDrawer(); }catch(e){}
 
-  // hashchange -> render
-  window.addEventListener("hashchange", ()=>{
-    const page = (location.hash || "#dashboard").replace("#","");
-    renderPage(page);
-  });
+      // sidebar: estado salvo
+      // (reutiliza sb já definido acima)
 
-  // first render
-  const initial = (location.hash || "#dashboard").replace("#","");
-  renderPage(initial);
+      const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
+      if(savedCollapsed && sb) sb.classList.add("collapsed");
 
-  // alerts modal on open
-  try{ showBillsAlertsOnOpen(); }catch(e){}
-}
+      document.getElementById("sidebarToggle")?.addEventListener("click", ()=>{
+        if(!sb) return;
+        sb.classList.toggle("collapsed");
+        localStorage.setItem("ui_sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
+      });
+document.querySelectorAll(".nav a[data-page]").forEach(a=>{
+        a.addEventListener("click", (e)=>{
+          e.preventDefault();
+          const page = a.getAttribute("data-page");
+          renderPage(page);
+          try{ if(window.matchMedia && window.matchMedia("(max-width: 1200px)").matches){ document.querySelector(".sidebar")?.classList.remove("open"); document.getElementById("drawerOverlay")?.classList.remove("active"); } }catch(e){}
+        });
+      });
 
-window.addEventListener("DOMContentLoaded", initNav);
+      // Primeiro carregamento: respeita hash, mas aplica gate
+      const initial = (location.hash || "#dashboard").replace("#","");
+      renderPage(initial);
+      try{ showBillsAlertsOnOpen(); }catch(e){}
+    }
+
+    window.addEventListener("DOMContentLoaded", initNav);
   </script>
 </head>
 <body>
@@ -1684,7 +1541,8 @@ window.addEventListener("DOMContentLoaded", initNav);
         <a href="#settings" data-page="settings" data-label="Configurações"><span class="left"><span class="icon">⚙️</span><span class="text">Configurações</span></a>
 
         <!-- Login no final -->
-</nav>
+        <a href="#login" data-page="login" data-label="Login"><span class="left"><span class="icon">🔐</span><span class="text">Login</span></a>
+      </nav>
     </aside>
 
     <main class="main">
