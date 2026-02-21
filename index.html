@@ -305,10 +305,75 @@
       z-index:10000;
     }
 
+
+    /* Mobile: sidebar vira drawer (menu lateral que abre/fecha) */
+    .drawer-overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      opacity:0; pointer-events:none;
+      transition: opacity .18s ease;
+      z-index:9000;
+    }
+    .drawer-overlay.active{ opacity:1; pointer-events:auto; }
+
+    @media (max-width: 980px){
+      .layout{flex-direction:column;}
+      .sidebar{
+        position:fixed;
+        top:0; left:0; bottom:0;
+        width:260px;
+        transform: translateX(-105%);
+        transition: transform .2s ease;
+        z-index:9500;
+        border-right:1px solid rgba(148,163,184,.18);
+      }
+      .sidebar.open{ transform: translateX(0); }
+      .main{ margin-left:0; padding:16px; }
+      /* botão de abrir menu aparece no topo */
+      .mobile-topbar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        padding:12px 12px;
+        border-bottom:1px solid rgba(148,163,184,.18);
+        background: rgba(2,6,23,.55);
+        position:sticky;
+        top:0;
+        z-index:8000;
+        backdrop-filter: blur(8px);
+      }
+      .mobile-topbar .mt-title{
+        font-weight:900;
+        letter-spacing:.2px;
+      }
+      .mobile-topbar .mt-actions{
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+    }
+
+
+    .mobile-topbar{display:none;}
+
+    /* Planos: edição controlada */
+    .is-locked{
+      opacity:.75;
+      pointer-events:none;
+    }
+    .inline-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-top:12px;
+    }
+
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-08";
+    window.__BUILD_ID__ = "v2026.02.20-13";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -750,49 +815,7 @@
             </div>
           `
         },
-        plans: {
-          title: "Planos",
-          sub: "Área de administração (separada do perfil/configurações).",
-          html: `
-            <div class="card">
-              <div class="row" style="align-items:flex-start">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Mensal / Semestral / Anual</div>
-                  <div class="desc">Defina o período do plano</div>
-                </div>
-                <select id="planPeriod">
-                  <option value="mensal">Mensal</option>
-                  <option value="semestral">Semestral</option>
-                  <option value="anual">Anual</option>
-                </select>
-              </div>
-              <div class="row" style="align-items:flex-start">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Forma PGto</div>
-                  <div class="desc">Cartão / PIX / Boleto</div>
-                </div>
-                <input id="planPayment" placeholder="Ex.: PIX" />
-              </div>
-              <div class="row" style="align-items:flex-start">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Ativo / Bloqueado</div>
-                  <div class="desc">Controle de status</div>
-                </div>
-                <select id="planStatus">
-                  <option value="ativo">Ativo</option>
-                  <option value="bloqueado">Bloqueado</option>
-                </select>
-              </div>
-              <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-                <button class="btn-muted" onclick="alert('Cancelado')">Cancelar</button>
-                <button class="btn-primary" onclick="savePlanSettings()">Salvar</button>
-              </div>
-              <p class="note" style="margin-top:12px">
-                Dica: “Bloqueado” impede login. Útil se quiser travar o acesso.
-              </p>
-            </div>
-          `
-        },
+        
         settings: {
           title: "Configurações",
           sub: "Preferências do app. (Planos e Dados ficam na lateral).",
@@ -806,7 +829,83 @@
               </div>
               <p class="note" style="margin-top:10px;">Categorias foi movido para Configurações para deixar o menu lateral mais simples.</p></p>
             </div>
-          `
+          
+        <div class="card" style="margin-top:20px;">
+          <h3>🗂️ Dados</h3>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Exportar Dados</div>
+                <div class="desc">Baixar seus dados em formato JSON</div>
+              </div>
+              <button class="btn-primary" onclick="exportData()">Exportar</button>
+            </div>
+
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Importar Dados</div>
+                <div class="desc">Carregar dados de um arquivo JSON</div>
+              </div>
+              <button class="btn-muted" onclick="importData()">Importar</button>
+            </div>
+
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Limpar Dados</div>
+                <div class="desc">Remover todos os dados do aplicativo (ação irreversível)</div>
+              </div>
+              <button class="btn-danger" onclick="clearAllData()">Limpar</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+          <h3>🧾 Planos</h3>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+            
+            <div id="planEditableWrap">
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Tipo de Plano</div>
+                <div class="desc">Mensal / Semestral / Anual
+
+            <div class="inline-actions">
+              <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
+              <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
+              <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
+              <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+            </div>
+</div>
+              </div>
+              <select id="planTypeSelect">
+                <option value="mensal">Mensal</option>
+                <option value="semestral">Semestral</option>
+                <option value="anual">Anual</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Forma PGTO</div>
+                <div class="desc">Cartão / PIX / Boleto</div>
+              </div>
+              <input id="planPaymentInput" placeholder="Ex: PIX" />
+            </div>
+
+            <div class="row">
+              <div style="flex:1;">
+                <div class="label">Status</div>
+                <div class="desc">Ativo / Bloqueado</div>
+              </div>
+              <select id="planStatusSelect">
+                <option value="ativo">Ativo</option>
+                <option value="bloqueado">Bloqueado</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+    `
         },
         login: {
           title: "Login",
@@ -868,7 +967,7 @@
       try{ updateAlertsBadges(); }catch(e){}
 
       // pós-render: preencher Planos
-      if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){} }
+      if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){} }
 
       if(page === "plans"){
         try{
@@ -997,10 +1096,134 @@
       }).join("");
     }
 
+
+    // ===== Planos (Tipo + Forma PGTO livres via 'Alterar'; Status só Admin com PIN) =====
+    function loadPlanConfig(){
+      try{
+        return JSON.parse(localStorage.getItem("ui_plan_config") || "null");
+      }catch(e){ return null; }
+    }
+    function savePlanConfig(cfg){
+      localStorage.setItem("ui_plan_config", JSON.stringify(cfg));
+    }
+    async function ensureAdminPin(){
+      // Se não existir PIN, cria um
+      const existing = localStorage.getItem("admin_pin_hash");
+      if(existing) return true;
+      const pin = prompt("Definir PIN Admin (4 dígitos):");
+      if(!pin) return false;
+      const clean = String(pin).replace(/\D/g,"");
+      if(clean.length != 4) { alert("PIN inválido. Use 4 dígitos."); return false; }
+      const h = await sha256(clean);
+      localStorage.setItem("admin_pin_hash", h);
+      alert("PIN Admin definido!");
+      return true;
+    }
+    async function verifyAdminPin(){
+      const h = localStorage.getItem("admin_pin_hash");
+      if(!h){
+        const ok = await ensureAdminPin();
+        return ok;
+      }
+      const pin = prompt("Digite o PIN Admin (4 dígitos):");
+      if(!pin) return false;
+      const clean = String(pin).replace(/\D/g,"");
+      if(clean.length != 4){ alert("PIN inválido."); return false; }
+      const chk = await sha256(clean);
+      if(chk !== h){ alert("PIN incorreto."); return false; }
+      return true;
+    }
+
+    function lockPlanFields(locked){
+      const typeEl = document.getElementById("planTypeSelect");
+      const payEl = document.getElementById("planPaymentInput");
+      if(typeEl) typeEl.disabled = locked;
+      if(payEl) payEl.disabled = locked;
+      const wrap = document.getElementById("planEditableWrap");
+      if(wrap){
+        wrap.classList.toggle("is-locked", locked);
+      }
+      const alterBtn = document.getElementById("planAlterBtn");
+      const saveBtn = document.getElementById("planSaveBtn");
+      if(alterBtn) alterBtn.style.display = locked ? "inline-flex" : "none";
+      if(saveBtn) saveBtn.style.display = locked ? "none" : "inline-flex";
+    }
+
+    function applyPlanConfigToUI(){
+      const cfg = loadPlanConfig() || { type:"mensal", pgto:"", status:"ativo", locked:true };
+      const typeEl = document.getElementById("planTypeSelect");
+      const payEl = document.getElementById("planPaymentInput");
+      const statusEl = document.getElementById("planStatusSelect");
+      if(typeEl) typeEl.value = cfg.type || "mensal";
+      if(payEl) payEl.value = cfg.pgto || "";
+      if(statusEl) statusEl.value = cfg.status || "ativo";
+      lockPlanFields(cfg.locked !== false); // default locked
+    }
+
+    function savePlanFromUI(lockAfter=true){
+      const typeEl = document.getElementById("planTypeSelect");
+      const payEl = document.getElementById("planPaymentInput");
+      const statusEl = document.getElementById("planStatusSelect");
+      const cfg = loadPlanConfig() || {};
+      cfg.type = typeEl ? typeEl.value : (cfg.type || "mensal");
+      cfg.pgto = payEl ? String(payEl.value||"").trim() : (cfg.pgto || "");
+      cfg.status = statusEl ? statusEl.value : (cfg.status || "ativo");
+      cfg.locked = lockAfter ? true : false;
+      savePlanConfig(cfg);
+      lockPlanFields(cfg.locked);
+      alert("Plano salvo.");
+    }
+
+    async function adminToggleStatus(){
+      const ok = await verifyAdminPin();
+      if(!ok) return;
+      const statusEl = document.getElementById("planStatusSelect");
+      if(!statusEl) return;
+      const cur = statusEl.value || "ativo";
+      const next = (cur === "ativo") ? "bloqueado" : "ativo";
+      statusEl.value = next;
+      // salva sem destravar campos
+      const cfg = loadPlanConfig() || {};
+      cfg.status = next;
+      cfg.locked = (cfg.locked !== false);
+      savePlanConfig(cfg);
+      alert("Status alterado para: " + (next === "ativo" ? "Ativo" : "Bloqueado"));
+    }
+
+    async function adminChangePin(){
+      const exists = !!localStorage.getItem("admin_pin_hash");
+      if(exists){
+        const ok = await verifyAdminPin();
+        if(!ok) return;
+      }
+      const pin = prompt("Novo PIN Admin (4 dígitos):");
+      if(!pin) return;
+      const clean = String(pin).replace(/\D/g,"");
+      if(clean.length != 4){ alert("PIN inválido. Use 4 dígitos."); return; }
+      const h = await sha256(clean);
+      localStorage.setItem("admin_pin_hash", h);
+      alert("PIN Admin atualizado.");
+    }
+
 function initNav(){
       // build tags
       document.getElementById("buildTag").textContent = window.__BUILD_ID__;
       document.getElementById("buildPill").textContent = "Build " + window.__BUILD_ID__;
+
+      // build pill no mobile
+      const bpm = document.getElementById("buildPillMobile");
+      if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
+
+      // mobile drawer
+      const overlay = document.getElementById("drawerOverlay");
+      const sb = document.querySelector(".sidebar");
+      const openDrawer = ()=>{ sb?.classList.add("open"); overlay?.classList.add("active"); };
+      const closeDrawer = ()=>{ sb?.classList.remove("open"); overlay?.classList.remove("active"); };
+      document.getElementById("mobileMenuBtn")?.addEventListener("click", ()=>{
+        if(sb?.classList.contains("open")) closeDrawer(); else openDrawer();
+      });
+      overlay?.addEventListener("click", closeDrawer);
+
 
       // sidebar: estado salvo
       const sb = document.querySelector(".sidebar");
@@ -1018,6 +1241,7 @@ function initNav(){
           e.preventDefault();
           const page = a.getAttribute("data-page");
           renderPage(page);
+          try{ if(window.matchMedia && window.matchMedia("(max-width: 980px)").matches){ document.querySelector(".sidebar")?.classList.remove("open"); document.getElementById("drawerOverlay")?.classList.remove("active"); } }catch(e){}
         });
       });
 
@@ -1031,6 +1255,7 @@ function initNav(){
   </script>
 </head>
 <body>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
@@ -1049,9 +1274,6 @@ function initNav(){
         <a href="#insights" data-page="insights" data-label="Relatórios & Gráficos"><span class="left"><span class="icon">📊</span><span class="text">Relatórios &amp; Gráficos</span></a>
 
         <div class="spacer"></div>
-
-        <a href="#data" data-page="data" data-label="Dados"><span class="left"><span class="icon">🗂️</span><span class="text">Dados</span></a>
-        <a href="#plans" data-page="plans" data-label="Planos"><span class="left"><span class="icon">🧾</span><span class="text">Planos</span></a>
         <a href="#settings" data-page="settings" data-label="Configurações"><span class="left"><span class="icon">⚙️</span><span class="text">Configurações</span></a>
 
         <!-- Login no final -->
@@ -1060,6 +1282,17 @@ function initNav(){
     </aside>
 
     <main class="main">
+      
+      <div class="mobile-topbar">
+        <div class="mt-actions">
+          <button class="btn-muted" id="mobileMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px;">☰</button>
+          <div class="mt-title">Minhas Finanças</div>
+        </div>
+        <div class="mt-actions">
+          <span class="pill" id="buildPillMobile"></span>
+        </div>
+      </div>
+
       <div class="topbar">
         <div>
           <h1 class="title" id="pageTitle">Visão Geral</h1>
