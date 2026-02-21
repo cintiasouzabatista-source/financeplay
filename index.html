@@ -502,7 +502,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-26";
+    window.__BUILD_ID__ = "v2026.02.20-27";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -760,7 +760,7 @@ function loadFixedBills(){
           <div class="card">
             <h3>🔔 Próximos vencimentos</h3>
             <p class="note">Nenhuma conta vencendo nos próximos 3 dias.</p>
-            <p class="note">Cadastre em <b>Contas</b> (marque como <b>fixa</b>) ou em <b>Configurações → Lembretes rápidos</b>.</p>
+            <p class="note">Cadastre em <b>Transações → Contas fixas</b> (marque a conta como <b>fixa</b>) ou em <b>Configurações → Lembretes rápidos</b>.</p>
           </div>
         `;
       }
@@ -925,8 +925,40 @@ function loadFixedBills(){
         },
         transactions: {
           title: "Transações",
-          sub: "Entradas, saídas e transferências.",
-          html: `<div class="card"><p class="note">Tela de transações (placeholder nesta versão).</p></div>`
+          sub: "Entradas, saídas e transferências (e configuração de contas fixas).",
+          html: `
+            <div class="card">
+              <h3>🧾 Transações</h3>
+              <p class="note">Tela de transações (placeholder nesta versão). Aqui depois entraremos com entradas/saídas/⇄.</p>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="card">
+              <h3>🔔 Contas fixas (vencimentos)</h3>
+              <p class="note">Aqui você marca uma conta como <b>fixa</b> e define o <b>dia de vencimento</b> (e valor opcional). Isso alimenta o alerta da Visão Geral.</p>
+
+              <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-top:10px;">
+                <div style="flex:1; min-width:240px;">
+                  <div class="note" style="margin-bottom:6px;">Conta</div>
+                  <select id="txFixedAccount"></select>
+                </div>
+                <div style="width:150px; min-width:140px;">
+                  <div class="note" style="margin-bottom:6px;">Dia</div>
+                  <input id="txFixedDueDay" inputmode="numeric" placeholder="1-31" />
+                </div>
+                <div style="width:190px; min-width:170px;">
+                  <div class="note" style="margin-bottom:6px;">Valor (opcional)</div>
+                  <input id="txFixedAmount" placeholder="0,00" />
+                </div>
+                <button class="btn-primary" onclick="setAccountFixedFromUI()">Salvar</button>
+                <button class="btn-muted" onclick="unsetAccountFixedFromUI()">Remover fixa</button>
+              </div>
+
+              <div class="section-divider"></div>
+              <div id="fixedAccountsList"></div>
+            </div>
+          `
         },
         categories: {
           title: "Categorias",
@@ -935,40 +967,23 @@ function loadFixedBills(){
         },
         accounts: {
           title: "Contas",
-          sub: "Gerencie suas contas e saldos (inclui contas fixas com vencimento).",
+          sub: "Gerencie suas contas e saldos. (As contas fixas são configuradas em Transações).",
           html: `
             <div class="card">
               <h3>➕ Nova conta</h3>
               <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                <div style="flex:1; min-width:220px;">
+                <div style="flex:1; min-width:240px;">
                   <div class="note" style="margin-bottom:6px;">Nome</div>
-                  <input id="accName" placeholder="Ex: Mercado Pago / IPVA / Aluguel" />
+                  <input id="accName" placeholder="Ex: Mercado Pago / Dinheiro / VR / VA" />
                 </div>
-                <div style="width:180px; min-width:160px;">
+                <div style="width:200px; min-width:170px;">
                   <div class="note" style="margin-bottom:6px;">Saldo (opcional)</div>
                   <input id="accBalance" placeholder="0,00" />
                 </div>
-                <div style="width:190px; min-width:170px;">
-                  <div class="note" style="margin-bottom:6px;">Conta fixa?</div>
-                  <select id="accIsFixed">
-                    <option value="nao">Não</option>
-                    <option value="sim">Sim (gera alerta)</option>
-                  </select>
-                </div>
-                <div style="width:150px; min-width:140px;">
-                  <div class="note" style="margin-bottom:6px;">Vencimento</div>
-                  <input id="accDueDay" inputmode="numeric" placeholder="Dia 1-31" />
-                </div>
-                <div style="width:190px; min-width:170px;">
-                  <div class="note" style="margin-bottom:6px;">Valor (fixa)</div>
-                  <input id="accAmount" placeholder="0,00" />
-                </div>
-                <div style="display:flex; gap:10px;">
-                  <button class="btn-primary" onclick="addAccountFromUI()">Salvar</button>
-                </div>
+                <button class="btn-primary" onclick="addAccountFromUI()">Salvar</button>
               </div>
               <p class="note" style="margin-top:10px;">
-                💡 Se marcar como <b>conta fixa</b>, ela entra em <b>Próximos vencimentos</b> automaticamente.
+                💡 Para criar <b>alertas de vencimento</b>, vá em <b>Transações → Contas fixas</b> e marque a conta como fixa.
               </p>
             </div>
 
@@ -977,7 +992,6 @@ function loadFixedBills(){
             <div class="card">
               <h3>📋 Suas contas</h3>
               <div id="accountsList"></div>
-              <p class="note" style="margin-top:10px;">Contas fixas entram no alerta sem cadastro duplicado.</p>
             </div>
           `
         },
@@ -1233,6 +1247,8 @@ function loadFixedBills(){
       // pós-render: preencher Planos
       if(page === "accounts"){ try{ renderAccountsList(); }catch(e){} }
 
+      if(page === "transactions"){ try{ refreshAccountsSelect(); }catch(e){}; try{ renderFixedAccountsList(); }catch(e){} }
+
       if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
 
       if(page === "plans"){
@@ -1304,14 +1320,33 @@ function loadFixedBills(){
     function addAccountFromUI(){
       const name = (document.getElementById("accName")?.value || "").trim();
       const bal = parseBRL(document.getElementById("accBalance")?.value || "");
-      const isFixed = (document.getElementById("accIsFixed")?.value || "nao") === "sim";
-      const dueDay = Number((document.getElementById("accDueDay")?.value || "").replace(/\D/g,''));
-      const amount = parseBRL(document.getElementById("accAmount")?.value || "");
 
       if(!name) return alert("Digite o nome da conta.");
-      if(isFixed){
-        if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Dia de vencimento inválido (1 a 31).");
-      }
+
+      const acc = loadAccounts();
+      acc.push({
+        id: "acc_" + Date.now(),
+        name,
+        balance: bal,
+        // flags de conta fixa podem ser configuradas depois em Transações
+        isFixed: false,
+        dueDay: null,
+        amount: null,
+        enabled: true
+      });
+      saveAccounts(acc);
+
+      // limpa campos
+      ["accName","accBalance"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
+
+      renderAccountsList();
+      try{ refreshAccountsSelect(); }catch(e){}
+      try{ updateAlertsBadges(); }catch(e){}
+      alert("Conta salva!");
+    }
 
       const acc = loadAccounts();
       acc.push({
@@ -1345,17 +1380,15 @@ function loadFixedBills(){
       if(!acc.length){ host.innerHTML = '<div class="note">Nenhuma conta cadastrada ainda.</div>'; return; }
       host.innerHTML = acc.map(a=>{
         const bal = (a.balance !== null && a.balance !== undefined) ? ('R$ ' + Number(a.balance).toFixed(2).replace('.',',')) : '—';
-        const fixed = a.isFixed ? ('Fixa • dia ' + String(a.dueDay||'').padStart(2,'0')) : 'Não fixa';
-        const amt = (a.amount !== null && a.amount !== undefined) ? ('R$ ' + Number(a.amount).toFixed(2).replace('.',',')) : '—';
         const st = (a.enabled === false) ? 'Desativada' : 'Ativa';
+        const fixed = a.isFixed ? ('<b class="badge-ok">Fixa</b> • vence dia ' + String(a.dueDay||'').padStart(2,'0')) : '<span class="note">Não fixa</span>';
         return `
           <div class="row" style="align-items:center">
             <div style="flex:1; min-width:220px;">
               <div class="label">${a.name}</div>
-              <div class="desc">Saldo: <b>${bal}</b> • ${fixed} • Valor fixa: <b>${amt}</b> • <b>${st}</b></div>
+              <div class="desc">Saldo: <b>${bal}</b> • ${fixed} • <b>${st}</b></div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-              <button class="btn-muted" onclick="toggleAccountFixed('${a.id}')">${a.isFixed ? 'Remover fixa' : 'Tornar fixa'}</button>
               <button class="btn-muted" onclick="toggleAccountEnabled('${a.id}')">${a.enabled === false ? 'Ativar' : 'Desativar'}</button>
               <button class="btn-danger" onclick="removeAccount('${a.id}')">Excluir</button>
             </div>
@@ -1363,11 +1396,12 @@ function loadFixedBills(){
         `;
       }).join('');
     }
-
     function removeAccount(id){
       const acc = loadAccounts().filter(a=>a.id!==id);
       saveAccounts(acc);
       renderAccountsList();
+      try{ refreshAccountsSelect(); }catch(e){}
+      try{ renderFixedAccountsList(); }catch(e){}
       try{ updateAlertsBadges(); }catch(e){}
     }
 
@@ -1381,24 +1415,81 @@ function loadFixedBills(){
       try{ updateAlertsBadges(); }catch(e){}
     }
 
-    function toggleAccountFixed(id){
+
+    // ===== Transações: configurar conta fixa (alerta) =====
+    function refreshAccountsSelect(){
+      const sel = document.getElementById("txFixedAccount");
+      if(!sel) return;
+      const acc = loadAccounts().filter(a=>a && a.enabled !== false);
+      sel.innerHTML = acc.length
+        ? acc.map(a=>`<option value="${a.id}">${a.name}</option>`).join("")
+        : `<option value="">(Cadastre uma conta primeiro)</option>`;
+    }
+
+    function renderFixedAccountsList(){
+      const host = document.getElementById("fixedAccountsList");
+      if(!host) return;
+      const fixed = loadAccounts().filter(a=>a && a.enabled !== false && a.isFixed);
+      if(!fixed.length){
+        host.innerHTML = '<div class="note">Nenhuma conta fixa cadastrada ainda.</div>';
+        return;
+      }
+      host.innerHTML = fixed.map(a=>{
+        const dd = String(a.dueDay||"").padStart(2,'0');
+        const amt = (a.amount !== null && a.amount !== undefined) ? ('R$ ' + Number(a.amount).toFixed(2).replace('.',',')) : '—';
+        return `
+          <div class="row" style="align-items:center">
+            <div style="flex:1; min-width:220px;">
+              <div class="label">${a.name}</div>
+              <div class="desc">Vence dia <b>${dd}</b> • Valor: <b>${amt}</b></div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+              <button class="btn-muted" onclick="unsetAccountFixed('${a.id}')">Remover fixa</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function setAccountFixedFromUI(){
+      const sel = document.getElementById("txFixedAccount");
+      const id = sel?.value || "";
+      if(!id) return alert("Selecione uma conta.");
+      const dueDay = Number((document.getElementById("txFixedDueDay")?.value || "").replace(/\D/g,''));
+      if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Dia inválido (1-31).");
+      const amount = parseBRL(document.getElementById("txFixedAmount")?.value || "");
+
+      const acc = loadAccounts();
+      const a = acc.find(x=>x.id===id);
+      if(!a) return alert("Conta não encontrada.");
+
+      a.isFixed = true;
+      a.dueDay = dueDay;
+      a.amount = amount;
+      saveAccounts(acc);
+
+      renderFixedAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+      alert("Conta marcada como fixa!");
+    }
+
+    function unsetAccountFixed(id){
       const acc = loadAccounts();
       const a = acc.find(x=>x.id===id);
       if(!a) return;
+      a.isFixed = false;
+      a.dueDay = null;
+      a.amount = null;
+      saveAccounts(acc);
+      renderFixedAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+    }
 
-      if(!a.isFixed){
-        const dd = prompt("Dia de vencimento (1-31):", a.dueDay || "");
-        const dueDay = Number(String(dd||"").replace(/\D/g,''));
-        if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Vencimento inválido.");
-        const am = prompt("Valor (opcional) ex: 120,50:", (a.amount ?? "") );
-        a.isFixed = true;
-        a.dueDay = dueDay;
-        a.amount = parseBRL(am);
-      }else{
-        a.isFixed = false;
-        a.dueDay = null;
-        a.amount = null;
-      }
+    function unsetAccountFixedFromUI(){
+      const id = (document.getElementById("txFixedAccount")?.value || "");
+      if(!id) return alert("Selecione uma conta.");
+      unsetAccountFixed(id);
+    }
 
       saveAccounts(acc);
       renderAccountsList();
