@@ -203,20 +203,22 @@
       input, select{max-width:100%}
     }
   
-    /* Sidebar minimizada */
+    /* Sidebar minimizada (modo compacto com nomes) */
     .sidebar.collapsed{
-      width:86px;
-      padding:14px 10px;
+      width:200px;
+      padding:14px 12px;
     }
     .sidebar.collapsed #brandTitle{display:none;}
-    .sidebar.collapsed .nav a{padding:10px 10px; justify-content:center;}
-    .sidebar.collapsed .nav a .left{gap:0;}
-    .sidebar.collapsed .nav .spacer{height:10px;}
     .sidebar.collapsed .version{display:none;}
-    .sidebar.collapsed + .main{margin-left:86px;}
-
-  
-    /* Startup alerts (toast/modal leve) */
+    .sidebar.collapsed .nav a{
+      padding:10px 12px;
+      justify-content:space-between;
+    }
+    .sidebar.collapsed .nav a .left{gap:10px;}
+    .sidebar.collapsed .nav .text{display:inline;}
+    .sidebar.collapsed .nav a:hover::after{display:none;}
+    .sidebar.collapsed + .main{margin-left:200px;}
+/* Startup alerts (toast/modal leve) */
     .toast-overlay{
       position:fixed; inset:0;
       display:flex; align-items:flex-start; justify-content:center;
@@ -281,7 +283,7 @@
       opacity:.95;
     }
     .nav .text{ display:inline; }
-    .sidebar.collapsed .nav .text{ display:none; }
+    .sidebar.collapsed .nav .text{ display:inline; }
 
     /* Tooltip com nome ao passar o mouse na lateral minimizada */
     .sidebar.collapsed .nav a{
@@ -493,7 +495,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-23";
+    window.__BUILD_ID__ = "v2026.02.20-24B-compact";
 
     async function sha256(text){
       const enc = new TextEncoder();
