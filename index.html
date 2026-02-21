@@ -428,10 +428,37 @@
       #fallbackMenuBtn{ display:inline-flex; align-items:center; justify-content:center; }
     }
 
+
+    /* === Mobile drawer (robusto) === */
+    .drawer-overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      opacity:0; pointer-events:none;
+      transition: opacity .18s ease;
+      z-index:12000;
+    }
+    .drawer-overlay.active{ opacity:1; pointer-events:auto; }
+
+    @media (max-width: 980px){
+      .sidebar{
+        position:fixed !important;
+        top:0; left:0; bottom:0;
+        width:260px !important;
+        transform: translateX(-110%);
+        transition: transform .22s ease;
+        z-index:13000;
+      }
+      .sidebar.open{ transform: translateX(0) !important; }
+      body.drawer-open{ overflow:hidden; }
+      /* no mobile sempre mostrar texto */
+      .sidebar.collapsed .nav .text{ display:inline !important; }
+      .sidebar.collapsed .nav a:hover::after{ display:none !important; }
+    }
+
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-17";
+    window.__BUILD_ID__ = "v2026.02.20-18";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1299,6 +1326,58 @@
 
     function isAdminMode(){
       return sessionStorage.getItem("admin_mode") === "1";
+    }
+
+
+    // === Mobile drawer handlers (robusto) ===
+    function setupMobileDrawer(){
+      const overlay = document.getElementById("drawerOverlay");
+      const sidebar = document.querySelector(".sidebar");
+      const btn = document.getElementById("mobileMenuBtn") || document.querySelector("[data-mobile-menu]") || document.querySelector(".mobile-menu-btn");
+
+      if(!sidebar || !overlay || !btn) return;
+
+      let timer = null;
+      const startAutoHide = ()=>{
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(()=> closeDrawer(), 6000);
+      };
+      const openDrawer = ()=>{
+        sidebar.classList.add("open");
+        overlay.classList.add("active");
+        document.body.classList.add("drawer-open");
+        startAutoHide();
+      };
+      const closeDrawer = ()=>{
+        sidebar.classList.remove("open");
+        overlay.classList.remove("active");
+        document.body.classList.remove("drawer-open");
+        if(timer) clearTimeout(timer);
+        timer = null;
+      };
+      const toggleDrawer = ()=>{
+        if(sidebar.classList.contains("open")) closeDrawer();
+        else openDrawer();
+      };
+
+      // click / touch
+      btn.addEventListener("click", (e)=>{ e.preventDefault(); toggleDrawer(); });
+      btn.addEventListener("touchend", (e)=>{ e.preventDefault(); toggleDrawer(); }, {passive:false});
+      overlay.addEventListener("click", closeDrawer);
+
+      // reinicia timer se interagir com menu
+      ["touchstart","touchmove","scroll","mousemove"].forEach(ev=>{
+        sidebar.addEventListener(ev, ()=>{ if(sidebar.classList.contains("open")) startAutoHide(); }, {passive:true});
+      });
+
+      // fecha ao clicar em link do menu
+      sidebar.querySelectorAll('a[data-page]').forEach(a=>{
+        a.addEventListener("click", ()=>{
+          if(window.matchMedia && window.matchMedia("(max-width: 980px)").matches){
+            closeDrawer();
+          }
+        });
+      });
     }
 
 function initNav(){
