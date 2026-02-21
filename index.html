@@ -224,61 +224,6 @@
     .sidebar.collapsed .version{display:none;}
     .sidebar.collapsed + .main{margin-left:86px;}
 
-  
-    /* Startup alerts (toast/modal leve) */
-    .toast-overlay{
-      position:fixed; inset:0;
-      display:flex; align-items:flex-start; justify-content:center;
-      padding:16px; z-index:9999;
-      background: rgba(0,0,0,.35);
-      opacity:0; pointer-events:none;
-      transition: opacity .18s ease;
-    }
-    .toast-overlay.active{ opacity:1; pointer-events:auto; }
-    .toast-card{
-      width:min(680px, 100%);
-      background: rgba(255,255,255,.98);
-      color:#0f172a;
-      border-radius:14px;
-      border:1px solid rgba(15,23,42,.10);
-      box-shadow: 0 18px 40px rgba(0,0,0,.25);
-      overflow:hidden;
-    }
-    .toast-head{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:12px 14px;
-      background: rgba(99,102,241,.10);
-      border-bottom:1px solid rgba(15,23,42,.08);
-    }
-    .toast-title{ font-weight:900; font-size:14px; }
-    .toast-body{ padding:12px 14px; }
-    .toast-item{ display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px dashed rgba(15,23,42,.12); }
-    .toast-item:last-child{ border-bottom:none; }
-    .toast-item b{ font-weight:900; }
-    .toast-item small{ color:#475569; }
-    .toast-actions{ display:flex; gap:10px; justify-content:flex-end; padding:12px 14px; border-top:1px solid rgba(15,23,42,.08); background: rgba(15,23,42,.03); flex-wrap:wrap; }
-    .toast-actions .btn-muted{ background: rgba(15,23,42,.06); color:#0f172a; border:1px solid rgba(15,23,42,.10); }
-    .toast-actions .btn-primary{ border:1px solid rgba(99,102,241,.25); }
-
-
-    /* Badge discreto para alertas no menu */
-    .menu-badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:18px;
-      height:18px;
-      padding:0 6px;
-      border-radius:999px;
-      background:#ef4444;
-      color:#fff;
-      font-size:11px;
-      font-weight:800;
-      line-height:1;
-      margin-left:8px;
-    }
-    .menu-badge.hidden{ display:none; }
-
 
     /* Ícones no menu (melhor leitura quando a lateral está minimizada) */
     .nav .icon{
@@ -502,7 +447,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-25";
+    window.__BUILD_ID__ = "v2026.02.21-25A-PROD";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -528,251 +473,6 @@
       const url = new URL(location.href);
       url.searchParams.set("v", window.__BUILD_ID__ + "-" + Date.now());
       location.href = url.toString();
-    }
-
-    
-    // ===== Alertas de contas a vencer (ao abrir o app) =====
-    function loadFixedBills(){
-      try{
-        const arr = JSON.parse(localStorage.getItem("fixed_bills") || "[]");
-        return Array.isArray(arr) ? arr : [];
-      }catch(e){ return []; }
-    }
-    function saveFixedBills(arr){
-      localStorage.setItem("fixed_bills", JSON.stringify(arr || []));
-    }
-
-    // Próximo vencimento (dia fixo 1-31)
-    function nextDueDate(day, now=new Date()){
-      const y = now.getFullYear();
-      const m = now.getMonth();
-      const d = Math.max(1, Math.min(31, Number(day)||1));
-      const lastDayThisMonth = new Date(y, m+1, 0).getDate();
-      const dueThisMonth = new Date(y, m, Math.min(d, lastDayThisMonth), 12, 0, 0, 0);
-      const todayNoon = new Date(y, m, now.getDate(), 12, 0, 0, 0);
-      if(dueThisMonth >= todayNoon) return dueThisMonth;
-      const lastDayNextMonth = new Date(y, m+2, 0).getDate();
-      return new Date(y, m+1, Math.min(d, lastDayNextMonth), 12, 0, 0, 0);
-    }
-
-    function daysBetween(a,b){
-      const one = 24*60*60*1000;
-      const A = new Date(a.getFullYear(),a.getMonth(),a.getDate());
-      const B = new Date(b.getFullYear(),b.getMonth(),b.getDate());
-      return Math.round((B-A)/one);
-    }
-
-    function formatBRDate(dt){
-      const dd = String(dt.getDate()).padStart(2,'0');
-      const mm = String(dt.getMonth()+1).padStart(2,'0');
-      const yy = dt.getFullYear();
-      return `${dd}/${mm}/${yy}`;
-    }
-
-    function shouldSkipAlertsToday(){
-      try{
-        const key = localStorage.getItem("skip_bill_alerts_until") || "";
-        if(!key) return false;
-        const until = new Date(key);
-        return until > new Date();
-      }catch(e){ return false; }
-    }
-
-    function skipAlertsForToday(){
-      const now = new Date();
-      const until = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 6, 0, 0, 0);
-      localStorage.setItem("skip_bill_alerts_until", until.toISOString());
-    }
-
-    function buildBillsAlerts(now=new Date()){
-      const bills = loadFixedBills().filter(b => b && b.enabled !== false);
-      if(!bills.length) return { total:0, items:[] };
-
-      const soonDays = 3; // janela de alerta
-      const items = bills.map(b=>{
-        const due = nextDueDate(b.dueDay, now);
-        const diff = daysBetween(now, due); // 0 hoje, 1 amanhã etc.
-        return {
-          id: b.id || (b.name + "|" + b.dueDay),
-          name: b.name || "Conta",
-          dueDay: b.dueDay,
-          amount: b.amount,
-          due,
-          diff
-        };
-      })
-      .filter(x => x.diff <= soonDays)
-      .sort((a,b)=> a.diff - b.diff);
-
-      return { total: items.length, items };
-    }
-
-    function openBillsAlertModal(payload){
-      let ov = document.getElementById("toastOverlay");
-      if(!ov){
-        ov = document.createElement("div");
-        ov.id = "toastOverlay";
-        ov.className = "toast-overlay";
-        ov.innerHTML = `
-          <div class="toast-card" role="dialog" aria-modal="true" aria-label="Alertas de contas">
-            <div class="toast-head">
-              <div class="toast-title">🔔 Contas a vencer</div>
-              <button class="btn-muted" id="toastCloseBtn" style="padding:8px 10px; border-radius:10px;">Fechar</button>
-            </div>
-            <div class="toast-body" id="toastBody"></div>
-            <div class="toast-actions">
-              <button class="btn-muted" id="toastSkipBtn">Não mostrar hoje</button>
-              <button class="btn-primary" id="toastGoBtn">Ver Transações</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(ov);
-      }
-
-      const body = ov.querySelector("#toastBody");
-      const list = payload.items.map(it=>{
-        let label = "Vence em breve";
-        if(it.diff < 0) label = "Atrasada";
-        else if(it.diff === 0) label = "Vence hoje";
-        else if(it.diff === 1) label = "Vence amanhã";
-        else label = `Vence em ${it.diff} dias`;
-
-        const amount = (it.amount !== undefined && it.amount !== null && it.amount !== "")
-          ? `<small>R$ ${Number(it.amount).toFixed(2).replace('.',',')}</small>`
-          : `<small>sem valor</small>`;
-
-        return `
-          <div class="toast-item">
-            <div>
-              <b>${it.name}</b><br/>
-              <small>${label} • ${formatBRDate(it.due)}</small>
-            </div>
-            <div style="text-align:right">${amount}</div>
-          </div>
-        `;
-      }).join("");
-
-      body.innerHTML = `
-        <div style="margin-bottom:8px; color:#334155; font-size:13px;">
-          Você tem <b>${payload.total}</b> conta(s) vencendo nos próximos 3 dias.
-        </div>
-        ${list}
-        <div style="margin-top:10px; font-size:12px; color:#64748b;">
-          Dica: cadastre as contas fixas em <b>Configurações</b> para o alerta funcionar sempre.
-        </div>
-      `;
-
-      function close(){ ov.classList.remove("active"); }
-      ov.querySelector("#toastCloseBtn").onclick = close;
-      ov.querySelector("#toastSkipBtn").onclick = ()=>{ skipAlertsForToday(); close(); };
-      ov.querySelector("#toastGoBtn").onclick = ()=>{ close(); renderPage("transactions"); };
-
-      requestAnimationFrame(()=> ov.classList.add("active"));
-    }
-
-    
-    function getBillsAlertsForDashboard(){
-      const bills = loadFixedBills().filter(b => b && b.enabled !== false);
-      if(!bills.length) return { total:0, items:[] };
-
-      const now = new Date();
-      const soonDays = 3;
-      const items = bills.map(b=>{
-        const due = nextDueDate(b.dueDay, now);
-        const diff = daysBetween(now, due);
-        return {
-          id: b.id || (b.name + "|" + b.dueDay),
-          name: b.name || "Conta",
-          dueDay: b.dueDay,
-          amount: b.amount,
-          due,
-          diff
-        };
-      }).filter(x => x.diff <= soonDays)
-        .sort((a,b)=> a.diff - b.diff);
-
-      return { total: items.length, items };
-    }
-
-    function updateAlertsBadges(){
-      try{
-        const payload = getBillsAlertsForDashboard();
-        const n = payload.total || 0;
-        ["alertsBadgeDashboard","alertsBadgeTx"].forEach(id=>{
-          const el = document.getElementById(id);
-          if(!el) return;
-          if(n > 0){
-            el.textContent = String(n);
-            el.classList.remove("hidden");
-          } else {
-            el.classList.add("hidden");
-          }
-        });
-      }catch(e){}
-    }
-
-    function renderBillsAlertsCardHTML(){
-      const payload = getBillsAlertsForDashboard();
-      if(payload.total <= 0){
-        return `
-          <div class="card">
-            <h3>🔔 Próximos vencimentos</h3>
-            <p class="note">Nenhuma conta vencendo nos próximos 3 dias.</p>
-            <p class="note">Cadastre em <b>Configurações → Alertas de contas</b>.</p>
-          </div>
-        `;
-      }
-
-      const top = payload.items.slice(0,3);
-      const rows = top.map(it=>{
-        let label = "Vence em breve";
-        if(it.diff < 0) label = "Atrasada";
-        else if(it.diff === 0) label = "Vence hoje";
-        else if(it.diff === 1) label = "Vence amanhã";
-        else label = `Vence em ${it.diff} dias`;
-
-        const amount = (it.amount !== undefined && it.amount !== null && it.amount !== "")
-          ? `R$ ${Number(it.amount).toFixed(2).replace('.',',')}`
-          : "—";
-
-        return `
-          <div class="row" style="align-items:center">
-            <div style="flex:1; min-width:160px;">
-              <div class="label">${it.name}</div>
-              <div class="desc">${label} • ${formatBRDate(it.due)}</div>
-            </div>
-            <div style="font-weight:800">${amount}</div>
-          </div>
-        `;
-      }).join("");
-
-      const more = payload.total - top.length;
-      const moreText = more > 0 ? `<span class="note">+${more} outra(s)</span>` : "";
-
-      return `
-        <div class="card">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-            <h3 style="margin:0;">🔔 Próximos vencimentos</h3>
-            <span class="pill">${payload.total} alerta(s) • até 3 dias</span>
-          </div>
-          <div style="margin-top:10px;">
-            ${rows}
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            ${moreText}
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-              <button class="btn-muted" onclick="renderPage('settings')">Editar contas</button>
-              <button class="btn-primary" onclick="renderPage('transactions')">Ver transações</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function showBillsAlertsOnOpen(){
-      if(shouldSkipAlertsToday()) return;
-      const payload = buildBillsAlerts(new Date());
-      if(payload.total > 0) openBillsAlertModal(payload);
     }
 
     function confirmAndClearData(){
@@ -878,7 +578,6 @@
               </div>
             </div>
             <div class="section-divider"></div>
-            ${renderBillsAlertsCardHTML()}
 `
         },
         transactions: {
@@ -1142,11 +841,9 @@
       subEl.textContent = p.sub;
       mainEl.innerHTML = p.html;
 
-      // atualiza badges de alerta no menu
-      try{ updateAlertsBadges(); }catch(e){}
 
       // pós-render: preencher Planos
-      if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
+      if(page === "settings"){ try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
 
       if(page === "plans"){
         try{
@@ -1211,68 +908,6 @@
       const norm = s.replace(/\./g,'').replace(',','.');
       const v = Number(norm);
       return isNaN(v) ? null : v;
-    }
-
-    function addFixedBill(){
-      const name = (document.getElementById("billName")?.value || "").trim();
-      const dueDay = Number((document.getElementById("billDueDay")?.value || "").replace(/\D/g,''));
-      const amount = parseBRL(document.getElementById("billAmount")?.value || "");
-      if(!name) return alert("Digite o nome da conta.");
-      if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Dia de vencimento inválido (1 a 31).");
-
-      const bills = loadFixedBills();
-      bills.push({ id: "bill_" + Date.now(), name, dueDay, amount, enabled: true });
-      saveFixedBills(bills);
-
-      if(document.getElementById("billName")) document.getElementById("billName").value = "";
-      if(document.getElementById("billDueDay")) document.getElementById("billDueDay").value = "";
-      if(document.getElementById("billAmount")) document.getElementById("billAmount").value = "";
-
-      renderFixedBillsList();
-      alert("Conta cadastrada! Você será avisada quando estiver perto do vencimento.");
-    }
-
-    function toggleFixedBill(id){
-      const bills = loadFixedBills();
-      const b = bills.find(x => x.id === id);
-      if(!b) return;
-      b.enabled = !(b.enabled !== false);
-      saveFixedBills(bills);
-      renderFixedBillsList();
-    }
-
-    function removeFixedBill(id){
-      const bills = loadFixedBills().filter(x => x.id !== id);
-      saveFixedBills(bills);
-      renderFixedBillsList();
-    }
-
-    function renderFixedBillsList(){
-      const host = document.getElementById("fixedBillsList");
-      if(!host) return;
-      const bills = loadFixedBills();
-      if(!bills.length){
-        host.innerHTML = '<div class="note">Nenhuma conta cadastrada ainda.</div>';
-        return;
-      }
-      host.innerHTML = bills.map(b=>{
-        const status = (b.enabled === false) ? "Desativada" : "Ativa";
-        const amount = (b.amount !== null && b.amount !== undefined && b.amount !== "")
-          ? ("R$ " + Number(b.amount).toFixed(2).replace('.',','))
-          : "—";
-        return `
-          <div class="row" style="align-items:center">
-            <div style="flex:1; min-width:180px;">
-              <div class="label">${b.name}</div>
-              <div class="desc">Vence dia ${String(b.dueDay).padStart(2,'0')} • ${amount} • <b>${status}</b></div>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-              <button class="btn-muted" onclick="toggleFixedBill('${b.id}')">${b.enabled === false ? "Ativar" : "Desativar"}</button>
-              <button class="btn-danger" onclick="removeFixedBill('${b.id}')">Excluir</button>
-            </div>
-          </div>
-        `;
-      }).join("");
     }
 
 
@@ -1512,7 +1147,6 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
       // Primeiro carregamento: respeita hash, mas aplica gate
       const initial = (location.hash || "#dashboard").replace("#","");
       renderPage(initial);
-      try{ showBillsAlertsOnOpen(); }catch(e){}
     }
 
     window.addEventListener("DOMContentLoaded", initNav);
@@ -1531,8 +1165,8 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
       </div>
 
       <nav class="nav">
-        <a href="#dashboard" data-page="dashboard" class="active" data-label="Visão Geral"><span class="left"><span class="icon">🏠</span><span class="text">Visão Geral</span><span class="menu-badge hidden" id="alertsBadgeDashboard">0</span></a>
-        <a href="#transactions" data-page="transactions" data-label="Transações"><span class="left"><span class="icon">⇄</span><span class="text">Transações</span><span class="menu-badge hidden" id="alertsBadgeTx">0</span></a>
+        <a href="#dashboard" data-page="dashboard" class="active" data-label="Visão Geral"><span class="left"><span class="icon">🏠</span><span class="text">Visão Geral</span></a>
+        <a href="#transactions" data-page="transactions" data-label="Transações"><span class="left"><span class="icon">⇄</span><span class="text">Transações</span></a>
         <a href="#accounts" data-page="accounts" data-label="Contas"><span class="left"><span class="icon">🏦</span><span class="text">Contas</span></a>
         <a href="#cards" data-page="cards" data-label="Cartões"><span class="left"><span class="icon">💳</span><span class="text">Cartões</span></a>
         <a href="#insights" data-page="insights" data-label="Relatórios & Gráficos"><span class="left"><span class="icon">📊</span><span class="text">Relatórios &amp; Gráficos</span></a>
