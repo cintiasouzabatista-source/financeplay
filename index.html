@@ -195,7 +195,7 @@
     .badge-warn{color: #fbbf24; font-weight:800;}
 
     /* Mobile */
-    @media (max-width: 980px){
+    @media (max-width: 1200px){
       .sidebar{position:static; width:100%; height:auto; border-right:none; border-bottom:1px solid var(--line);}
       .main{margin-left:0}
       .layout{flex-direction:column}
@@ -316,7 +316,7 @@
     }
     .drawer-overlay.active{ opacity:1; pointer-events:auto; }
 
-    @media (max-width: 980px){
+    @media (max-width: 1200px){
       .layout{flex-direction:column;}
       .sidebar{
         position:fixed;
@@ -387,7 +387,7 @@
 
     .mobile-topbar{ display:none; }
 
-    @media (max-width: 980px){
+    @media (max-width: 1200px){
       .mobile-topbar{
         display:flex;
         align-items:center;
@@ -422,10 +422,16 @@
       .sidebar.collapsed .nav .text{ display:inline; } /* no mobile sempre mostra nome */
     }
 
+
+    /* Fallback: mostra botão de menu no topo em telas menores */
+    @media (max-width: 1200px){
+      #fallbackMenuBtn{ display:inline-flex; align-items:center; justify-content:center; }
+    }
+
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-16";
+    window.__BUILD_ID__ = "v2026.02.20-17";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1352,6 +1358,9 @@ function initNav(){
       document.getElementById("mobileMenuBtn")?.addEventListener("click", ()=>{
         if(sb?.classList.contains("open")) closeDrawer(); else openDrawer();
       });
+      document.getElementById("fallbackMenuBtn")?.addEventListener("click", ()=>{
+        if(sb?.classList.contains("open")) closeDrawer(); else openDrawer();
+      });
       overlay?.addEventListener("click", closeDrawer);
 
       // se mexer no menu, reinicia o timer (para não sumir enquanto usa)
@@ -1377,7 +1386,7 @@ function initNav(){
           e.preventDefault();
           const page = a.getAttribute("data-page");
           renderPage(page);
-          try{ if(window.matchMedia && window.matchMedia("(max-width: 980px)").matches){ document.querySelector(".sidebar")?.classList.remove("open"); document.getElementById("drawerOverlay")?.classList.remove("active"); } }catch(e){}
+          try{ if(window.matchMedia && window.matchMedia("(max-width: 1200px)").matches){ document.querySelector(".sidebar")?.classList.remove("open"); document.getElementById("drawerOverlay")?.classList.remove("active"); } }catch(e){}
         });
       });
 
@@ -1434,6 +1443,7 @@ function initNav(){
           <h1 class="title" id="pageTitle">Visão Geral</h1>
           <p class="subtitle" id="pageSubtitle">Resumo rápido do mês e do seu saldo.</p>
         </div>
+        <button class="btn-muted" id="fallbackMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px; margin-right:10px; display:none;">☰</button>
         <span class="pill" id="buildPill"></span>
       </div>
 
