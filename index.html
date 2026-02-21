@@ -521,7 +521,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-29";
+    window.__BUILD_ID__ = "v2026.02.20-30";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1767,6 +1767,31 @@ function renderAccountsList(){
     }
 
 
+
+    // Drawer globals (fallback se os listeners falharem)
+    function openDrawer(){
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.getElementById("drawerOverlay");
+      if(!sidebar || !overlay) return;
+      sidebar.classList.add("open");
+      overlay.classList.add("active");
+      document.body.classList.add("drawer-open");
+    }
+    function closeDrawer(){
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.getElementById("drawerOverlay");
+      if(!sidebar || !overlay) return;
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+      document.body.classList.remove("drawer-open");
+    }
+    function toggleDrawer(){
+      const sidebar = document.querySelector(".sidebar");
+      if(!sidebar) return;
+      if(sidebar.classList.contains("open")) closeDrawer();
+      else openDrawer();
+    }
+
     // === Mobile drawer handlers (robusto) ===
     function setupMobileDrawer(){
       const overlay = document.getElementById("drawerOverlay");
@@ -1870,10 +1895,16 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
     }
 
     window.addEventListener("DOMContentLoaded", initNav);
+    window.addEventListener("hashchange", ()=>{
+      try{
+        const page = (location.hash || "#dashboard").replace("#","");
+        renderPage(page);
+      }catch(e){}
+    });
   </script>
 </head>
 <body>
-  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
@@ -1903,7 +1934,7 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
       
       <div class="mobile-topbar">
         <div class="mt-actions">
-          <button class="btn-muted" id="mobileMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px;">☰</button>
+          <button class="btn-muted" id="mobileMenuBtn" onclick="toggleDrawer()" title="Menu" style="padding:8px 10px; border-radius:12px;">☰</button>
           <div class="mt-title">Minhas Finanças</div>
         </div>
         <div class="mt-actions">
@@ -1916,7 +1947,7 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
           <h1 class="title" id="pageTitle">Visão Geral</h1>
           <p class="subtitle" id="pageSubtitle">Resumo rápido do mês e do seu saldo.</p>
         </div>
-        <button class="btn-muted" id="fallbackMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px; margin-right:10px; display:none;">☰</button>
+        <button class="btn-muted" id="fallbackMenuBtn" onclick="toggleDrawer()" title="Menu" style="padding:8px 10px; border-radius:12px; margin-right:10px; display:none;">☰</button>
         <span class="pill" id="buildPill"></span>
       </div>
 
