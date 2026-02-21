@@ -370,10 +370,14 @@
       margin-top:12px;
     }
 
+
+    /* Admin UI escondida por padrão */
+    #planAdminActions{ gap:10px; }
+
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-14";
+    window.__BUILD_ID__ = "v2026.02.20-15";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -868,12 +872,22 @@
                 <div class="label">Tipo de Plano</div>
                 <div class="desc">Mensal / Semestral / Anual
 
+            
             <div class="inline-actions">
               <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
               <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
-              <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
-              <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+
+              <!-- Admin: fica oculto para usuário -->
+              <div class="inline-actions" id="planAdminActions" style="display:none; width:100%; justify-content:flex-end;">
+                <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
+                <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+              </div>
+
+              <p class="note" style="margin:0; width:100%; text-align:right;">
+                <span id="adminHint" style="opacity:.7;"></span>
+              </p>
             </div>
+
 </div>
               </div>
               <select id="planTypeSelect">
@@ -967,7 +981,7 @@
       try{ updateAlertsBadges(); }catch(e){}
 
       // pós-render: preencher Planos
-      if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){} }
+      if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
 
       if(page === "plans"){
         try{
@@ -1205,6 +1219,34 @@
       alert("PIN Admin atualizado.");
     }
 
+
+    // ===== Admin gate: não mostrar botões de admin para usuários =====
+    function revealAdminUI(){
+      const el = document.getElementById("planAdminActions");
+      const hint = document.getElementById("adminHint");
+      if(el) el.style.display = "flex";
+      if(hint) hint.textContent = "Modo Admin ativo";
+    }
+
+    function hideAdminUI(){
+      const el = document.getElementById("planAdminActions");
+      const hint = document.getElementById("adminHint");
+      if(el) el.style.display = "none";
+      if(hint) hint.textContent = "";
+    }
+
+    async function tryEnterAdminMode(){
+      const ok = await verifyAdminPin(); // cria PIN se não existir
+      if(ok){
+        sessionStorage.setItem("admin_mode", "1");
+        revealAdminUI();
+      }
+    }
+
+    function isAdminMode(){
+      return sessionStorage.getItem("admin_mode") === "1";
+    }
+
 function initNav(){
       // build tags
       document.getElementById("buildTag").textContent = window.__BUILD_ID__;
@@ -1213,6 +1255,19 @@ function initNav(){
       // build pill no mobile
       const bpm = document.getElementById("buildPillMobile");
       if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
+
+      // gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
+      let adminTapCount = 0;
+      const adminTap = ()=>{
+        adminTapCount += 1;
+        if(adminTapCount >= 7){
+          adminTapCount = 0;
+          tryEnterAdminMode();
+        }
+      };
+      document.getElementById("buildPill")?.addEventListener("click", adminTap);
+      document.getElementById("buildPillMobile")?.addEventListener("click", adminTap);
+
 
       // mobile drawer
       const overlay = document.getElementById("drawerOverlay");
