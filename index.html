@@ -521,7 +521,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-30";
+    window.__BUILD_ID__ = "v2026.02.20-31S";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -911,7 +911,7 @@ function loadFixedBills(){
       const mainEl = document.getElementById("pageBody");
 
       // Gate: se não logado, força login (exceto página de login)
-      const needAuth = true; // mantém ligado por padrão
+      const needAuth = false;
       if (needAuth && !isLoggedIn() && page !== "login") {
         page = "login";
         location.hash = "#login";
@@ -1088,190 +1088,20 @@ function loadFixedBills(){
         
         settings: {
           title: "Configurações",
-          sub: "Preferências do app. (Planos e Dados ficam na lateral).",
+          sub: "Preferências do app (modo simplificado para testes).",
           html: `
             <div class="card">
-              <p class="note">Preferências do app.</p>
-              <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn-muted" onclick="renderPage('categories')">Categorias</button>
-                
-              </div>
-              <p class="note" style="margin-top:10px;">Categorias fica em Configurações para deixar o menu lateral mais simples.</p>
-            </div>
-
-            <div class="section-divider"></div>
-            <div class="card">
-              <h3>🔔 Lembretes rápidos</h3>
-
-              <div class="row" style="align-items:flex-start;">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Nome da conta</div>
-                  <div class="desc">Ex: IPVA, Licenciamento, Internet...</div>
-                </div>
-                <input id="billName" placeholder="Ex: IPVA" />
-              </div>
-
-              <div class="row" style="align-items:flex-start;">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Dia do vencimento</div>
-                  <div class="desc">1 a 31</div>
-                </div>
-                <input id="billDueDay" inputmode="numeric" placeholder="Ex: 15" />
-              </div>
-
-              <div class="row" style="align-items:flex-start;">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Valor (opcional)</div>
-                  <div class="desc">Pode deixar em branco</div>
-                </div>
-                <input id="billAmount" inputmode="decimal" placeholder="Ex: 120,50" />
-              </div>
-
-              <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:12px;">
-                <button class="btn-primary" onclick="addFixedBill()">Adicionar conta</button>
-              </div>
-
-              <div style="margin-top:14px;">
-                <div class="note" style="margin-bottom:8px;">Contas cadastradas:</div>
-                <div id="fixedBillsList"></div>
+              <h3>⚙️ Preferências</h3>
+              <p class="note">Esta é a versão <b>simplificada</b> para testes e ajustes rápidos.</p>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                <button class="btn-muted" onclick="renderPage('categories')">Abrir Categorias</button>
+                <button class="btn-muted" onclick="renderPage('data')">Abrir Dados</button>
               </div>
             </div>
 
             <div class="card">
-              <h3>🗂️ Dados</h3>
-              <div class="row">
-                <div>
-                  <div class="label">Exportar</div>
-                  <div class="desc">Baixar seus dados em formato JSON</div>
-                </div>
-                <button class="btn-primary" onclick="alert('Exportar: conecte aqui sua função real.')">Exportar</button>
-              </div>
-              <div class="row">
-                <div>
-                  <div class="label">Importar</div>
-                  <div class="desc">Carregar dados de um arquivo JSON (substitui dados atuais)</div>
-                </div>
-                <button class="btn-muted" onclick="alert('Importar: conecte aqui sua função real.')">Importar</button>
-              </div>
-              <div class="row">
-                <div>
-                  <div class="label">Limpar Dados</div>
-                  <div class="desc">Remove tudo do app (ação irreversível)</div>
-                </div>
-                <button class="btn-danger" onclick="confirmAndClearData()">Limpar</button>
-              </div>
-              <div class="row">
-                <div>
-                  <div class="label">Limpar Cache do App</div>
-                  <div class="desc">Resolve tela desatualizada (Service Worker / cache)</div>
-                </div>
-                <button class="btn-danger" onclick="clearAppCache()">Limpar Cache</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <h3>🧾 Planos</h3>
-
-              <div id="planEditableWrap">
-                <div class="row" style="align-items:flex-start;">
-                  <div style="flex:1; min-width:180px;">
-                    <div class="label">Tipo</div>
-                    <div class="desc">Mensal / Semestral / Anual</div>
-                  </div>
-                  <select id="planTypeSelect">
-                    <option value="mensal">Mensal</option>
-                    <option value="semestral">Semestral</option>
-                    <option value="anual">Anual</option>
-                  </select>
-                </div>
-
-                <div class="row" style="align-items:flex-start;">
-                  <div style="flex:1; min-width:180px;">
-                    <div class="label">Forma PGTO</div>
-                    <div class="desc">Cartão / PIX / Boleto</div>
-                  </div>
-                  <input id="planPaymentInput" placeholder="Ex: PIX" />
-                </div>
-              </div>
-
-              <div class="row" style="align-items:flex-start;">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Status</div>
-                  <div class="desc">Ativo / Bloqueado (somente Admin)</div>
-                </div>
-                <select id="planStatusSelect" disabled>
-                  <option value="ativo">Ativo</option>
-                  <option value="bloqueado">Bloqueado</option>
-                </select>
-              </div>
-
-              <div class="inline-actions">
-                <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
-                <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
-
-                <!-- Admin oculto -->
-                <div class="inline-actions" id="planAdminActions" style="display:none; width:100%; justify-content:flex-end;">
-                  <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
-                  <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
-                </div>
-
-                <p class="note" style="margin:0; width:100%; text-align:right;">
-                  <span id="adminHint" style="opacity:.7;"></span>
-                </p>
-              </div>
-
-              <p class="note" style="margin-top:10px;">
-                Dica: para entrar no modo Admin, toque 7x no <b>Build</b> (no topo).
-              </p>
-            </div>
-          `
-        },
-        login: {
-          title: "Login",
-          sub: "Acesso com CPF e senha.",
-          html: `
-            <div class="card">
-              <h3>Entrar</h3>
-              <div class="row" style="align-items:flex-start">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">CPF</div>
-                  <div class="desc">Digite apenas números</div>
-                </div>
-                <input id="loginCpf" inputmode="numeric" placeholder="00000000000" maxlength="14" />
-              </div>
-              <div class="row" style="align-items:flex-start">
-                <div style="flex:1; min-width:180px;">
-                  <div class="label">Senha</div>
-                  <div class="desc">Mínimo 4 caracteres</div>
-                </div>
-                <input id="loginPass" type="password" placeholder="••••" />
-              </div>
-
-              <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;">
-                <button class="btn-muted" onclick="handleCreateAccess()">Criar acesso</button>
-                <button class="btn-primary" onclick="handleLoginSubmit()">Entrar</button>
-              </div>
-
-              <p class="note" style="margin-top:12px">
-                Primeiro acesso? Use <span class="link" onclick="handleCreateAccess()">Criar acesso</span> para cadastrar CPF e senha neste dispositivo.
-              </p>
-            </div>
-
-            <div class="card">
-              <div class="row">
-                <div>
-                  <div class="label">Status</div>
-                  <div class="desc">Se estiver bloqueado, não entra.</div>
-                </div>
-                <div id="loginStatus" class="badge-ok">Pronto</div>
-              </div>
-              <div class="row">
-                <div>
-                  <div class="label">Sair</div>
-                  <div class="desc">Encerrar sessão atual.</div>
-                </div>
-                <button class="btn-danger" onclick="handleLogout()">Sair</button>
-              </div>
+              <h3>🔔 Alertas</h3>
+              <p class="note">Os alertas de vencimento são cadastrados em <b>Transações → Despesas fixas</b> (nesta fase de testes).</p>
             </div>
           `
         }
@@ -1639,25 +1469,6 @@ function renderAccountsList(){
     function savePlanConfig(cfg){
       localStorage.setItem("ui_plan_config", JSON.stringify(cfg));
     }
-    async function ensureAdminPin(){
-      // Se não existir PIN, cria um
-      const existing = localStorage.getItem("admin_pin_hash");
-      if(existing) return true;
-      const pin = prompt("Definir PIN Admin (4 dígitos):");
-      if(!pin) return false;
-      const clean = String(pin).replace(/\D/g,"");
-      if(clean.length != 4) { alert("PIN inválido. Use 4 dígitos."); return false; }
-      const h = await sha256(clean);
-      localStorage.setItem("admin_pin_hash", h);
-      alert("PIN Admin definido!");
-      return true;
-    }
-    async function verifyAdminPin(){
-      const h = localStorage.getItem("admin_pin_hash");
-      if(!h){
-        const ok = await ensureAdminPin();
-        return ok;
-      }
       const pin = prompt("Digite o PIN Admin (4 dígitos):");
       if(!pin) return false;
       const clean = String(pin).replace(/\D/g,"");
@@ -1706,29 +1517,6 @@ function renderAccountsList(){
       lockPlanFields(cfg.locked);
       alert("Plano salvo.");
     }
-
-    async function adminToggleStatus(){
-      const ok = await verifyAdminPin();
-      if(!ok) return;
-      const statusEl = document.getElementById("planStatusSelect");
-      if(!statusEl) return;
-      const cur = statusEl.value || "ativo";
-      const next = (cur === "ativo") ? "bloqueado" : "ativo";
-      statusEl.value = next;
-      // salva sem destravar campos
-      const cfg = loadPlanConfig() || {};
-      cfg.status = next;
-      cfg.locked = (cfg.locked !== false);
-      savePlanConfig(cfg);
-      alert("Status alterado para: " + (next === "ativo" ? "Ativo" : "Bloqueado"));
-    }
-
-    async function adminChangePin(){
-      const exists = !!localStorage.getItem("admin_pin_hash");
-      if(exists){
-        const ok = await verifyAdminPin();
-        if(!ok) return;
-      }
       const pin = prompt("Novo PIN Admin (4 dígitos):");
       if(!pin) return;
       const clean = String(pin).replace(/\D/g,"");
@@ -1740,57 +1528,8 @@ function renderAccountsList(){
 
 
     // ===== Admin gate: não mostrar botões de admin para usuários =====
-    function revealAdminUI(){
-      const el = document.getElementById("planAdminActions");
-      const hint = document.getElementById("adminHint");
-      if(el) el.style.display = "flex";
-      if(hint) hint.textContent = "Modo Admin ativo";
     }
 
-    function hideAdminUI(){
-      const el = document.getElementById("planAdminActions");
-      const hint = document.getElementById("adminHint");
-      if(el) el.style.display = "none";
-      if(hint) hint.textContent = "";
-    }
-
-    async function tryEnterAdminMode(){
-      const ok = await verifyAdminPin(); // cria PIN se não existir
-      if(ok){
-        sessionStorage.setItem("admin_mode", "1");
-        revealAdminUI();
-      }
-    }
-
-    function isAdminMode(){
-      return sessionStorage.getItem("admin_mode") === "1";
-    }
-
-
-
-    // Drawer globals (fallback se os listeners falharem)
-    function openDrawer(){
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.getElementById("drawerOverlay");
-      if(!sidebar || !overlay) return;
-      sidebar.classList.add("open");
-      overlay.classList.add("active");
-      document.body.classList.add("drawer-open");
-    }
-    function closeDrawer(){
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.getElementById("drawerOverlay");
-      if(!sidebar || !overlay) return;
-      sidebar.classList.remove("open");
-      overlay.classList.remove("active");
-      document.body.classList.remove("drawer-open");
-    }
-    function toggleDrawer(){
-      const sidebar = document.querySelector(".sidebar");
-      if(!sidebar) return;
-      if(sidebar.classList.contains("open")) closeDrawer();
-      else openDrawer();
-    }
 
     // === Mobile drawer handlers (robusto) ===
     function setupMobileDrawer(){
@@ -1843,68 +1582,87 @@ function renderAccountsList(){
       });
     }
 
+
+function closeMobileDrawer(){
+  const overlay = document.getElementById("drawerOverlay");
+  const sb = document.querySelector(".sidebar");
+  if(sb) sb.classList.remove("open");
+  if(overlay) overlay.classList.remove("active");
+  document.body.classList.remove("drawer-open");
+}
+
+function openMobileDrawer(){
+  const overlay = document.getElementById("drawerOverlay");
+  const sb = document.querySelector(".sidebar");
+  if(sb) sb.classList.add("open");
+  if(overlay) overlay.classList.add("active");
+  document.body.classList.add("drawer-open");
+}
+
+function toggleMobileDrawer(){
+  const sb = document.querySelector(".sidebar");
+  if(sb && sb.classList.contains("open")) closeMobileDrawer();
+  else openMobileDrawer();
+}
+
 function initNav(){
-      // build tags
-      document.getElementById("buildTag").textContent = window.__BUILD_ID__;
-      document.getElementById("buildPill").textContent = "Build " + window.__BUILD_ID__;
+  // build tags
+  const buildTag = document.getElementById("buildTag");
+  const buildPill = document.getElementById("buildPill");
+  const buildPillMobile = document.getElementById("buildPillMobile");
+  if(buildTag) buildTag.textContent = window.__BUILD_ID__;
+  if(buildPill) buildPill.textContent = "Build " + window.__BUILD_ID__;
+  if(buildPillMobile) buildPillMobile.textContent = "Build " + window.__BUILD_ID__;
 
-      // build pill no mobile
-      const bpm = document.getElementById("buildPillMobile");
-      if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
+  // sidebar collapsed state (PC)
+  const sb = document.querySelector(".sidebar");
+  const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
+  if(sb && savedCollapsed) sb.classList.add("collapsed");
+  const toggleBtn = document.getElementById("sidebarToggle");
+  if(toggleBtn && sb){
+    toggleBtn.onclick = ()=>{
+      sb.classList.toggle("collapsed");
+      localStorage.setItem("ui_sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
+    };
+  }
 
-      const sb = document.querySelector(".sidebar");
-
-      // build pill no mobile// gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
-      let adminTapCount = 0;
-      const adminTap = ()=>{
-        adminTapCount += 1;
-        if(adminTapCount >= 7){
-          adminTapCount = 0;
-          tryEnterAdminMode();
-        }
-      };
-      document.getElementById("buildPill")?.addEventListener("click", adminTap);
-      document.getElementById("buildPillMobile")?.addEventListener("click", adminTap);
-      // mobile drawer
-      try{ setupMobileDrawer(); }catch(e){}
-
-      // sidebar: estado salvo
-      // (reutiliza sb já definido acima)
-
-      const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
-      if(savedCollapsed && sb) sb.classList.add("collapsed");
-
-      document.getElementById("sidebarToggle")?.addEventListener("click", ()=>{
-        if(!sb) return;
-        sb.classList.toggle("collapsed");
-        localStorage.setItem("ui_sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
-      });
-document.querySelectorAll(".nav a[data-page]").forEach(a=>{
-        a.addEventListener("click", (e)=>{
-          e.preventDefault();
-          const page = a.getAttribute("data-page");
-          renderPage(page);
-          try{ if(window.matchMedia && window.matchMedia("(max-width: 1200px)").matches){ document.querySelector(".sidebar")?.classList.remove("open"); document.getElementById("drawerOverlay")?.classList.remove("active"); } }catch(e){}
-        });
-      });
-
-      // Primeiro carregamento: respeita hash, mas aplica gate
-      const initial = (location.hash || "#dashboard").replace("#","");
-      renderPage(initial);
-      try{ showBillsAlertsOnOpen(); }catch(e){}
-    }
-
-    window.addEventListener("DOMContentLoaded", initNav);
-    window.addEventListener("hashchange", ()=>{
-      try{
-        const page = (location.hash || "#dashboard").replace("#","");
-        renderPage(page);
-      }catch(e){}
+  // Menu links
+  document.querySelectorAll(".nav a[data-page]").forEach(a=>{
+    a.addEventListener("click", (e)=>{
+      e.preventDefault();
+      const page = a.getAttribute("data-page");
+      location.hash = "#" + page; // hashchange cuidará do render
+      closeMobileDrawer();
     });
+  });
+
+  // Mobile drawer buttons
+  const mobileBtn = document.getElementById("mobileMenuBtn");
+  const fallbackBtn = document.getElementById("fallbackMenuBtn");
+  const overlay = document.getElementById("drawerOverlay");
+  if(mobileBtn) mobileBtn.onclick = (e)=>{ e.preventDefault(); toggleMobileDrawer(); };
+  if(fallbackBtn) fallbackBtn.onclick = (e)=>{ e.preventDefault(); toggleMobileDrawer(); };
+  if(overlay) overlay.onclick = ()=> closeMobileDrawer();
+
+  // hashchange -> render
+  window.addEventListener("hashchange", ()=>{
+    const page = (location.hash || "#dashboard").replace("#","");
+    renderPage(page);
+  });
+
+  // first render
+  const initial = (location.hash || "#dashboard").replace("#","");
+  renderPage(initial);
+
+  // alerts modal on open
+  try{ showBillsAlertsOnOpen(); }catch(e){}
+}
+
+window.addEventListener("DOMContentLoaded", initNav);
   </script>
 </head>
 <body>
-  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
@@ -1926,15 +1684,14 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
         <a href="#settings" data-page="settings" data-label="Configurações"><span class="left"><span class="icon">⚙️</span><span class="text">Configurações</span></a>
 
         <!-- Login no final -->
-        <a href="#login" data-page="login" data-label="Login"><span class="left"><span class="icon">🔐</span><span class="text">Login</span></a>
-      </nav>
+</nav>
     </aside>
 
     <main class="main">
       
       <div class="mobile-topbar">
         <div class="mt-actions">
-          <button class="btn-muted" id="mobileMenuBtn" onclick="toggleDrawer()" title="Menu" style="padding:8px 10px; border-radius:12px;">☰</button>
+          <button class="btn-muted" id="mobileMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px;">☰</button>
           <div class="mt-title">Minhas Finanças</div>
         </div>
         <div class="mt-actions">
@@ -1947,7 +1704,7 @@ document.querySelectorAll(".nav a[data-page]").forEach(a=>{
           <h1 class="title" id="pageTitle">Visão Geral</h1>
           <p class="subtitle" id="pageSubtitle">Resumo rápido do mês e do seu saldo.</p>
         </div>
-        <button class="btn-muted" id="fallbackMenuBtn" onclick="toggleDrawer()" title="Menu" style="padding:8px 10px; border-radius:12px; margin-right:10px; display:none;">☰</button>
+        <button class="btn-muted" id="fallbackMenuBtn" title="Menu" style="padding:8px 10px; border-radius:12px; margin-right:10px; display:none;">☰</button>
         <span class="pill" id="buildPill"></span>
       </div>
 
