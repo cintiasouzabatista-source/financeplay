@@ -502,7 +502,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-27";
+    window.__BUILD_ID__ = "v2026.02.20-28";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1322,56 +1322,6 @@ function loadFixedBills(){
       const bal = parseBRL(document.getElementById("accBalance")?.value || "");
 
       if(!name) return alert("Digite o nome da conta.");
-
-      const acc = loadAccounts();
-      acc.push({
-        id: "acc_" + Date.now(),
-        name,
-        balance: bal,
-        // flags de conta fixa podem ser configuradas depois em Transações
-        isFixed: false,
-        dueDay: null,
-        amount: null,
-        enabled: true
-      });
-      saveAccounts(acc);
-
-      // limpa campos
-      ["accName","accBalance"].forEach(id=>{
-        const el = document.getElementById(id);
-        if(el) el.value = "";
-      });
-
-      renderAccountsList();
-      try{ refreshAccountsSelect(); }catch(e){}
-      try{ updateAlertsBadges(); }catch(e){}
-      alert("Conta salva!");
-    }
-
-      const acc = loadAccounts();
-      acc.push({
-        id: "acc_" + Date.now(),
-        name,
-        balance: bal,
-        isFixed,
-        dueDay: isFixed ? dueDay : null,
-        amount: isFixed ? amount : null,
-        enabled: true
-      });
-      saveAccounts(acc);
-
-      // limpa campos
-      ["accName","accBalance","accDueDay","accAmount"].forEach(id=>{
-        const el = document.getElementById(id);
-        if(el) el.value = "";
-      });
-      const sel = document.getElementById("accIsFixed");
-      if(sel) sel.value = "nao";
-
-      renderAccountsList();
-      try{ updateAlertsBadges(); }catch(e){}
-      alert("Conta salva!");
-    }
 
     function renderAccountsList(){
       const host = document.getElementById("accountsList");
