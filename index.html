@@ -373,7 +373,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-13";
+    window.__BUILD_ID__ = "v2026.02.20-14";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1226,7 +1226,8 @@ function initNav(){
 
 
       // sidebar: estado salvo
-      const sb = document.querySelector(".sidebar");
+      // (reutiliza sb já definido acima)
+
       const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
       if(savedCollapsed) sb.classList.add("collapsed");
 
