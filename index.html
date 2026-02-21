@@ -502,7 +502,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-25";
+    window.__BUILD_ID__ = "v2026.02.20-26";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -531,8 +531,36 @@
     }
 
     
-    // ===== Alertas de contas a vencer (ao abrir o app) =====
-    function loadFixedBills(){
+    // ===== Lembretes rápidos a vencer (ao abrir o app) =====
+    
+    // ===== Contas (armazenamento simples) =====
+    function loadAccounts(){
+      try{
+        const arr = JSON.parse(localStorage.getItem("accounts_data") || "[]");
+        return Array.isArray(arr) ? arr : [];
+      }catch(e){ return []; }
+    }
+    function saveAccounts(arr){
+      localStorage.setItem("accounts_data", JSON.stringify(arr || []));
+    }
+
+    // Extrai "contas fixas" do módulo Contas (híbrido de alertas)
+    function getFixedFromAccounts(){
+      const acc = loadAccounts();
+      return acc
+        .filter(a => a && a.isFixed === true && a.enabled !== false)
+        .map(a => ({
+          id: a.id || ("acc_" + (a.name||"Conta") + "_" + (a.dueDay||"")),
+          name: a.name || "Conta",
+          dueDay: a.dueDay,
+          amount: a.amount,
+          enabled: a.enabled !== false,
+          source: "accounts"
+        }));
+    }
+
+    // Lembretes rápidos (Configurações)
+function loadFixedBills(){
       try{
         const arr = JSON.parse(localStorage.getItem("fixed_bills") || "[]");
         return Array.isArray(arr) ? arr : [];
@@ -614,7 +642,7 @@
         ov.id = "toastOverlay";
         ov.className = "toast-overlay";
         ov.innerHTML = `
-          <div class="toast-card" role="dialog" aria-modal="true" aria-label="Alertas de contas">
+          <div class="toast-card" role="dialog" aria-modal="true" aria-label="Lembretes rápidos">
             <div class="toast-head">
               <div class="toast-title">🔔 Contas a vencer</div>
               <button class="btn-muted" id="toastCloseBtn" style="padding:8px 10px; border-radius:10px;">Fechar</button>
@@ -658,7 +686,7 @@
         </div>
         ${list}
         <div style="margin-top:10px; font-size:12px; color:#64748b;">
-          Dica: cadastre as contas fixas em <b>Configurações</b> para o alerta funcionar sempre.
+          Dica: você pode cadastrar em <b>Contas</b> (conta fixa) ou como <b>Lembrete rápido</b> em Configurações.
         </div>
       `;
 
@@ -672,7 +700,21 @@
 
     
     function getBillsAlertsForDashboard(){
-      const bills = loadFixedBills().filter(b => b && b.enabled !== false);
+      // híbrido: Contas fixas (Contas) + Lembretes rápidos (Configurações)
+      const fromAccounts = getFixedFromAccounts();
+      const quick = loadFixedBills().filter(b => b && b.enabled !== false).map(b => ({...b, source:"quick"}));
+      const all = [...fromAccounts, ...quick];
+
+      // dedupe por nome+dia (prioriza Contas)
+      const seen = new Map();
+      for(const it of all){
+        const key = (it.name||"").trim().toLowerCase() + "|" + String(it.dueDay||"");
+        if(!key) continue;
+        if(!seen.has(key) || it.source === "accounts"){
+          seen.set(key, it);
+        }
+      }
+      const bills = Array.from(seen.values());
       if(!bills.length) return { total:0, items:[] };
 
       const now = new Date();
@@ -686,14 +728,14 @@
           dueDay: b.dueDay,
           amount: b.amount,
           due,
-          diff
+          diff,
+          source: b.source || "quick"
         };
       }).filter(x => x.diff <= soonDays)
         .sort((a,b)=> a.diff - b.diff);
 
       return { total: items.length, items };
     }
-
     function updateAlertsBadges(){
       try{
         const payload = getBillsAlertsForDashboard();
@@ -718,7 +760,7 @@
           <div class="card">
             <h3>🔔 Próximos vencimentos</h3>
             <p class="note">Nenhuma conta vencendo nos próximos 3 dias.</p>
-            <p class="note">Cadastre em <b>Configurações → Alertas de contas</b>.</p>
+            <p class="note">Cadastre em <b>Contas</b> (marque como <b>fixa</b>) ou em <b>Configurações → Lembretes rápidos</b>.</p>
           </div>
         `;
       }
@@ -893,8 +935,51 @@
         },
         accounts: {
           title: "Contas",
-          sub: "Gerencie suas contas e saldos.",
-          html: `<div class="card"><p class="note">Tela de contas (placeholder nesta versão).</p></div>`
+          sub: "Gerencie suas contas e saldos (inclui contas fixas com vencimento).",
+          html: `
+            <div class="card">
+              <h3>➕ Nova conta</h3>
+              <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+                <div style="flex:1; min-width:220px;">
+                  <div class="note" style="margin-bottom:6px;">Nome</div>
+                  <input id="accName" placeholder="Ex: Mercado Pago / IPVA / Aluguel" />
+                </div>
+                <div style="width:180px; min-width:160px;">
+                  <div class="note" style="margin-bottom:6px;">Saldo (opcional)</div>
+                  <input id="accBalance" placeholder="0,00" />
+                </div>
+                <div style="width:190px; min-width:170px;">
+                  <div class="note" style="margin-bottom:6px;">Conta fixa?</div>
+                  <select id="accIsFixed">
+                    <option value="nao">Não</option>
+                    <option value="sim">Sim (gera alerta)</option>
+                  </select>
+                </div>
+                <div style="width:150px; min-width:140px;">
+                  <div class="note" style="margin-bottom:6px;">Vencimento</div>
+                  <input id="accDueDay" inputmode="numeric" placeholder="Dia 1-31" />
+                </div>
+                <div style="width:190px; min-width:170px;">
+                  <div class="note" style="margin-bottom:6px;">Valor (fixa)</div>
+                  <input id="accAmount" placeholder="0,00" />
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <button class="btn-primary" onclick="addAccountFromUI()">Salvar</button>
+                </div>
+              </div>
+              <p class="note" style="margin-top:10px;">
+                💡 Se marcar como <b>conta fixa</b>, ela entra em <b>Próximos vencimentos</b> automaticamente.
+              </p>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="card">
+              <h3>📋 Suas contas</h3>
+              <div id="accountsList"></div>
+              <p class="note" style="margin-top:10px;">Contas fixas entram no alerta sem cadastro duplicado.</p>
+            </div>
+          `
         },
         cards: {
           title: "Cartões",
@@ -961,7 +1046,7 @@
 
             <div class="section-divider"></div>
             <div class="card">
-              <h3>🔔 Alertas de contas</h3>
+              <h3>🔔 Lembretes rápidos</h3>
 
               <div class="row" style="align-items:flex-start;">
                 <div style="flex:1; min-width:180px;">
@@ -1146,6 +1231,8 @@
       try{ updateAlertsBadges(); }catch(e){}
 
       // pós-render: preencher Planos
+      if(page === "accounts"){ try{ renderAccountsList(); }catch(e){} }
+
       if(page === "settings"){ try{ renderFixedBillsList(); }catch(e){}; try{ applyPlanConfigToUI(); }catch(e){}; try{ if(isAdminMode()){ revealAdminUI(); } else { hideAdminUI(); } }catch(e){} }
 
       if(page === "plans"){
@@ -1212,6 +1299,112 @@
       const v = Number(norm);
       return isNaN(v) ? null : v;
     }
+
+    // ===== Contas: UI e CRUD =====
+    function addAccountFromUI(){
+      const name = (document.getElementById("accName")?.value || "").trim();
+      const bal = parseBRL(document.getElementById("accBalance")?.value || "");
+      const isFixed = (document.getElementById("accIsFixed")?.value || "nao") === "sim";
+      const dueDay = Number((document.getElementById("accDueDay")?.value || "").replace(/\D/g,''));
+      const amount = parseBRL(document.getElementById("accAmount")?.value || "");
+
+      if(!name) return alert("Digite o nome da conta.");
+      if(isFixed){
+        if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Dia de vencimento inválido (1 a 31).");
+      }
+
+      const acc = loadAccounts();
+      acc.push({
+        id: "acc_" + Date.now(),
+        name,
+        balance: bal,
+        isFixed,
+        dueDay: isFixed ? dueDay : null,
+        amount: isFixed ? amount : null,
+        enabled: true
+      });
+      saveAccounts(acc);
+
+      // limpa campos
+      ["accName","accBalance","accDueDay","accAmount"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
+      const sel = document.getElementById("accIsFixed");
+      if(sel) sel.value = "nao";
+
+      renderAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+      alert("Conta salva!");
+    }
+
+    function renderAccountsList(){
+      const host = document.getElementById("accountsList");
+      if(!host) return;
+      const acc = loadAccounts();
+      if(!acc.length){ host.innerHTML = '<div class="note">Nenhuma conta cadastrada ainda.</div>'; return; }
+      host.innerHTML = acc.map(a=>{
+        const bal = (a.balance !== null && a.balance !== undefined) ? ('R$ ' + Number(a.balance).toFixed(2).replace('.',',')) : '—';
+        const fixed = a.isFixed ? ('Fixa • dia ' + String(a.dueDay||'').padStart(2,'0')) : 'Não fixa';
+        const amt = (a.amount !== null && a.amount !== undefined) ? ('R$ ' + Number(a.amount).toFixed(2).replace('.',',')) : '—';
+        const st = (a.enabled === false) ? 'Desativada' : 'Ativa';
+        return `
+          <div class="row" style="align-items:center">
+            <div style="flex:1; min-width:220px;">
+              <div class="label">${a.name}</div>
+              <div class="desc">Saldo: <b>${bal}</b> • ${fixed} • Valor fixa: <b>${amt}</b> • <b>${st}</b></div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+              <button class="btn-muted" onclick="toggleAccountFixed('${a.id}')">${a.isFixed ? 'Remover fixa' : 'Tornar fixa'}</button>
+              <button class="btn-muted" onclick="toggleAccountEnabled('${a.id}')">${a.enabled === false ? 'Ativar' : 'Desativar'}</button>
+              <button class="btn-danger" onclick="removeAccount('${a.id}')">Excluir</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function removeAccount(id){
+      const acc = loadAccounts().filter(a=>a.id!==id);
+      saveAccounts(acc);
+      renderAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+    }
+
+    function toggleAccountEnabled(id){
+      const acc = loadAccounts();
+      const a = acc.find(x=>x.id===id);
+      if(!a) return;
+      a.enabled = !(a.enabled !== false);
+      saveAccounts(acc);
+      renderAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+    }
+
+    function toggleAccountFixed(id){
+      const acc = loadAccounts();
+      const a = acc.find(x=>x.id===id);
+      if(!a) return;
+
+      if(!a.isFixed){
+        const dd = prompt("Dia de vencimento (1-31):", a.dueDay || "");
+        const dueDay = Number(String(dd||"").replace(/\D/g,''));
+        if(!dueDay || dueDay < 1 || dueDay > 31) return alert("Vencimento inválido.");
+        const am = prompt("Valor (opcional) ex: 120,50:", (a.amount ?? "") );
+        a.isFixed = true;
+        a.dueDay = dueDay;
+        a.amount = parseBRL(am);
+      }else{
+        a.isFixed = false;
+        a.dueDay = null;
+        a.amount = null;
+      }
+
+      saveAccounts(acc);
+      renderAccountsList();
+      try{ updateAlertsBadges(); }catch(e){}
+    }
+
 
     function addFixedBill(){
       const name = (document.getElementById("billName")?.value || "").trim();
