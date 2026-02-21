@@ -211,8 +211,6 @@
     .sidebar.collapsed #brandTitle{display:none;}
     .sidebar.collapsed .nav a{padding:10px 10px; justify-content:center;}
     .sidebar.collapsed .nav a .left{gap:0;}
-    .sidebar.collapsed .nav a .left .dot{width:10px;height:10px;}
-    .sidebar.collapsed .nav a .left{font-size:0;}
     .sidebar.collapsed .nav .spacer{height:10px;}
     .sidebar.collapsed .version{display:none;}
     .sidebar.collapsed + .main{margin-left:86px;}
@@ -272,10 +270,45 @@
     }
     .menu-badge.hidden{ display:none; }
 
+
+    /* Ícones no menu (melhor leitura quando a lateral está minimizada) */
+    .nav .icon{
+      width:18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      opacity:.95;
+    }
+    .nav .text{ display:inline; }
+    .sidebar.collapsed .nav .text{ display:none; }
+
+    /* Tooltip com nome ao passar o mouse na lateral minimizada */
+    .sidebar.collapsed .nav a{
+      position:relative;
+    }
+    .sidebar.collapsed .nav a:hover::after{
+      content: attr(data-label);
+      position:absolute;
+      left:92px;
+      top:50%;
+      transform: translateY(-50%);
+      background: rgba(15,23,42,.96);
+      color:#fff;
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+      border:1px solid rgba(148,163,184,.22);
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      z-index:10000;
+    }
+
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-07";
+    window.__BUILD_ID__ = "v2026.02.20-08";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1009,20 +1042,20 @@ function initNav(){
       </div>
 
       <nav class="nav">
-        <a href="#dashboard" data-page="dashboard" class="active"><span class="left"><span class="dot"></span>Visão Geral</span><span class="menu-badge hidden" id="alertsBadgeDashboard">0</span></a>
-        <a href="#transactions" data-page="transactions"><span class="left"><span class="dot"></span>Transações</span><span class="menu-badge hidden" id="alertsBadgeTx">0</span></a>
-        <a href="#accounts" data-page="accounts"><span class="left"><span class="dot"></span>Contas</span></a>
-        <a href="#cards" data-page="cards"><span class="left"><span class="dot"></span>Cartões</span></a>
-        <a href="#insights" data-page="insights"><span class="left"><span class="dot"></span>Relatórios &amp; Gráficos</span></a>
+        <a href="#dashboard" data-page="dashboard" class="active" data-label="Visão Geral"><span class="left"><span class="icon">🏠</span><span class="text">Visão Geral</span><span class="menu-badge hidden" id="alertsBadgeDashboard">0</span></a>
+        <a href="#transactions" data-page="transactions" data-label="Transações"><span class="left"><span class="icon">⇄</span><span class="text">Transações</span><span class="menu-badge hidden" id="alertsBadgeTx">0</span></a>
+        <a href="#accounts" data-page="accounts" data-label="Contas"><span class="left"><span class="icon">🏦</span><span class="text">Contas</span></a>
+        <a href="#cards" data-page="cards" data-label="Cartões"><span class="left"><span class="icon">💳</span><span class="text">Cartões</span></a>
+        <a href="#insights" data-page="insights" data-label="Relatórios & Gráficos"><span class="left"><span class="icon">📊</span><span class="text">Relatórios &amp; Gráficos</span></a>
 
         <div class="spacer"></div>
 
-        <a href="#data" data-page="data"><span class="left"><span class="dot"></span>Dados</span></a>
-        <a href="#plans" data-page="plans"><span class="left"><span class="dot"></span>Planos</span></a>
-        <a href="#settings" data-page="settings"><span class="left"><span class="dot"></span>Configurações</span></a>
+        <a href="#data" data-page="data" data-label="Dados"><span class="left"><span class="icon">🗂️</span><span class="text">Dados</span></a>
+        <a href="#plans" data-page="plans" data-label="Planos"><span class="left"><span class="icon">🧾</span><span class="text">Planos</span></a>
+        <a href="#settings" data-page="settings" data-label="Configurações"><span class="left"><span class="icon">⚙️</span><span class="text">Configurações</span></a>
 
         <!-- Login no final -->
-        <a href="#login" data-page="login"><span class="left"><span class="dot"></span>Login</span></a>
+        <a href="#login" data-page="login" data-label="Login"><span class="left"><span class="icon">🔐</span><span class="text">Login</span></a>
       </nav>
     </aside>
 
