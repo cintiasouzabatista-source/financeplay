@@ -93,7 +93,7 @@
       background: rgba(148,163,184,.45);
     }
     .nav a.active .dot{background: rgba(99,102,241,.9);}
-    .nav .spacer{height:14px;}
+    .nav .spacer{height:6px;}
 
     .main {
       margin-left:260px;
@@ -455,10 +455,45 @@
       .sidebar.collapsed .nav a:hover::after{ display:none !important; }
     }
 
+
+    /* Elegant neutral divider */
+    .nav-divider{height:1px;margin:14px 10px;border-radius:999px;background: linear-gradient(90deg, transparent, rgba(148,163,184,.35), transparent);box-shadow: 0 6px 12px rgba(0,0,0,.25);}
+
+
+    /* Internal elegant section divider */
+    .section-divider{
+      height:1px;
+      margin:18px 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(148,163,184,.28),
+        transparent
+      );
+      box-shadow: 0 4px 10px rgba(0,0,0,.22);
+      border-radius:999px;
+    }
+
+
+    /* Global divider utilities */
+    .divider{ height:1px; border-radius:999px; }
+    .divider--soft{
+      background: linear-gradient(90deg, transparent, rgba(148,163,184,.28), transparent);
+      box-shadow: 0 4px 10px rgba(0,0,0,.22);
+    }
+    .divider--menu{
+      background: linear-gradient(90deg, transparent, rgba(148,163,184,.35), transparent);
+      box-shadow: 0 6px 12px rgba(0,0,0,.25);
+    }
+    .section-divider{ height:1px; margin:18px 0; border-radius:999px;
+      background: linear-gradient(90deg, transparent, rgba(148,163,184,.28), transparent);
+      box-shadow: 0 4px 10px rgba(0,0,0,.22);
+    }
+    
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-19";
+    window.__BUILD_ID__ = "v2026.02.20-23";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -833,7 +868,7 @@
                 <div class="hint">Reserva separada do dia a dia.</div>
               </div>
             </div>
-          
+            <div class="section-divider"></div>
             ${renderBillsAlertsCardHTML()}
 `
         },
@@ -861,6 +896,7 @@
           title: "Relatórios & Gráficos",
           sub: "Tudo em um só lugar (sem poluir a tela inicial).",
           html: `<div class="card"><p class="note">Área unificada para relatórios e gráficos.</p></div>
+                 <div class="section-divider"></div>
                  <div class="card"><p class="note">✅ Aqui entram os gráficos semestrais e relatórios detalhados.</p></div>`
         },
 
@@ -906,101 +942,140 @@
           sub: "Preferências do app. (Planos e Dados ficam na lateral).",
           html: `
             <div class="card">
-              <p class="note">✅ Layout preto/cinza aplicado.</p>
-              <p class="note">✅ “Planos” e “Dados” foram movidos para o menu lateral.</p>
-              <p class="note">Se quiser, posso colocar aqui um campo para trocar senha/CPF também.
-              <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn-primary" onclick="renderPage('categories')">Abrir Categorias</button>
+              <p class="note">Preferências do app.</p>
+              <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn-muted" onclick="renderPage('categories')">Categorias</button>
+                <button class="btn-muted" onclick="renderPage('login')">Login</button>
               </div>
-              <p class="note" style="margin-top:10px;">Categorias foi movido para Configurações para deixar o menu lateral mais simples.</p></p>
-            </div>
-          
-        <div class="card" style="margin-top:20px;">
-          <h3>🗂️ Dados</h3>
-          <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Exportar Dados</div>
-                <div class="desc">Baixar seus dados em formato JSON</div>
-              </div>
-              <button class="btn-primary" onclick="exportData()">Exportar</button>
+              <p class="note" style="margin-top:10px;">Categorias fica em Configurações para deixar o menu lateral mais simples.</p>
             </div>
 
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Importar Dados</div>
-                <div class="desc">Carregar dados de um arquivo JSON</div>
+            <div class="section-divider"></div>
+            <div class="card">
+              <h3>🔔 Alertas de contas</h3>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Nome da conta</div>
+                  <div class="desc">Ex: IPVA, Licenciamento, Internet...</div>
+                </div>
+                <input id="billName" placeholder="Ex: IPVA" />
               </div>
-              <button class="btn-muted" onclick="importData()">Importar</button>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Dia do vencimento</div>
+                  <div class="desc">1 a 31</div>
+                </div>
+                <input id="billDueDay" inputmode="numeric" placeholder="Ex: 15" />
+              </div>
+
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Valor (opcional)</div>
+                  <div class="desc">Pode deixar em branco</div>
+                </div>
+                <input id="billAmount" inputmode="decimal" placeholder="Ex: 120,50" />
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                <button class="btn-primary" onclick="addFixedBill()">Adicionar conta</button>
+              </div>
+
+              <div style="margin-top:14px;">
+                <div class="note" style="margin-bottom:8px;">Contas cadastradas:</div>
+                <div id="fixedBillsList"></div>
+              </div>
             </div>
 
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Limpar Dados</div>
-                <div class="desc">Remover todos os dados do aplicativo (ação irreversível)</div>
+            <div class="card">
+              <h3>🗂️ Dados</h3>
+              <div class="row">
+                <div>
+                  <div class="label">Exportar</div>
+                  <div class="desc">Baixar seus dados em formato JSON</div>
+                </div>
+                <button class="btn-primary" onclick="alert('Exportar: conecte aqui sua função real.')">Exportar</button>
               </div>
-              <button class="btn-danger" onclick="clearAllData()">Limpar</button>
+              <div class="row">
+                <div>
+                  <div class="label">Importar</div>
+                  <div class="desc">Carregar dados de um arquivo JSON (substitui dados atuais)</div>
+                </div>
+                <button class="btn-muted" onclick="alert('Importar: conecte aqui sua função real.')">Importar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Limpar Dados</div>
+                  <div class="desc">Remove tudo do app (ação irreversível)</div>
+                </div>
+                <button class="btn-danger" onclick="confirmAndClearData()">Limpar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="label">Limpar Cache do App</div>
+                  <div class="desc">Resolve tela desatualizada (Service Worker / cache)</div>
+                </div>
+                <button class="btn-danger" onclick="clearAppCache()">Limpar Cache</button>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:20px;">
-          <h3>🧾 Planos</h3>
-          <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
-            
-            <div id="planEditableWrap">
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Tipo de Plano</div>
-                <div class="desc">Mensal / Semestral / Anual
 
-            
-            <div class="inline-actions">
-              <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
-              <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
+            <div class="card">
+              <h3>🧾 Planos</h3>
 
-              <!-- Admin: fica oculto para usuário -->
-              <div class="inline-actions" id="planAdminActions" style="display:none; width:100%; justify-content:flex-end;">
-                <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
-                <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+              <div id="planEditableWrap">
+                <div class="row" style="align-items:flex-start;">
+                  <div style="flex:1; min-width:180px;">
+                    <div class="label">Tipo</div>
+                    <div class="desc">Mensal / Semestral / Anual</div>
+                  </div>
+                  <select id="planTypeSelect">
+                    <option value="mensal">Mensal</option>
+                    <option value="semestral">Semestral</option>
+                    <option value="anual">Anual</option>
+                  </select>
+                </div>
+
+                <div class="row" style="align-items:flex-start;">
+                  <div style="flex:1; min-width:180px;">
+                    <div class="label">Forma PGTO</div>
+                    <div class="desc">Cartão / PIX / Boleto</div>
+                  </div>
+                  <input id="planPaymentInput" placeholder="Ex: PIX" />
+                </div>
               </div>
 
-              <p class="note" style="margin:0; width:100%; text-align:right;">
-                <span id="adminHint" style="opacity:.7;"></span>
+              <div class="row" style="align-items:flex-start;">
+                <div style="flex:1; min-width:180px;">
+                  <div class="label">Status</div>
+                  <div class="desc">Ativo / Bloqueado (somente Admin)</div>
+                </div>
+                <select id="planStatusSelect" disabled>
+                  <option value="ativo">Ativo</option>
+                  <option value="bloqueado">Bloqueado</option>
+                </select>
+              </div>
+
+              <div class="inline-actions">
+                <button class="btn-muted" id="planAlterBtn" onclick="lockPlanFields(false)">Alterar</button>
+                <button class="btn-primary" id="planSaveBtn" onclick="savePlanFromUI(true)" style="display:none;">Salvar</button>
+
+                <!-- Admin oculto -->
+                <div class="inline-actions" id="planAdminActions" style="display:none; width:100%; justify-content:flex-end;">
+                  <button class="btn-muted" onclick="adminToggleStatus()">Admin: Ativo/Bloqueado</button>
+                  <button class="btn-muted" onclick="adminChangePin()">PIN Admin</button>
+                </div>
+
+                <p class="note" style="margin:0; width:100%; text-align:right;">
+                  <span id="adminHint" style="opacity:.7;"></span>
+                </p>
+              </div>
+
+              <p class="note" style="margin-top:10px;">
+                Dica: para entrar no modo Admin, toque 7x no <b>Build</b> (no topo).
               </p>
             </div>
-
-</div>
-              </div>
-              <select id="planTypeSelect">
-                <option value="mensal">Mensal</option>
-                <option value="semestral">Semestral</option>
-                <option value="anual">Anual</option>
-              </select>
-            </div>
-
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Forma PGTO</div>
-                <div class="desc">Cartão / PIX / Boleto</div>
-              </div>
-              <input id="planPaymentInput" placeholder="Ex: PIX" />
-            </div>
-
-            <div class="row">
-              <div style="flex:1;">
-                <div class="label">Status</div>
-                <div class="desc">Ativo / Bloqueado</div>
-              </div>
-              <select id="planStatusSelect">
-                <option value="ativo">Ativo</option>
-                <option value="bloqueado">Bloqueado</option>
-              </select>
-            </div>
-
-          </div>
-        </div>
-
-    `
+          `
         },
         login: {
           title: "Login",
@@ -1388,6 +1463,9 @@ function initNav(){
       // build pill no mobile
       const bpm = document.getElementById("buildPillMobile");
       if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
+
+      const sb = document.querySelector(".sidebar");
+
       // build pill no mobile// gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
       let adminTapCount = 0;
       const adminTap = ()=>{
@@ -1406,15 +1484,14 @@ function initNav(){
       // (reutiliza sb já definido acima)
 
       const savedCollapsed = localStorage.getItem("ui_sidebar_collapsed") === "1";
-      if(savedCollapsed) sb.classList.add("collapsed");
+      if(savedCollapsed && sb) sb.classList.add("collapsed");
 
       document.getElementById("sidebarToggle")?.addEventListener("click", ()=>{
+        if(!sb) return;
         sb.classList.toggle("collapsed");
         localStorage.setItem("ui_sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
       });
-
-
-      document.querySelectorAll(".nav a[data-page]").forEach(a=>{
+document.querySelectorAll(".nav a[data-page]").forEach(a=>{
         a.addEventListener("click", (e)=>{
           e.preventDefault();
           const page = a.getAttribute("data-page");
@@ -1451,7 +1528,7 @@ function initNav(){
         <a href="#cards" data-page="cards" data-label="Cartões"><span class="left"><span class="icon">💳</span><span class="text">Cartões</span></a>
         <a href="#insights" data-page="insights" data-label="Relatórios & Gráficos"><span class="left"><span class="icon">📊</span><span class="text">Relatórios &amp; Gráficos</span></a>
 
-        <div class="spacer"></div>
+        <div class="nav-divider"></div>
         <a href="#settings" data-page="settings" data-label="Configurações"><span class="left"><span class="icon">⚙️</span><span class="text">Configurações</span></a>
 
         <!-- Login no final -->
