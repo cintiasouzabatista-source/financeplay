@@ -195,8 +195,8 @@
     .badge-warn{color: #fbbf24; font-weight:800;}
 
     /* Mobile */
-    @media (max-width: 1200px){
-      .sidebar{position:static; width:100%; height:auto; border-right:none; border-bottom:1px solid var(--line);}
+    @media (max-width: 980px){
+      .sidebar{width:100%; height:auto; border-right:none; border-bottom:1px solid var(--line);}
       .main{margin-left:0}
       .layout{flex-direction:column}
       .grid{grid-template-columns:1fr}
@@ -458,7 +458,7 @@
 </style>
 
   <script>
-    window.__BUILD_ID__ = "v2026.02.20-18";
+    window.__BUILD_ID__ = "v2026.02.20-19";
 
     async function sha256(text){
       const enc = new TextEncoder();
@@ -1333,7 +1333,7 @@
     function setupMobileDrawer(){
       const overlay = document.getElementById("drawerOverlay");
       const sidebar = document.querySelector(".sidebar");
-      const btn = document.getElementById("mobileMenuBtn") || document.querySelector("[data-mobile-menu]") || document.querySelector(".mobile-menu-btn");
+      const btn = document.getElementById("mobileMenuBtn") || document.getElementById("fallbackMenuBtn") || document.querySelector("[data-mobile-menu]") || document.querySelector(".mobile-menu-btn");
 
       if(!sidebar || !overlay || !btn) return;
 
@@ -1388,8 +1388,7 @@ function initNav(){
       // build pill no mobile
       const bpm = document.getElementById("buildPillMobile");
       if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
-
-      // gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
+      // build pill no mobile// gesto secreto: 7 toques no "Build" ativa Admin (com PIN)
       let adminTapCount = 0;
       const adminTap = ()=>{
         adminTapCount += 1;
@@ -1400,53 +1399,8 @@ function initNav(){
       };
       document.getElementById("buildPill")?.addEventListener("click", adminTap);
       document.getElementById("buildPillMobile")?.addEventListener("click", adminTap);
-
-
-      
       // mobile drawer
-      const overlay = document.getElementById("drawerOverlay");
-      const sb = document.querySelector(".sidebar");
-
-      // build pill no mobile
-      const bpm = document.getElementById("buildPillMobile");
-      if(bpm) bpm.textContent = "Build " + window.__BUILD_ID__;
-
-      let drawerTimer = null;
-      const startDrawerAutoHide = ()=>{
-        if(drawerTimer) clearTimeout(drawerTimer);
-        // some sozinho depois de 6s sem interação
-        drawerTimer = setTimeout(()=>{
-          if(sb?.classList.contains("open")) closeDrawer();
-        }, 6000);
-      };
-      const openDrawer = ()=>{
-        sb?.classList.add("open");
-        overlay?.classList.add("active");
-        document.body.classList.add("drawer-open");
-        startDrawerAutoHide();
-      };
-      const closeDrawer = ()=>{
-        sb?.classList.remove("open");
-        overlay?.classList.remove("active");
-        document.body.classList.remove("drawer-open");
-        if(drawerTimer) clearTimeout(drawerTimer);
-        drawerTimer = null;
-      };
-
-      // abre/fecha ao clicar no ☰
-      document.getElementById("mobileMenuBtn")?.addEventListener("click", ()=>{
-        if(sb?.classList.contains("open")) closeDrawer(); else openDrawer();
-      });
-      document.getElementById("fallbackMenuBtn")?.addEventListener("click", ()=>{
-        if(sb?.classList.contains("open")) closeDrawer(); else openDrawer();
-      });
-      overlay?.addEventListener("click", closeDrawer);
-
-      // se mexer no menu, reinicia o timer (para não sumir enquanto usa)
-      sb?.addEventListener("touchstart", startDrawerAutoHide, {passive:true});
-      sb?.addEventListener("mousemove", startDrawerAutoHide);
-      sb?.addEventListener("scroll", startDrawerAutoHide, {passive:true});
-
+      try{ setupMobileDrawer(); }catch(e){}
 
       // sidebar: estado salvo
       // (reutiliza sb já definido acima)
